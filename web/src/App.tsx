@@ -9,14 +9,14 @@ import { PullRequestModal } from './components/PullRequestModal';
 import { PRESET_SCENARIOS, PresetScenario } from './data/scenarios';
 import { RemediationResult } from './types';
 import { runRemediationPipeline } from './engine/agentRunner';
-import { Code2, Terminal, Shield, Sparkles, ExternalLink, Zap } from 'lucide-react';
+import { Code2, Terminal, Shield, Sparkles, ExternalLink, Zap, LayoutGrid, CheckCircle2 } from 'lucide-react';
 
 export function App() {
   const [selectedScenario, setSelectedScenario] = useState<PresetScenario>(PRESET_SCENARIOS[0]);
   const [simulateRetry, setSimulateRetry] = useState<boolean>(false);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [result, setResult] = useState<RemediationResult | null>(null);
-  const [activeTab, setActiveTab] = useState<'diff' | 'terminal' | 'both'>('both');
+  const [activeTab, setActiveTab] = useState<'both' | 'diff' | 'terminal'>('both');
   const [isPrModalOpen, setIsPrModalOpen] = useState<boolean>(false);
 
   const handleStart = async () => {
@@ -30,8 +30,8 @@ export function App() {
 
       if (finalResult.status === 'PR_READY') {
         confetti({
-          particleCount: 80,
-          spread: 60,
+          particleCount: 90,
+          spread: 70,
           origin: { y: 0.6 }
         });
       }
@@ -42,47 +42,35 @@ export function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0d14] text-slate-100 flex flex-col font-sans">
+      {/* Top Navigation */}
       <Navbar onOpenPr={() => setIsPrModalOpen(true)} hasPr={Boolean(result?.prBody)} />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-8 space-y-6">
-        {/* Hero Banner / Status */}
-        <div className="bg-gradient-to-r from-cyan-950/30 via-[#101826] to-emerald-950/30 border border-[#1f2b42] rounded-2xl p-5 lg:p-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3" />
-                Live Agentic Sandbox
-              </span>
-              <span className="text-xs text-slate-400">Zero Server Cost • Local AI Support</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
-              Autonomous Agentic Patching &amp; DevSecOps Remediation
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-              Ingest SAST/SCA alerts, extract AST context, synthesize surgical security patches, and verify regressions inside an ephemeral Docker sandbox container with closed-loop self-healing.
-            </p>
+      <main className="flex-1 max-w-7xl mx-auto w-full p-3 sm:p-5 lg:p-6 space-y-4 sm:space-y-5">
+        {/* Banner with Status & PR Trigger */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0d131f] border border-[#1e2a3e] rounded-xl px-4 py-3 shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5 shrink-0">
+              <Sparkles className="w-3 h-3" />
+              Live Interactive Sandbox
+            </span>
+            <span className="text-xs text-slate-400">
+              Zero Server Cost • Ephemeral Docker Execution • Multi-Agent Closed Loop
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 self-start md:self-auto">
-            {result?.prBody && (
-              <button
-                onClick={() => setIsPrModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2"
-              >
-                <span>View Generated PR</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
+          {result?.prBody && (
+            <button
+              onClick={() => setIsPrModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 animate-bounce"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>View Generated PR Description</span>
+              <ExternalLink className="w-3 h-3" />
+            </button>
+          )}
         </div>
 
-        {/* Multi-Agent Visual State Graph */}
-        <AgentPipeline
-          status={result?.status || 'IDLE'}
-          retryCount={result?.retryCount || 0}
-        />
-
-        {/* Vulnerability Selector & Controls */}
+        {/* 1. VULNERABILITY FINDING SELECTOR (PROMINENT AT TOP!) */}
         <VulnerabilitySelector
           selectedScenario={selectedScenario}
           onSelect={(sc) => {
@@ -95,52 +83,71 @@ export function App() {
           onToggleRetry={setSimulateRetry}
         />
 
-        {/* View Toggle Bar */}
-        <div className="flex items-center justify-between pt-2">
+        {/* 2. MULTI-AGENT STATE GRAPH */}
+        <AgentPipeline
+          status={result?.status || 'IDLE'}
+          retryCount={result?.retryCount || 0}
+        />
+
+        {/* 3. WORKSPACE VIEW TOGGLE BAR */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
           <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 mr-1">
+              <LayoutGrid className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Workspace View:</span>
+            </span>
+
             <button
               onClick={() => setActiveTab('both')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'both'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
                   : 'bg-[#121824] text-slate-400 hover:text-white border border-[#1e293b]'
               }`}
             >
-              Split View (Diff &amp; Sandbox)
+              Split View (Code &amp; Terminal)
             </button>
             <button
               onClick={() => setActiveTab('diff')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'diff'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
                   : 'bg-[#121824] text-slate-400 hover:text-white border border-[#1e293b]'
               }`}
             >
               <Code2 className="w-3.5 h-3.5" />
-              <span>Patch Diff</span>
+              <span>{result?.patchDiff ? 'Unified Patch Diff' : 'Vulnerable Code'}</span>
             </button>
             <button
               onClick={() => setActiveTab('terminal')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'terminal'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
                   : 'bg-[#121824] text-slate-400 hover:text-white border border-[#1e293b]'
               }`}
             >
               <Terminal className="w-3.5 h-3.5" />
-              <span>Sandbox Logs</span>
+              <span>Docker Sandbox Terminal</span>
             </button>
+          </div>
+
+          <div className="text-[11px] text-slate-400 flex items-center gap-2">
+            <span>Target: <span className="font-mono text-cyan-400">{selectedScenario.finding.filePath}</span></span>
           </div>
         </div>
 
-        {/* Main Work Area: Diff Viewer & Terminal */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[460px]">
+        {/* 4. MAIN WORKSPACE: DUAL PANES */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-[420px]">
           {(activeTab === 'both' || activeTab === 'diff') && (
             <div className={activeTab === 'diff' ? 'lg:col-span-2' : ''}>
               <DiffViewer
                 diffText={result?.patchDiff}
                 explanation={result?.patchExplanation}
                 filePath={selectedScenario.finding.filePath}
+                initialSourceCode={selectedScenario.initialSourceCode}
+                vulnerableCode={selectedScenario.finding.vulnerableCode}
+                findingTitle={selectedScenario.finding.title}
+                cwe={selectedScenario.finding.cwe}
               />
             </div>
           )}
@@ -157,7 +164,7 @@ export function App() {
         </div>
       </main>
 
-      {/* PR Modal */}
+      {/* Pull Request Modal */}
       <PullRequestModal
         isOpen={isPrModalOpen}
         onClose={() => setIsPrModalOpen(false)}
@@ -165,8 +172,8 @@ export function App() {
       />
 
       {/* Footer */}
-      <footer className="border-t border-[#1a2336] bg-[#0c101a] py-6 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="border-t border-[#1a2336] bg-[#0c101a] py-4 px-4 text-center text-xs text-slate-500 mt-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>
             Autonomous Agentic Patching &amp; DevSecOps Remediation Bot • Open Source (MIT)
           </p>

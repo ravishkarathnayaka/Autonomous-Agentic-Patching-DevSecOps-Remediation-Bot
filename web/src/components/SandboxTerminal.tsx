@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Terminal, Shield, CheckCircle, AlertTriangle, XCircle, Box } from 'lucide-react';
+import { Terminal, Shield, CheckCircle, AlertTriangle, XCircle, Box, Cpu, WifiOff, ShieldCheck } from 'lucide-react';
 import { AgentLog, VerificationResult } from '../types';
 
 interface SandboxTerminalProps {
@@ -32,9 +32,9 @@ export const SandboxTerminal: React.FC<SandboxTerminalProps> = ({ logs, verifica
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-[#162136] text-slate-300 border border-[#23314f]">
-            <Box className="w-3 h-3 text-cyan-400" />
-            <span>Isolation: Strict (No Net)</span>
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-[#162136] text-emerald-400 border border-emerald-500/30">
+            <ShieldCheck className="w-3 h-3 text-emerald-400" />
+            <span>Strict Isolation</span>
           </div>
         </div>
       </div>
@@ -42,8 +42,26 @@ export const SandboxTerminal: React.FC<SandboxTerminalProps> = ({ logs, verifica
       {/* Terminal Console Output */}
       <div className="p-4 font-mono text-xs overflow-y-auto max-h-[380px] bg-[#090c12] space-y-2 leading-relaxed">
         {logs.length === 0 ? (
-          <div className="text-slate-600 italic py-8 text-center">
-            &gt; Waiting for agent execution stream...
+          <div className="space-y-3 py-2 text-slate-400">
+            <div className="p-3 rounded-lg bg-[#0e1420] border border-[#1e293b] space-y-1.5 text-[11px]">
+              <div className="text-emerald-400 font-bold flex items-center gap-1.5">
+                <Box className="w-3.5 h-3.5" />
+                <span>EPHEMERAL RUNNER CONTAINER STANDBY</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-slate-400 pt-1">
+                <div>• <span className="text-slate-300">Base Image:</span> python:3.11-slim</div>
+                <div>• <span className="text-slate-300">Network:</span> disabled (0 egress)</div>
+                <div>• <span className="text-slate-300">Linux Caps:</span> cap_drop=['ALL']</div>
+                <div>• <span className="text-slate-300">Memory Limit:</span> 512 MB</div>
+                <div>• <span className="text-slate-300">Test Engine:</span> pytest test_app.py</div>
+                <div>• <span className="text-slate-300">SAST Re-scan:</span> semgrep --config=p/security</div>
+              </div>
+            </div>
+
+            <div className="text-slate-500 text-xs pl-1 flex items-center gap-2">
+              <span className="text-emerald-400 animate-pulse font-bold">&gt;</span>
+              <span>Waiting for run trigger. Click <span className="text-cyan-400 font-semibold">RUN REMEDIATION BOT</span> above to execute.</span>
+            </div>
           </div>
         ) : (
           logs.map((log) => {
@@ -103,7 +121,7 @@ export const SandboxTerminal: React.FC<SandboxTerminalProps> = ({ logs, verifica
         {isRunning && (
           <div className="flex items-center gap-2 text-cyan-400 py-1">
             <span className="animate-pulse">&gt;</span>
-            <span className="text-xs">Agents reasoning &amp; verifying patch...</span>
+            <span className="text-xs">Agents reasoning &amp; verifying patch in container...</span>
           </div>
         )}
 
