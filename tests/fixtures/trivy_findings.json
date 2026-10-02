@@ -1,0 +1,50 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "target_repo/requirements.txt",
+  "ArtifactType": "filesystem",
+  "Results": [
+    {
+      "Target": "target_repo/requirements.txt",
+      "Class": "lang-pkgs",
+      "Type": "pip",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2023-30861",
+          "PkgName": "Flask",
+          "InstalledVersion": "2.2.0",
+          "FixedVersion": "2.2.5",
+          "Title": "Flask vulnerable to session cookie manipulation and disclosure",
+          "Description": "In Flask prior to 2.2.5, improper handling of secret keys in specific configurations could allow session hijacking.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-384"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Score": 7.5
+            }
+          },
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-30861"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-25577",
+          "PkgName": "Werkzeug",
+          "InstalledVersion": "2.2.2",
+          "FixedVersion": "2.2.3",
+          "Title": "Werkzeug denial of service via multipart form upload",
+          "Description": "Werkzeug before 2.2.3 does not limit the maximum number of parts in a multipart form body, allowing remote attackers to cause high CPU load.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-400"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Score": 6.5
+            }
+          },
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-25577"
+        }
+      ]
+    }
+  ]
+}

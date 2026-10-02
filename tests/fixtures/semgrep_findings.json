@@ -1,0 +1,93 @@
+{
+  "version": "1.65.0",
+  "results": [
+    {
+      "check_id": "rules.python.security.sqlite_sql_injection",
+      "path": "target_repo/app.py",
+      "start": {
+        "line": 28,
+        "col": 5
+      },
+      "end": {
+        "line": 29,
+        "col": 26
+      },
+      "extra": {
+        "message": "User-controllable input formatted directly into raw SQL query allows SQL Injection.",
+        "severity": "ERROR",
+        "metadata": {
+          "cwe": [
+            "CWE-89: Improper Neutralization of Special Elements used in an SQL Command"
+          ],
+          "owasp": [
+            "A03:2021 - Injection"
+          ],
+          "cvss": 9.8,
+          "references": [
+            "https://owasp.org/Top10/A03_2021-Injection/"
+          ]
+        },
+        "lines": "    query = f\"SELECT * FROM items WHERE name = '{name}'\"\n    cursor.execute(query)"
+      }
+    },
+    {
+      "check_id": "rules.python.security.path_traversal_open",
+      "path": "target_repo/app.py",
+      "start": {
+        "line": 42,
+        "col": 5
+      },
+      "end": {
+        "line": 44,
+        "col": 24
+      },
+      "extra": {
+        "message": "Potential arbitrary file read via unvalidated path traversal parameter.",
+        "severity": "WARNING",
+        "metadata": {
+          "cwe": [
+            "CWE-22: Improper Limitation of a Pathname to a Restricted Directory"
+          ],
+          "owasp": [
+            "A01:2021 - Broken Access Control"
+          ],
+          "cvss": 7.5,
+          "references": [
+            "https://cwe.mitre.org/data/definitions/22.html"
+          ]
+        },
+        "lines": "    file_path = os.path.join(SAFE_DIR, filename)\n    with open(file_path, \"r\") as f:\n        return f.read()"
+      }
+    },
+    {
+      "check_id": "rules.python.security.subprocess_command_injection",
+      "path": "target_repo/app.py",
+      "start": {
+        "line": 58,
+        "col": 5
+      },
+      "end": {
+        "line": 60,
+        "col": 18
+      },
+      "extra": {
+        "message": "Dynamic command construction executed with shell=True invites remote command injection.",
+        "severity": "ERROR",
+        "metadata": {
+          "cwe": [
+            "CWE-78: Improper Neutralization of Special Elements used in an OS Command"
+          ],
+          "owasp": [
+            "A03:2021 - Injection"
+          ],
+          "cvss": 9.8,
+          "references": [
+            "https://cwe.mitre.org/data/definitions/78.html"
+          ]
+        },
+        "lines": "    cmd = f\"ping {count_flag} 1 {host}\"\n    output = subprocess.check_output(cmd, shell=True, text=True)\n    return output"
+      }
+    }
+  ],
+  "errors": []
+}

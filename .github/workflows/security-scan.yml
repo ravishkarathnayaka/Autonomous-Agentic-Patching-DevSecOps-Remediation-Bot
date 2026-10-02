@@ -1,0 +1,44 @@
+name: DevSecOps Security Scans (Trivy & Gitleaks)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 4 * * 1' # Weekly Monday scan at 04:00 UTC
+
+jobs:
+  trivy-scan:
+    name: Trivy Vulnerability & Misconfig Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy Vulnerability Scanner (Repo filesystem)
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '0' # Non-blocking for sample vulnerable fixture files
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+  gitleaks-scan:
+    name: Gitleaks Secrets Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks Secrets Scanner
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: "free"

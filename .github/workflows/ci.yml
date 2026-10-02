@@ -1,0 +1,39 @@
+name: CI - Code Quality & Automated Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Lint, Typecheck & Pytest Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Code Linting (flake8)
+        run: |
+          flake8 agent_engine cli tests --max-line-length=130 --extend-ignore=E203,W503
+
+      - name: Strict Type Checking (mypy)
+        run: |
+          mypy agent_engine cli
+
+      - name: Execute Full Pytest Test Suite
+        run: |
+          pytest tests/ target_repo/test_app.py -v --cov=agent_engine --cov=cli --cov-report=term-missing

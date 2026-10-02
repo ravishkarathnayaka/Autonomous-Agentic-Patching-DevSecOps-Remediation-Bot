@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # 1. Local LLM Service via Ollama ($0 cost, offline capability)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: devsecops-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/api/tags || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Message Broker & State Cache
+  redis:
+    image: redis:7-alpine
+    container_name: devsecops-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # 3. Autonomous Remediation Bot CLI / API Service
+  remediation-bot:
+    build:
+      context: ..
+      dockerfile: docker/sandbox.Dockerfile
+    container_name: devsecops-bot
+    volumes:
+      - ..:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=qwen2.5-coder:7b
+      - REDIS_URL=redis://redis:6379/0
+      - SANDBOX_IMAGE=devsecops-remediation-sandbox:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    working_dir: /workspace
+    command: ["python", "-m", "cli.main", "--help"]
+
+volumes:
+  ollama_models:
+  redis_data:
