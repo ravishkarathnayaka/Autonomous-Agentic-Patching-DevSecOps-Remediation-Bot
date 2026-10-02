@@ -51,3 +51,10 @@ tmp/
 *.patch
 .env
 PR_OUTPUT.md
+
+# Web & Node dependencies
+node_modules/
+dist/
+.vite/
+web/node_modules/
+web/dist/

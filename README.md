@@ -11,6 +11,7 @@
 ---
 
 ## 📌 Table of Contents
+- [Live Web Portal & Vercel Deployment](#-live-web-portal--vercel-deployment)
 - [Executive Overview](#-executive-overview)
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
@@ -25,6 +26,37 @@
 - [Sample Generated Pull Request](#-sample-generated-pull-request)
 - [Automated Testing & CI/CD](#-automated-testing--cicd)
 - [License](#-license)
+
+---
+
+## 🌐 Live Web Portal & Vercel Deployment
+
+A rich, interactive web application is included in `web/` allowing anyone to test, simulate, and inspect the autonomous remediation agents live in their browser.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fravishkarathnayaka%2FAutonomous-Agentic-Patching-DevSecOps-Remediation-Bot)
+
+### Key Portal Capabilities:
+- **Interactive Multi-Agent State Machine**: Real-time visual progress nodes for Triage, Patch, Verifier, and PR agents.
+- **Scenario Presets**: Instantly trigger remediation against SQLi (CWE-89), Path Traversal (CWE-22), Command Injection (CWE-78), or Flask SCA (CVE-2023-30861).
+- **Self-Healing Simulation**: Toggle the retry feedback loop to watch the Verifier detect an intentional defect, feed diagnostics back to the Patch Agent, and self-heal on attempt #2.
+- **Unified Diff Viewer**: Colorized before/after code comparison with line change indicators and one-click `.patch` download.
+- **Ephemeral Sandbox Console**: Emulated Docker container output with regression test results and capability lockdown indicators.
+- **GitHub PR Modal**: One-click copy or download of full GitHub-ready pull request documentation.
+
+### Run Web Portal Locally:
+```bash
+cd web
+npm install
+npm run dev
+# Open http://localhost:3000 in your browser
+```
+
+### Deploy to Vercel in 60 Seconds:
+1. Push this repository to GitHub (or use the one-click deploy button above).
+2. Go to [vercel.com](https://vercel.com) and click **"Add New Project"**.
+3. Import `Autonomous-Agentic-Patching-DevSecOps-Remediation-Bot`.
+4. Vercel automatically detects the Vite framework and builds `web/` using the included `vercel.json`.
+5. Your live URL is generated immediately! (e.g. `https://devsecops-bot.vercel.app`)
 
 ---
 
