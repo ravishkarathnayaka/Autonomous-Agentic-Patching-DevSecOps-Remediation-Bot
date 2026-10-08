@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitPullRequest, X, Copy, Check, Download, GitBranch, GitCommit, ShieldCheck } from 'lucide-react';
+import { GitPullRequest, X, Copy, Check, Download, GitBranch, GitCommit, ShieldCheck, FileJson } from 'lucide-react';
 import { RemediationResult } from '../types';
 
 interface PullRequestModalProps {
@@ -25,6 +25,45 @@ export const PullRequestModal: React.FC<PullRequestModalProps> = ({ isOpen, onCl
     const link = document.createElement('a');
     link.href = url;
     link.download = `PR-${result.finding.id}.md`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadSarif = () => {
+    const sarif = {
+      $schema: "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+      version: "2.1.0",
+      runs: [{
+        tool: {
+          driver: {
+            name: "Autonomous-DevSecOps-Bot",
+            version: "1.0.0",
+            rules: [{
+              id: result.finding.ruleId,
+              name: result.finding.title,
+              shortDescription: { text: result.finding.title },
+              fullDescription: { text: result.finding.description }
+            }]
+          }
+        },
+        results: [{
+          ruleId: result.finding.ruleId,
+          level: "error",
+          message: { text: result.finding.description },
+          locations: [{
+            physicalLocation: {
+              artifactLocation: { uri: result.finding.filePath },
+              region: { startLine: result.finding.startLine, endLine: result.finding.endLine }
+            }
+          }]
+        }]
+      }]
+    };
+    const blob = new Blob([JSON.stringify(sarif, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${result.finding.id}.sarif`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -55,7 +94,7 @@ export const PullRequestModal: React.FC<PullRequestModalProps> = ({ isOpen, onCl
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -81,17 +120,25 @@ export const PullRequestModal: React.FC<PullRequestModalProps> = ({ isOpen, onCl
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/25 transition-all font-semibold"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/25 transition-all font-semibold cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy PR Markdown'}</span>
             </button>
             <button
               onClick={handleDownload}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a243a] hover:bg-[#233252] border border-[#2b3d63] text-slate-200 transition-all font-semibold"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a243a] hover:bg-[#233252] border border-[#2b3d63] text-slate-200 transition-all font-semibold cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download .md</span>
+            </button>
+            <button
+              onClick={handleDownloadSarif}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 transition-all font-semibold cursor-pointer"
+              title="Download standard SARIF 2.1.0 for GitHub Code Scanning"
+            >
+              <FileJson className="w-3.5 h-3.5" />
+              <span>Export SARIF</span>
             </button>
           </div>
         </div>
