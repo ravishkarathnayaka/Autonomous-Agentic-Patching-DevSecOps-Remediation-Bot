@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
-from agent_engine.state import Finding
+from agent_engine.state import Finding, FindingType, SeverityLevel
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +39,12 @@ def parse_bandit_report(report_data: Union[str, Dict[str, Any], Path]) -> List[F
             # Map severity
             bandit_sev = item.get("issue_severity", "MEDIUM").upper()
             severity_map = {
-                "HIGH": "HIGH",
-                "MEDIUM": "MEDIUM",
-                "LOW": "LOW",
-                "CRITICAL": "CRITICAL"
+                "HIGH": SeverityLevel.HIGH,
+                "MEDIUM": SeverityLevel.MEDIUM,
+                "LOW": SeverityLevel.LOW,
+                "CRITICAL": SeverityLevel.CRITICAL
             }
-            severity = severity_map.get(bandit_sev, "MEDIUM")
+            severity = severity_map.get(bandit_sev, SeverityLevel.MEDIUM)
 
             # Extract CWE
             cwe_obj = item.get("issue_cwe", {})
@@ -53,7 +53,7 @@ def parse_bandit_report(report_data: Union[str, Dict[str, Any], Path]) -> List[F
 
             # Map CVSS estimate based on severity
             cvss_map = {"CRITICAL": 9.5, "HIGH": 7.5, "MEDIUM": 5.0, "LOW": 2.5}
-            cvss = cvss_map.get(severity, 5.0)
+            cvss = cvss_map.get(bandit_sev, 5.0)
 
             line_num = item.get("line_number", 1)
             line_range = item.get("line_range", [line_num])
@@ -67,13 +67,13 @@ def parse_bandit_report(report_data: Union[str, Dict[str, Any], Path]) -> List[F
             finding = Finding(
                 id=f"bandit-{test_id}-{clean_path}-{start_line}",
                 scanner="bandit",
-                type="SAST",
+                finding_type=FindingType.SAST,
                 rule_id=rule_id,
                 title=item.get("issue_text", f"Bandit finding {test_id}"),
                 description=item.get("issue_text", "") + f" (Rule: {test_name})",
                 severity=severity,
-                cwe=cwe_list,
-                cvss=cvss,
+                cwe_ids=cwe_list,
+                cvss_score=cvss,
                 file_path=clean_path,
                 start_line=start_line,
                 end_line=end_line,

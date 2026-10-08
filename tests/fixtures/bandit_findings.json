@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "code": "query = f\"SELECT * FROM items WHERE name = '{name}'\"\ncursor.execute(query)",
+      "filename": "target_repo/app.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 28,
+      "line_range": [28, 29],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    },
+    {
+      "code": "subprocess.check_output(cmd, shell=True, text=True)",
+      "filename": "target_repo/app.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 78,
+        "link": "https://cwe.mitre.org/data/definitions/78.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Starting a process with a shell, possible injection detected, security issue.",
+      "line_number": 49,
+      "line_range": [49],
+      "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+      "test_id": "B602",
+      "test_name": "subprocess_popen_with_shell_equals_true"
+    }
+  ]
+}
