@@ -12,6 +12,8 @@ from agent_engine.llm.client import get_llm_client
 from agent_engine.state import Finding, RemediationState, RemediationStatus
 from agent_engine.tools.report_parsers import load_findings_from_file
 from agent_engine.tools.sandbox_executor import SandboxExecutor
+from agent_engine.tools.sarif_exporter import export_findings_to_sarif
+from agent_engine.telemetry import TelemetryTracker
 
 # Setup logging
 logging.basicConfig(
@@ -94,6 +96,18 @@ def _print_banner() -> None:
     help="Optional path to write generated Pull Request markdown output."
 )
 @click.option(
+    "--export-sarif",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Optional path to export normalized findings as SARIF 2.1.0 JSON."
+)
+@click.option(
+    "--export-telemetry",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Optional path to export remediation performance telemetry JSON."
+)
+@click.option(
     "--finding-id",
     default=None,
     help="Filter to remediate only a specific finding ID."
@@ -114,6 +128,8 @@ def main(
     sandbox_mode: str,
     test_file: str,
     output_pr: Optional[Path],
+    export_sarif: Optional[Path],
+    export_telemetry: Optional[Path],
     finding_id: Optional[str],
     simulate_failure: bool
 ) -> None:
@@ -140,6 +156,14 @@ def main(
     if not findings:
         click.secho("[!] No actionable findings found.", fg="yellow")
         sys.exit(0)
+
+    # Optional SARIF export
+    if export_sarif:
+        try:
+            export_findings_to_sarif(findings, output_path=export_sarif)
+            click.secho(f"[+] Exported findings to SARIF: {export_sarif}", fg="green")
+        except Exception as e:
+            logger.error("Failed to export SARIF: %s", e)
 
     # 2. Configure Sandbox Executor
     force_local = (sandbox_mode.lower() == "local")
@@ -215,6 +239,26 @@ def main(
             click.secho(f"\n[+] Wrote Pull Request markdown description to: {output_pr}", fg="green")
         except Exception as e:
             logger.error("Failed to write PR output file: %s", e)
+
+    # 8. Export Telemetry Report if requested
+    if export_telemetry:
+        try:
+            tracker = TelemetryTracker()
+            for s in results:
+                tracker.record_attempt(
+                    finding_id=s.finding.id,
+                    rule_id=s.finding.rule_id,
+                    severity=s.finding.severity.value,
+                    cwe=s.finding.cwe_ids,
+                    duration_seconds=0.0,
+                    status=s.status.value,
+                    retry_count=s.retry_count,
+                    sandbox_passed=(s.status == RemediationStatus.PR_READY)
+                )
+            tracker.generate_report().export_json(export_telemetry)
+            click.secho(f"[+] Wrote Telemetry report to: {export_telemetry}", fg="green")
+        except Exception as e:
+            logger.error("Failed to export telemetry: %s", e)
 
     if failed:
         sys.exit(1)
