@@ -397,6 +397,35 @@ All four commands execute in the repository's GitHub Actions CI pipeline on ever
 
 ---
 
+## 🛡️ Supported Scanners & SARIF Export
+
+| Scanner Type | Tool | Supported Format | Normalized Rule Mapping |
+| :--- | :--- | :--- | :--- |
+| **SAST** | **Semgrep** | JSON output (`--json`) | CWE-89, CWE-22, CWE-78, custom rulesets |
+| **SAST** | **Bandit** | JSON output (`-f json`) | Python AST security flaws (B608, B602, etc.) |
+| **SCA** | **Trivy** | JSON output (`--format json`) | CVE advisories in dependencies (pip, npm) |
+
+### Exporting Standard SARIF 2.1.0 for GitHub Code Scanning:
+```bash
+python -m cli.main \
+  --report tests/fixtures/semgrep_findings.json \
+  --target target_repo/ \
+  --export-sarif findings.sarif \
+  --export-telemetry telemetry.json
+```
+
+---
+
+## 📚 Documentation & Architecture Guides
+
+- [Threat Model & STRIDE Analysis](docs/THREAT_MODEL.md) — Deep dive into prompt injection defenses, ephemeral sandbox containment, and privilege drop.
+- [Local LLM Benchmark Guide](docs/LLM_BENCHMARKS.md) — Performance matrix comparing Qwen2.5-Coder, Llama 3, and DeepSeek for security diff generation.
+- [Contributing Guidelines](CONTRIBUTING.md) — Developer setup, coding standards, and pull request workflow.
+- [Code of Conduct](CODE_OF_CONDUCT.md) — Contributor Covenant 2.1 pledge and standards.
+- [Security Policy](SECURITY.md) — Coordinated vulnerability disclosure and supported versions.
+
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
