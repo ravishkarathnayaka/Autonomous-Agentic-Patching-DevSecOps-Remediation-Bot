@@ -1,0 +1,44 @@
+name: Bug Report
+description: File a bug report to help improve the remediation bot
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug! Please fill in the details below.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the issue.
+      placeholder: |
+        1. Run CLI with scan file '...'
+        2. Agent reaches state '...'
+        3. Exception thrown: '...'
+    validations:
+      required: true
+  - type: dropdown
+    id: scanner
+    attributes:
+      label: Scanner Involved
+      options:
+        - Semgrep (SAST)
+        - Trivy (SCA)
+        - Bandit (SAST)
+        - Custom
+        - None / Core Engine
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs or Error Traces
+      description: Paste any logs or tracebacks from `agent_engine` or Docker sandbox.
+      render: shell

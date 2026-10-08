@@ -1,0 +1,27 @@
+name: Feature Request
+description: Propose a new feature, agent role, or scanner parser
+title: "[FEAT]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for proposing a new feature!
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem?
+      description: A clear description of the challenge or workflow gap.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Detailed description of what you want to happen and proposed architecture.
+    validations:
+      required: true
+  - type: textarea
+    id: security_considerations
+    attributes:
+      label: Security & Isolation Considerations
+      description: How does this proposal ensure container isolation and prevent untrusted code execution?
