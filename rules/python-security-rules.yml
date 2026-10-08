@@ -1,0 +1,65 @@
+rules:
+  - id: python.sqlite.formatted-sql-injection
+    languages: [python]
+    message: "Detected SQLite query using f-string or string concatenation. Use parameterized queries '?' instead to prevent CWE-89 SQL Injection."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-89"]
+      owasp: ["A03:2021 - Injection"]
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: $CURSOR.execute(f"...", ...)
+          - pattern: $CURSOR.execute("..." % (...), ...)
+          - pattern: $CURSOR.execute("...".format(...), ...)
+
+  - id: python.path.unsafe-file-traversal
+    languages: [python]
+    message: "Detected file open with uncanonicalized user path. Ensure os.path.abspath validation against safe directory to prevent CWE-22 Path Traversal."
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-22"]
+      owasp: ["A01:2021 - Broken Access Control"]
+      confidence: HIGH
+    patterns:
+      - pattern: open(os.path.join($SAFE, $FILENAME), ...)
+      - pattern-not-inside: |
+          ...
+          if not $PATH.startswith(...):
+              ...
+
+  - id: python.subprocess.shell-true-injection
+    languages: [python]
+    message: "subprocess call with shell=True detected. Pass argument list with shell=False to prevent CWE-78 Command Injection."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-78"]
+      owasp: ["A03:2021 - Injection"]
+      confidence: HIGH
+    patterns:
+      - pattern: subprocess.$FUNC(..., shell=True, ...)
+
+  - id: python.deserialization.insecure-pickle
+    languages: [python]
+    message: "Unpickling untrusted data can lead to arbitrary remote code execution (CWE-502). Use safe serialization formats such as JSON or Protocol Buffers."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-502"]
+      owasp: ["A08:2021 - Software and Data Integrity Failures"]
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: pickle.loads(...)
+          - pattern: pickle.load(...)
+          - pattern: _pickle.loads(...)
+
+  - id: python.crypto.weak-hash-md5
+    languages: [python]
+    message: "MD5 is a cryptographically broken hash algorithm vulnerable to collision attacks (CWE-327). Use SHA-256 or bcrypt instead."
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-327"]
+      owasp: ["A02:2021 - Cryptographic Failures"]
+      confidence: HIGH
+    patterns:
+      - pattern: hashlib.md5(...)
