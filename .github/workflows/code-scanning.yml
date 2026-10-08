@@ -1,0 +1,48 @@
+name: Security - Code Scanning SARIF Upload
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0' # Weekly scan
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sarif_scan:
+    name: Semgrep & Bot SARIF Export
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install semgrep
+
+      - name: Run Semgrep SAST Scan
+        run: |
+          semgrep scan --config auto --json -o semgrep-scan.json target_repo/ || true
+
+      - name: Generate SARIF 2.1.0 via DevSecOps Bot Exporter
+        run: |
+          python -m cli.main --report semgrep-scan.json --target target_repo/ --export-sarif findings.sarif --provider mock || true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: findings.sarif
+          category: autonomous-devsecops-bot
