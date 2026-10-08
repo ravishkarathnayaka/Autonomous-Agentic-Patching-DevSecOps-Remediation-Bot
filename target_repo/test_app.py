@@ -4,7 +4,9 @@ These tests verify valid application business logic and must continue passing
 both before and after security remediation patches are applied.
 """
 
+import base64
 import os
+import pickle
 import pytest
 try:
     from target_repo.app import app, init_db
@@ -49,3 +51,11 @@ def test_ping_valid(client):
     resp = client.get("/ping?host=127.0.0.1")
     assert resp.status_code == 200
     assert any(term in resp.data.lower() for term in [b"ttl", b"bytes", b"packets", b"received", b"reply", b"loss"])
+
+
+def test_load_session_valid(client):
+    """Verify loading legitimate base64 session payload returns 200."""
+    payload = base64.b64encode(pickle.dumps({"user": "alice"})).decode("utf-8")
+    resp = client.post("/session/load", data={"payload": payload})
+    assert resp.status_code == 200
+    assert resp.get_json()["session_user"] == "alice"
