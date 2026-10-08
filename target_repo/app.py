@@ -4,9 +4,12 @@ Contains intentional security vulnerabilities:
 1. CWE-89: SQL Injection (/items)
 2. CWE-22: Path Traversal (/files)
 3. CWE-78: Command Injection (/ping)
+4. CWE-502: Insecure Deserialization (/session/load)
 """
 
+import base64
 import os
+import pickle
 import sqlite3
 import subprocess
 import sys
@@ -48,6 +51,20 @@ def ping():
     cmd = f"ping {count_flag} 1 {host}"
     output = subprocess.check_output(cmd, shell=True, text=True)
     return output
+
+
+@app.route("/session/load", methods=["POST"])
+def load_session():
+    payload = request.form.get("payload", "")
+    if not payload:
+        return jsonify({"error": "Missing payload"}), 400
+    try:
+        raw_bytes = base64.b64decode(payload.encode("utf-8"))
+        obj = pickle.loads(raw_bytes)
+        user = obj.get("user", "guest") if isinstance(obj, dict) else "guest"
+        return jsonify({"status": "loaded", "session_user": str(user)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 def init_db():
