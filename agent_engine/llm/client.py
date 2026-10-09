@@ -117,6 +117,21 @@ class OpenAILLMClient(BaseLLMClient):
             raise RuntimeError(f"LLM API request error: {e}") from e
 
 
+class FallbackLLMClient(BaseLLMClient):
+    """Wraps a primary LLM client with a secondary fallback client upon failure."""
+
+    def __init__(self, primary: BaseLLMClient, fallback: BaseLLMClient):
+        self.primary = primary
+        self.fallback = fallback
+
+    def generate(self, prompt: str, system_prompt: Optional[str] = None, temperature: float = 0.0) -> str:
+        try:
+            return self.primary.generate(prompt, system_prompt=system_prompt, temperature=temperature)
+        except Exception as e:
+            logger.warning("Primary LLM provider failed (%s). Activating fallback provider.", e)
+            return self.fallback.generate(prompt, system_prompt=system_prompt, temperature=temperature)
+
+
 def get_llm_client(
     provider: str = "mock",
     model: Optional[str] = None,
