@@ -189,5 +189,127 @@ pytest>=8.0.0`,
 -Flask==2.2.0
 +Flask==99.99.99-nonexistent`,
     remediationExplanation: 'Upgraded pinned Flask dependency from 2.2.0 to official security patch 2.2.5 resolving CVE-2023-30861.'
+  },
+  {
+    id: 'insecure-deserialization',
+    name: 'Insecure Deserialization (CWE-502)',
+    icon: 'FileCode',
+    category: 'SAST',
+    finding: {
+      id: 'semgrep-insecure-pickle-01',
+      scanner: 'semgrep',
+      type: 'SAST',
+      ruleId: 'rules.python.security.insecure_deserialization_pickle',
+      title: 'Untrusted Pickle Deserialization in /load-session',
+      description: 'Deserialization of untrusted user input using pickle.loads allows arbitrary remote code execution.',
+      severity: 'CRITICAL',
+      cwe: ['CWE-502'],
+      cvss: 9.8,
+      filePath: 'target_repo/app.py',
+      startLine: 62,
+      endLine: 65,
+      vulnerableCode: '    raw_data = base64.b64decode(data)\n    session_obj = pickle.loads(raw_data)',
+      astContext: 'Function: load_session() | Lines: 60-68\nImports: import base64, import pickle, import json'
+    },
+    initialSourceCode: `@app.route("/load-session", methods=["POST"])
+def load_session():
+    data = request.json.get("data", "")
+    raw_data = base64.b64decode(data)
+    session_obj = pickle.loads(raw_data)
+    return jsonify({"status": "loaded", "session": str(session_obj)})`,
+    passingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -62,2 +62,2 @@
+-    raw_data = base64.b64decode(data)
+-    session_obj = pickle.loads(raw_data)
++    raw_data = base64.b64decode(data).decode("utf-8")
++    session_obj = json.loads(raw_data)`,
+    failingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -62,2 +62,2 @@
+-    session_obj = pickle.loads(raw_data)
++    session_obj = eval(raw_data)`,
+    remediationExplanation: 'Replaced arbitrary object deserialization with standard, schema-safe JSON parsing (json.loads), neutralizing CWE-502 remote code execution payloads.'
+  },
+  {
+    id: 'weak-crypto-md5',
+    name: 'Insecure Cryptographic Hash (CWE-327)',
+    icon: 'Key',
+    category: 'SAST',
+    finding: {
+      id: 'bandit-weak-hash-md5-01',
+      scanner: 'bandit',
+      type: 'SAST',
+      ruleId: 'B303:md5',
+      title: 'Use of Insecure MD5 Hash for Passwords in /hash-password',
+      description: 'Use of known broken or collision-vulnerable hash algorithm MD5 for credential storage.',
+      severity: 'HIGH',
+      cwe: ['CWE-327'],
+      cvss: 7.5,
+      filePath: 'target_repo/app.py',
+      startLine: 78,
+      endLine: 80,
+      vulnerableCode: '    hasher = hashlib.md5()\n    hasher.update(password.encode("utf-8"))\n    return jsonify({"hash": hasher.hexdigest()})',
+      astContext: 'Function: hash_password() | Lines: 75-82\nImports: import hashlib'
+    },
+    initialSourceCode: `@app.route("/hash-password", methods=["POST"])
+def hash_password():
+    password = request.json.get("password", "")
+    hasher = hashlib.md5()
+    hasher.update(password.encode("utf-8"))
+    return jsonify({"hash": hasher.hexdigest()})`,
+    passingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -78,3 +78,3 @@
+-    hasher = hashlib.md5()
+-    hasher.update(password.encode("utf-8"))
+-    return jsonify({"hash": hasher.hexdigest()})
++    hasher = hashlib.sha256()
++    hasher.update(password.encode("utf-8"))
++    return jsonify({"hash": hasher.hexdigest()})`,
+    failingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -78,2 +78,2 @@
+-    hasher = hashlib.md5()
++    hasher = hashlib.sha1()`,
+    remediationExplanation: 'Replaced collision-vulnerable MD5 digest with cryptographically sound SHA-256 algorithm to adhere to modern cryptographic storage standards.'
+  },
+  {
+    id: 'xss-reflected',
+    name: 'Reflected Cross-Site Scripting (CWE-79)',
+    icon: 'ShieldAlert',
+    category: 'SAST',
+    finding: {
+      id: 'semgrep-reflected-xss-01',
+      scanner: 'semgrep',
+      type: 'SAST',
+      ruleId: 'rules.python.security.reflected_xss',
+      title: 'Reflected XSS in /search query parameter',
+      description: 'Raw HTML response returns unescaped user query parameter directly in HTTP body.',
+      severity: 'MEDIUM',
+      cwe: ['CWE-79'],
+      cvss: 6.1,
+      filePath: 'target_repo/app.py',
+      startLine: 95,
+      endLine: 97,
+      vulnerableCode: '    return f"<h1>Search Results for: {query}</h1><p>No results found.</p>"',
+      astContext: 'Function: search() | Lines: 92-98\nImports: import html, from flask import Flask, request'
+    },
+    initialSourceCode: `@app.route("/search", methods=["GET"])
+def search():
+    query = request.args.get("q", "")
+    return f"<h1>Search Results for: {query}</h1><p>No results found.</p>"`,
+    passingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -95,2 +95,3 @@
+-    return f"<h1>Search Results for: {query}</h1><p>No results found.</p>"
++    safe_query = html.escape(query)
++    return f"<h1>Search Results for: {safe_query}</h1><p>No results found.</p>"`,
+    failingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -95,1 +95,1 @@
+-    return f"<h1>Search Results for: {query}</h1><p>No results found.</p>"
++    return f"<div>{query}</div>"`,
+    remediationExplanation: 'Escaped HTML entities in untrusted query parameter using html.escape() to prevent script tag injection and browser context hijacking.'
   }
 ];
