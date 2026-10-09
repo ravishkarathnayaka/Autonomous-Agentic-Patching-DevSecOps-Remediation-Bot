@@ -1,0 +1,36 @@
+{
+  "ok": false,
+  "packageManager": "pip",
+  "displayTargetFile": "target_repo/requirements.txt",
+  "vulnerabilities": [
+    {
+      "id": "SNYK-PYTHON-FLASK-5465191",
+      "title": "Information Disclosure",
+      "packageName": "Flask",
+      "version": "2.2.0",
+      "severity": "high",
+      "cvssScore": 7.5,
+      "description": "Flask session cookie disclosure vulnerability under certain secret key setups.",
+      "identifiers": {
+        "CVE": ["CVE-2023-30861"],
+        "CWE": ["CWE-384"]
+      },
+      "upgradePath": [false, "Flask@2.2.5"],
+      "fixedIn": ["2.2.5"]
+    },
+    {
+      "id": "SNYK-PYTHON-WERKZEUG-3319936",
+      "title": "Denial of Service (DoS)",
+      "packageName": "Werkzeug",
+      "version": "2.2.2",
+      "severity": "medium",
+      "cvssScore": 6.5,
+      "description": "Slow multipart data parsing causing resource exhaustion.",
+      "identifiers": {
+        "CVE": ["CVE-2023-25577"],
+        "CWE": ["CWE-400"]
+      },
+      "fixedIn": ["2.2.3"]
+    }
+  ]
+}
