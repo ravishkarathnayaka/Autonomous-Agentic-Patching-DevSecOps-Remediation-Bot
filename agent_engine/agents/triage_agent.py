@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 
+from agent_engine.policy_engine import RemediationPolicyEngine
 from agent_engine.state import Finding, RemediationState, RemediationStatus
 from agent_engine.tools.ast_parser import extract_ast_context
 
@@ -13,8 +14,9 @@ logger = logging.getLogger(__name__)
 class TriageAgent:
     """Agent responsible for inspecting findings and enriching code context."""
 
-    def __init__(self, name: str = "TriageAgent"):
+    def __init__(self, name: str = "TriageAgent", policy_engine: Optional[RemediationPolicyEngine] = None):
         self.name = name
+        self.policy_engine = policy_engine
 
     def execute(self, state: RemediationState) -> RemediationState:
         """Analyze the target finding, locate the source file, and attach AST context."""
@@ -22,6 +24,16 @@ class TriageAgent:
         repo_root = Path(state.target_repo_path).resolve()
 
         state.log_event(self.name, "start_triage", {"finding_id": finding.id, "rule_id": finding.rule_id})
+
+        # 0. Evaluate against Remediation Policy if configured
+        if self.policy_engine:
+            policy_res = self.policy_engine.evaluate_finding(finding)
+            if not policy_res.is_allowed:
+                reason_msg = "; ".join(policy_res.reasons)
+                state.status = RemediationStatus.FAILED
+                state.last_error_trace = f"Blocked by DevSecOps Policy: {reason_msg}"
+                state.log_event(self.name, "policy_blocked", {"reasons": policy_res.reasons})
+                return state
 
         # Locate file on disk
         target_file_path = self._resolve_file_path(repo_root, finding.file_path)
