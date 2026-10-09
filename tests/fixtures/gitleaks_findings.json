@@ -1,0 +1,22 @@
+[
+  {
+    "Description": "AWS Access Key ID",
+    "StartLine": 12,
+    "EndLine": 12,
+    "StartColumn": 15,
+    "EndColumn": 35,
+    "Match": "AKIAIOSFODNN7EXAMPLE",
+    "Secret": "AKIAIOSFODNN7EXAMPLE",
+    "File": "target_repo/app.py",
+    "SymlinkFile": "",
+    "Commit": "abc1234",
+    "Entropy": 3.75,
+    "Author": "developer",
+    "Email": "dev@example.com",
+    "Date": "2026-10-09T00:00:00Z",
+    "Message": "Add config",
+    "Tags": ["key", "AWS"],
+    "RuleID": "aws-access-key-id",
+    "Fingerprint": "aws-access-key-id:target_repo/app.py:12"
+  }
+]
