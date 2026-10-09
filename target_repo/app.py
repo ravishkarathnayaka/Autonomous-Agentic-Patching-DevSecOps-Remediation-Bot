@@ -5,9 +5,11 @@ Contains intentional security vulnerabilities:
 2. CWE-22: Path Traversal (/files)
 3. CWE-78: Command Injection (/ping)
 4. CWE-502: Insecure Deserialization (/session/load)
+5. CWE-327: Use of a Broken or Risky Cryptographic Algorithm (/user/hash_password)
 """
 
 import base64
+import hashlib
 import os
 import pickle
 import sqlite3
@@ -65,6 +67,14 @@ def load_session():
         return jsonify({"status": "loaded", "session_user": str(user)})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
+@app.route("/user/hash_password", methods=["POST"])
+def hash_password():
+    password = request.form.get("password", "")
+    # Vulnerable: Insecure MD5 hash without salt violates CWE-327
+    md5_hash = hashlib.md5(password.encode("utf-8")).hexdigest()
+    return jsonify({"algo": "md5", "hash": md5_hash})
 
 
 def init_db():
