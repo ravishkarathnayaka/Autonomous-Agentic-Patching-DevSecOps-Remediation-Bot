@@ -16,6 +16,7 @@
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
+- [Enterprise Deployment & Governance Guide](docs/ENTERPRISE_GUIDE.md)
 - [Project Directory Layout](#-project-directory-layout)
 - [Getting Started ($0 Local Execution)](#-getting-started-0-local-execution)
   - [Prerequisites](#prerequisites)
