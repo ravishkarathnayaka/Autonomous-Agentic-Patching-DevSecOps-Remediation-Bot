@@ -68,3 +68,10 @@ def test_hash_password_valid(client):
     data = resp.get_json()
     assert "hash" in data
     assert len(data["hash"]) > 0
+
+
+def test_search_html_valid(client):
+    """Verify that searching renders html with query term."""
+    resp = client.get("/search?q=laptop")
+    assert resp.status_code == 200
+    assert b"Search Results for: laptop" in resp.data
