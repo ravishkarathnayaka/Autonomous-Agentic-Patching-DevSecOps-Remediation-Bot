@@ -32,17 +32,24 @@ class PatchAgent:
         self.llm_client = llm_client
         self.name = name
 
+    @staticmethod
+    def compute_temperature(retry_count: int, base_temp: float = 0.0, step: float = 0.2, max_temp: float = 0.7) -> float:
+        """Anneal sampling temperature across self-healing retry attempts for exploration."""
+        return min(max_temp, round(base_temp + (retry_count * step), 2))
+
     def execute(self, state: RemediationState) -> RemediationState:
         """Synthesize a patch based on finding details, AST context, and verification feedback."""
+        temperature = self.compute_temperature(state.retry_count)
         state.log_event(self.name, "start_patching", {
             "retry_count": state.retry_count,
+            "temperature": temperature,
             "has_error_feedback": bool(state.last_error_trace)
         })
 
         prompt = self._build_prompt(state)
 
         try:
-            response = self.llm_client.generate(prompt=prompt, system_prompt=SYSTEM_PROMPT, temperature=0.1)
+            response = self.llm_client.generate(prompt=prompt, system_prompt=SYSTEM_PROMPT, temperature=temperature)
         except Exception as e:
             logger.error("LLM patch generation call failed: %s", e)
             state.status = RemediationStatus.FAILED
