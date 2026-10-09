@@ -1,0 +1,20 @@
+{
+  "name": "autonomous-agentic-patching-bot",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Multi-agent autonomous DevSecOps remediation platform and web portal",
+  "scripts": {
+    "build": "cd web && npm install && npm run build",
+    "dev": "cd web && npm run dev",
+    "preview": "cd web && npm run preview"
+  },
+  "keywords": [
+    "devsecops",
+    "ai-agents",
+    "security-automation",
+    "sast",
+    "sca"
+  ],
+  "author": "Ravishka Prabhath Rathnayaka",
+  "license": "MIT"
+}
