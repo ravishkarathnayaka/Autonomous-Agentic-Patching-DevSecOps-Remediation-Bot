@@ -1,0 +1,37 @@
+# Corporate DevSecOps Remediation Policy Configuration
+remediation_policy:
+  # Minimum CVSS score required to trigger autonomous patching (Default: 5.0)
+  min_cvss: 5.0
+
+  # Allowed severity levels
+  allowed_severities:
+    - CRITICAL
+    - HIGH
+    - MEDIUM
+
+  # Whitelist of approved Common Weakness Enumerations (CWEs) for autonomous remediation
+  allowed_cwes:
+    - CWE-89    # SQL Injection
+    - CWE-22    # Path Traversal
+    - CWE-78    # OS Command Injection
+    - CWE-502   # Insecure Deserialization
+    - CWE-798   # Hardcoded Credentials
+    - CWE-1395  # Vulnerable Third-Party Dependencies (SCA)
+    - CWE-327   # Broken/Risky Cryptographic Algorithm
+    - CWE-79    # Cross-Site Scripting (XSS)
+
+  # Explicitly banned CWEs requiring manual security engineering review
+  banned_cwes:
+    - CWE-287   # Authentication Bypass (High business logic risk)
+    - CWE-863   # Incorrect Authorization (IAM policy risk)
+
+  # Paths never touched by autonomous bots
+  ignored_path_patterns:
+    - "vendor/"
+    - "node_modules/"
+    - ".git/"
+    - "migrations/"
+    - "tests/fixtures/"
+
+  # Strict Docker container sandboxing required for patch regression validation
+  require_sandbox: true
