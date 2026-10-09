@@ -178,15 +178,38 @@ def load_findings_from_file(file_path: Union[str, Path]) -> List[Finding]:
         data = json.load(f)
 
     # Detect format
-    if "results" in data and isinstance(data["results"], list):
-        return parse_semgrep_json(data)
-    elif "Results" in data or "SchemaVersion" in data:
-        return parse_trivy_json(data)
-    elif isinstance(data, list):
-        # Already a list of finding objects or raw items
-        if data and "check_id" in data[0]:
-            return parse_semgrep_json({"results": data})
-        elif data and "VulnerabilityID" in data[0]:
-            return parse_trivy_json({"Results": [{"Target": "dependencies", "Vulnerabilities": data}]})
+    if isinstance(data, dict):
+        if "issues" in data and isinstance(data["issues"], list):
+            from agent_engine.tools.sonarqube_parser import parse_sonarqube_report
+            return parse_sonarqube_report(data)
+        if "vulnerabilities" in data and isinstance(data["vulnerabilities"], list):
+            from agent_engine.tools.snyk_parser import parse_snyk_report
+            return parse_snyk_report(data)
+        if "check_type" in data or "passed_checks" in data:
+            from agent_engine.tools.checkov_parser import parse_checkov_report
+            return parse_checkov_report(data)
+        if "dependencies" in data and isinstance(data["dependencies"], list):
+            from agent_engine.tools.pip_audit_parser import parse_pip_audit_report
+            return parse_pip_audit_report(data)
+        if "metrics" in data and "results" in data:
+            from agent_engine.tools.bandit_parser import parse_bandit_json
+            return parse_bandit_json(data)
+        if "results" in data and isinstance(data["results"], list):
+            return parse_semgrep_json(data)
+        if "Results" in data or "SchemaVersion" in data:
+            return parse_trivy_json(data)
 
-    raise ValueError(f"Unsupported report format in {file_path}. Expected Semgrep or Trivy JSON.")
+    elif isinstance(data, list):
+        if data and isinstance(data[0], dict):
+            if "Secret" in data[0] or "RuleID" in data[0]:
+                from agent_engine.tools.gitleaks_parser import parse_gitleaks_report
+                return parse_gitleaks_report(data)
+            if "vulnerabilities" in data[0]:
+                from agent_engine.tools.snyk_parser import parse_snyk_report
+                return parse_snyk_report(data)
+            if "check_id" in data[0]:
+                return parse_semgrep_json({"results": data})
+            if "VulnerabilityID" in data[0]:
+                return parse_trivy_json({"Results": [{"Target": "dependencies", "Vulnerabilities": data}]})
+
+    raise ValueError(f"Unsupported report format in {file_path}. Expected Semgrep, Trivy, Snyk, SonarQube, Gitleaks, Pip-Audit, Checkov, or Bandit JSON.")
