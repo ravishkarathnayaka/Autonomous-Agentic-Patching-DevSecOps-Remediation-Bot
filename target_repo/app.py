@@ -6,6 +6,7 @@ Contains intentional security vulnerabilities:
 3. CWE-78: Command Injection (/ping)
 4. CWE-502: Insecure Deserialization (/session/load)
 5. CWE-327: Use of a Broken or Risky Cryptographic Algorithm (/user/hash_password)
+6. CWE-79: Cross-Site Scripting (/search)
 """
 
 import base64
@@ -75,6 +76,14 @@ def hash_password():
     # Vulnerable: Insecure MD5 hash without salt violates CWE-327
     md5_hash = hashlib.md5(password.encode("utf-8")).hexdigest()
     return jsonify({"algo": "md5", "hash": md5_hash})
+
+
+@app.route("/search", methods=["GET"])
+def search():
+    q = request.args.get("q", "")
+    # Vulnerable: Unescaped reflected user input in HTML template (CWE-79)
+    html = f"<html><body><h1>Search Results for: {q}</h1><p>No matches found.</p></body></html>"
+    return html, 200, {"Content-Type": "text/html"}
 
 
 def init_db():
