@@ -59,3 +59,12 @@ def test_load_session_valid(client):
     resp = client.post("/session/load", data={"payload": payload})
     assert resp.status_code == 200
     assert resp.get_json()["session_user"] == "alice"
+
+
+def test_hash_password_valid(client):
+    """Verify password hashing endpoint returns hash digest."""
+    resp = client.post("/user/hash_password", data={"password": "SecretPassword123"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "hash" in data
+    assert len(data["hash"]) > 0
