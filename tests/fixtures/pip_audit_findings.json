@@ -1,0 +1,16 @@
+{
+  "dependencies": [
+    {
+      "name": "flask",
+      "version": "2.2.0",
+      "vulns": [
+        {
+          "id": "PYSEC-2023-61",
+          "fix_versions": ["2.2.5"],
+          "description": "Flask session cookie disclosure vulnerability under specific configurations.",
+          "aliases": ["CVE-2023-30861", "GHSA-m2qf-cpwh-56wg"]
+        }
+      ]
+    }
+  ]
+}
