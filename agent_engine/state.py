@@ -19,6 +19,8 @@ class FindingType(str, Enum):
     """Source scanner finding type."""
     SAST = "SAST"
     SCA = "SCA"
+    SECRET = "SECRET"
+    IAC = "IAC"
 
 
 class RemediationStatus(str, Enum):
