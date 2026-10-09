@@ -1,0 +1,27 @@
+{
+  "total": 2,
+  "issues": [
+    {
+      "key": "AY789xyz123",
+      "rule": "python:S2077",
+      "severity": "CRITICAL",
+      "component": "my_project:target_repo/app.py",
+      "project": "my_project",
+      "line": 28,
+      "message": "Use prepared statements or parameterized queries instead of concatenation.",
+      "type": "VULNERABILITY",
+      "effort": "20min"
+    },
+    {
+      "key": "AY789xyz456",
+      "rule": "python:S2083",
+      "severity": "MAJOR",
+      "component": "my_project:target_repo/app.py",
+      "project": "my_project",
+      "line": 42,
+      "message": "Make sure paths constructed from untrusted inputs are properly restricted.",
+      "type": "VULNERABILITY",
+      "effort": "15min"
+    }
+  ]
+}
