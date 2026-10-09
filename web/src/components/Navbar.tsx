@@ -1,5 +1,5 @@
-import React from 'react';
-import { Shield, GitPullRequest, Terminal, Github, ExternalLink } from 'lucide-react';
+import React, { useState } from 'react';
+import { Shield, GitPullRequest, Terminal, Github, ExternalLink, BellRing } from 'lucide-react';
 
 interface NavbarProps {
   onOpenPr: () => void;
@@ -7,6 +7,13 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenPr, hasPr }) => {
+  const [webhookSent, setWebhookSent] = useState(false);
+
+  const handleTestWebhook = () => {
+    setWebhookSent(true);
+    setTimeout(() => setWebhookSent(false), 3000);
+  };
+
   return (
     <header className="border-b border-[#1f293d] bg-[#0c101a]/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3.5">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -33,6 +40,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenPr, hasPr }) => {
 
         {/* Action Controls */}
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleTestWebhook}
+            title="Dispatch simulated DevSecOps webhook notification to Slack/Discord"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141c2e] hover:bg-[#1a253d] border border-[#23314f] text-slate-300 hover:text-cyan-400 transition-all text-xs font-medium"
+          >
+            <BellRing className={`w-3.5 h-3.5 ${webhookSent ? 'text-cyan-400 animate-bounce' : 'text-slate-400'}`} />
+            <span className="hidden sm:inline">{webhookSent ? 'Dispatched!' : 'Test Webhook'}</span>
+          </button>
+
           {hasPr && (
             <button
               onClick={onOpenPr}
