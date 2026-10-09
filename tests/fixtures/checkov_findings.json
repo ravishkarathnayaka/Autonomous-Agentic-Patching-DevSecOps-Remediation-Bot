@@ -1,0 +1,14 @@
+{
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "CKV_DOCKER_3",
+        "check_name": "Ensure that a user for the container has been created",
+        "file_path": "docker/sandbox.Dockerfile",
+        "file_line_range": [1, 35],
+        "severity": "HIGH",
+        "guideline": "Specify USER non-root inside container to prevent container breakout."
+      }
+    ]
+  }
+}
