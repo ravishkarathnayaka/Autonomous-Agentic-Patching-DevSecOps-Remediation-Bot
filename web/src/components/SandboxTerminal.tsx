@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Terminal, Shield, CheckCircle, AlertTriangle, XCircle, Box, Cpu, WifiOff, ShieldCheck } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Terminal, Shield, CheckCircle, AlertTriangle, XCircle, Box, Cpu, WifiOff, ShieldCheck, Clock } from 'lucide-react';
 import { AgentLog, VerificationResult } from '../types';
 
 interface SandboxTerminalProps {
@@ -10,6 +10,20 @@ interface SandboxTerminalProps {
 
 export const SandboxTerminal: React.FC<SandboxTerminalProps> = ({ logs, verification, isRunning }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+
+  useEffect(() => {
+    let interval: any;
+    if (isRunning) {
+      setElapsedSeconds(0);
+      interval = setInterval(() => {
+        setElapsedSeconds((prev) => +(prev + 0.1).toFixed(1));
+      }, 100);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,6 +46,12 @@ export const SandboxTerminal: React.FC<SandboxTerminalProps> = ({ logs, verifica
         </div>
 
         <div className="flex items-center gap-2">
+          {isRunning && (
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 animate-pulse">
+              <Clock className="w-3 h-3 text-cyan-400" />
+              <span>{elapsedSeconds.toFixed(1)}s elapsed</span>
+            </div>
+          )}
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono bg-[#162136] text-emerald-400 border border-emerald-500/30">
             <ShieldCheck className="w-3 h-3 text-emerald-400" />
             <span>Strict Isolation</span>
