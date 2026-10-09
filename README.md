@@ -17,6 +17,8 @@
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
 - [Enterprise Deployment & Governance Guide](docs/ENTERPRISE_GUIDE.md)
+- [LinkedIn Showcase & Social Announcement](docs/LINKEDIN_SHOWCASE.md)
+- [Video Demo & Presentation Walkthrough](docs/DEMO_PRESENTATION_SCRIPT.md)
 - [Project Directory Layout](#-project-directory-layout)
 - [Getting Started ($0 Local Execution)](#-getting-started-0-local-execution)
   - [Prerequisites](#prerequisites)
