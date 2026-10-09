@@ -36,5 +36,14 @@ RUN chown -R sandboxuser:sandboxgroup /workspace
 # Switch to unprivileged user
 USER sandboxuser
 
+# Metadata and security labels
+LABEL org.opencontainers.image.title="DevSecOps Remediation Sandbox" \
+      org.opencontainers.image.description="Ephemeral hardened container environment for AST patch verification" \
+      org.opencontainers.image.vendor="Autonomous Agentic Patching Bot"
+
+# Healthcheck to verify scanner and python runtime integrity
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+    CMD python3 -c "import pytest, flask; print('healthy')" || exit 1
+
 # Default command
 CMD ["pytest", "-v"]
