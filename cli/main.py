@@ -13,6 +13,7 @@ from agent_engine.state import Finding, RemediationState, RemediationStatus
 from agent_engine.tools.report_parsers import load_findings_from_file
 from agent_engine.tools.sandbox_executor import SandboxExecutor
 from agent_engine.tools.sarif_exporter import export_findings_to_sarif
+from agent_engine.tools.notification_dispatcher import NotificationDispatcher
 from agent_engine.telemetry import TelemetryTracker
 
 # Setup logging
@@ -118,6 +119,11 @@ def _print_banner() -> None:
     default=False,
     help="Instruct mock LLM to simulate a first-attempt failure to test self-healing retry loop."
 )
+@click.option(
+    "--webhook-url",
+    default=None,
+    help="Optional Slack or Discord incoming webhook URL to broadcast remediation status."
+)
 def main(
     report: Path,
     target: Path,
@@ -131,7 +137,8 @@ def main(
     export_sarif: Optional[Path],
     export_telemetry: Optional[Path],
     finding_id: Optional[str],
-    simulate_failure: bool
+    simulate_failure: bool,
+    webhook_url: Optional[str]
 ) -> None:
     """Autonomous agentic vulnerability remediation CLI."""
     _print_banner()
@@ -213,6 +220,14 @@ def main(
             click.secho(f"  -> Remediation FAILED: {final_state.last_error_trace}", fg="red", bold=True)
         else:
             click.secho(f"  -> Finished with status: {final_state.status.value}", fg="cyan")
+
+        # Broadcast webhook alerts if configured
+        if webhook_url:
+            dispatcher = NotificationDispatcher(webhook_url)
+            if final_state.status == RemediationStatus.PR_READY:
+                dispatcher.dispatch_pr_created(final_state)
+            elif final_state.status == RemediationStatus.FAILED:
+                dispatcher.dispatch_remediation_failed(final_state)
 
     # 6. Summary Report
     click.echo("\n" + "=" * 70)
