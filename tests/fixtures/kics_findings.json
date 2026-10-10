@@ -1,0 +1,48 @@
+{
+  "kics_version": "v1.7.0",
+  "files_scanned": 15,
+  "queries_total": 45,
+  "total_counter": 2,
+  "queries": [
+    {
+      "query_name": "S3 Bucket Without Encryption At Rest",
+      "query_id": "e38a8e0a-b6bb-42d3-92ff-ec2a5b6cbef3",
+      "severity": "HIGH",
+      "platform": "Terraform",
+      "category": "Encryption",
+      "description": "AWS S3 Bucket must have server-side encryption enabled to protect sensitive data at rest.",
+      "cwe": "311",
+      "files": [
+        {
+          "file_name": "terraform/s3.tf",
+          "line": 14,
+          "issue_type": "MissingAttribute",
+          "search_key": "aws_s3_bucket[my_bucket]",
+          "search_value": "server_side_encryption_configuration",
+          "key_actual_value": "server_side_encryption_configuration is missing",
+          "actual_value": null
+        }
+      ]
+    },
+    {
+      "query_name": "Container Running As Root",
+      "query_id": "893c5d79-ef21-42e1-a0c5-34908ef48a91",
+      "severity": "MEDIUM",
+      "platform": "Dockerfile",
+      "category": "Build Process",
+      "description": "Running containers as root user violates least privilege and increases impact of container breakout.",
+      "cwe": "250",
+      "files": [
+        {
+          "file_name": "Dockerfile",
+          "line": 1,
+          "issue_type": "MissingAttribute",
+          "search_key": "FROM python:3.11",
+          "search_value": "USER",
+          "key_actual_value": "USER directive is missing",
+          "actual_value": null
+        }
+      ]
+    }
+  ]
+}
