@@ -1,0 +1,56 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2023-32681",
+        "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2023-32681",
+        "severity": "Medium",
+        "urls": [
+          "https://github.com/advisories/GHSA-j8r2-6x86-q33q"
+        ],
+        "description": "Requests Proxy-Authorization header leak upon redirect.",
+        "cvss": [
+          {
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:N/A:N",
+            "metrics": {
+              "baseScore": 6.1
+            }
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.31.0"
+          ],
+          "state": "fixed"
+        }
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "GHSA-j8r2-6x86-q33q",
+          "cweIds": [
+            "CWE-200"
+          ]
+        }
+      ],
+      "artifact": {
+        "name": "requests",
+        "version": "2.30.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/app/requirements.txt"
+          }
+        ]
+      }
+    }
+  ],
+  "source": {
+    "type": "directory",
+    "target": "."
+  },
+  "descriptor": {
+    "name": "grype",
+    "version": "0.73.0"
+  }
+}
