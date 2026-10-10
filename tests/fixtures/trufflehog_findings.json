@@ -1,0 +1,43 @@
+[
+  {
+    "SourceMetadata": {
+      "Data": {
+        "Git": {
+          "commit": "a1b2c3d4",
+          "file": "config/aws_settings.py",
+          "line": 15
+        }
+      }
+    },
+    "SourceType": "git",
+    "SourceName": "repository",
+    "DetectorType": 17,
+    "DetectorName": "AWS",
+    "DecoderName": "BASE64",
+    "Verified": true,
+    "Raw": "AKIAIOSFODNN7EXAMPLE",
+    "Redacted": "AKIAIOSF********MPLE",
+    "ExtraData": {
+      "account_id": "123456789012"
+    }
+  },
+  {
+    "SourceMetadata": {
+      "Data": {
+        "Git": {
+          "commit": "b2c3d4e5",
+          "file": ".env.test",
+          "line": 4
+        }
+      }
+    },
+    "SourceType": "git",
+    "SourceName": "repository",
+    "DetectorType": 45,
+    "DetectorName": "SlackWebhook",
+    "DecoderName": "PLAIN",
+    "Verified": false,
+    "Raw": "https://hooks.slack.com/services/T000/B000/XXXX",
+    "Redacted": "https://hooks.slack.com/services/T000/B000/********"
+  }
+]
