@@ -6,6 +6,7 @@ import { VulnerabilitySelector } from './components/VulnerabilitySelector';
 import { DiffViewer } from './components/DiffViewer';
 import { SandboxTerminal } from './components/SandboxTerminal';
 import { PullRequestModal } from './components/PullRequestModal';
+import { ComplianceBadge } from './components/ComplianceBadge';
 import { PRESET_SCENARIOS, PresetScenario } from './data/scenarios';
 import { RemediationResult } from './types';
 import { runRemediationPipeline } from './engine/agentRunner';
@@ -56,6 +57,9 @@ export function App() {
             <span className="text-xs text-slate-400">
               Zero Server Cost • Ephemeral Docker Execution • Multi-Agent Closed Loop
             </span>
+            <div className="hidden md:block pl-2 border-l border-[#1e2a3e]">
+              <ComplianceBadge cwe={selectedScenario.finding.cwe} />
+            </div>
           </div>
 
           {result?.prBody && (
