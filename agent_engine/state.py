@@ -21,6 +21,9 @@ class FindingType(str, Enum):
     SCA = "SCA"
     SECRET = "SECRET"
     IAC = "IAC"
+    DAST = "DAST"
+    CONTAINER = "CONTAINER"
+    CLOUD = "CLOUD"
 
 
 class RemediationStatus(str, Enum):
