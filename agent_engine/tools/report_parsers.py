@@ -179,6 +179,18 @@ def load_findings_from_file(file_path: Union[str, Path]) -> List[Finding]:
 
     # Detect format
     if isinstance(data, dict):
+        if "@programName" in data or ("site" in data and isinstance(data["site"], list)):
+            from agent_engine.tools.zap_parser import parse_zap_report
+            return parse_zap_report(data)
+        if "kics_version" in data or ("queries" in data and isinstance(data["queries"], list)):
+            from agent_engine.tools.kics_parser import parse_kics_report
+            return parse_kics_report(data)
+        if "matches" in data and ("descriptor" in data or "source" in data):
+            from agent_engine.tools.grype_parser import parse_grype_report
+            return parse_grype_report(data)
+        if "analysisVulnerabilities" in data or "analysisID" in data:
+            from agent_engine.tools.horusec_parser import parse_horusec_report
+            return parse_horusec_report(data)
         if "issues" in data and isinstance(data["issues"], list):
             from agent_engine.tools.sonarqube_parser import parse_sonarqube_report
             return parse_sonarqube_report(data)
@@ -201,6 +213,9 @@ def load_findings_from_file(file_path: Union[str, Path]) -> List[Finding]:
 
     elif isinstance(data, list):
         if data and isinstance(data[0], dict):
+            if "DetectorName" in data[0] or "DetectorType" in data[0]:
+                from agent_engine.tools.trufflehog_parser import parse_trufflehog_report
+                return parse_trufflehog_report(data)
             if "Secret" in data[0] or "RuleID" in data[0]:
                 from agent_engine.tools.gitleaks_parser import parse_gitleaks_report
                 return parse_gitleaks_report(data)
@@ -212,4 +227,4 @@ def load_findings_from_file(file_path: Union[str, Path]) -> List[Finding]:
             if "VulnerabilityID" in data[0]:
                 return parse_trivy_json({"Results": [{"Target": "dependencies", "Vulnerabilities": data}]})
 
-    raise ValueError(f"Unsupported report format in {file_path}. Expected Semgrep, Trivy, Snyk, SonarQube, Gitleaks, Pip-Audit, Checkov, or Bandit JSON.")
+    raise ValueError(f"Unsupported report format in {file_path}. Expected Semgrep, Trivy, Snyk, SonarQube, Gitleaks, Pip-Audit, Checkov, Bandit, ZAP, KICS, Grype, TruffleHog, or Horusec JSON.")
