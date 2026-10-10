@@ -1,0 +1,33 @@
+# Software Supply Chain Security and Dependency Governance Policy (SLSA / NIST SSDF)
+remediation_policy:
+  policy_name: "Supply-Chain-OSS-Governance"
+  compliance_profile: "SLSA-Level-3"
+  min_cvss: 0.0
+
+  # Allowed severities for automated dependency remediation PRs
+  allowed_severities:
+    - "CRITICAL"
+    - "HIGH"
+    - "MEDIUM"
+    - "LOW"
+
+  # Remediation Service Level Agreements (SLAs in hours)
+  sla_hours:
+    CRITICAL: 24
+    HIGH: 168     # 7 days
+    MEDIUM: 720   # 30 days
+    LOW: 2160     # 90 days
+
+  # Automated version bump guardrails
+  allow_major_version_bumps: false  # Prohibit breaking changes without human oversight
+  allow_minor_version_bumps: true
+  allow_patch_version_bumps: true
+
+  # Blocked package namespaces known for typosquatting or malicious campaigns
+  quarantined_package_patterns:
+    - "*-test-pkg"
+    - "color-terminal-*"
+    - "crypto-stealer-*"
+
+  # Require container verification sandbox before merging dependency updates
+  require_sandbox: true
