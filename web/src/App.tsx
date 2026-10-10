@@ -7,6 +7,7 @@ import { DiffViewer } from './components/DiffViewer';
 import { SandboxTerminal } from './components/SandboxTerminal';
 import { PullRequestModal } from './components/PullRequestModal';
 import { ComplianceBadge } from './components/ComplianceBadge';
+import { ExportAuditModal } from './components/ExportAuditModal';
 import { PRESET_SCENARIOS, PresetScenario } from './data/scenarios';
 import { RemediationResult } from './types';
 import { runRemediationPipeline } from './engine/agentRunner';
@@ -19,6 +20,7 @@ export function App() {
   const [result, setResult] = useState<RemediationResult | null>(null);
   const [activeTab, setActiveTab] = useState<'both' | 'diff' | 'terminal'>('both');
   const [isPrModalOpen, setIsPrModalOpen] = useState<boolean>(false);
+  const [isSarifModalOpen, setIsSarifModalOpen] = useState<boolean>(false);
 
   const handleStart = async () => {
     setIsRunning(true);
@@ -62,16 +64,24 @@ export function App() {
             </div>
           </div>
 
-          {result?.prBody && (
+          <div className="flex items-center gap-2">
+            {result?.prBody && (
+              <button
+                onClick={() => setIsPrModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 animate-bounce"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>View Generated PR Description</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            )}
             <button
-              onClick={() => setIsPrModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-black font-bold text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-1.5 cursor-pointer shrink-0 animate-bounce"
+              onClick={() => setIsSarifModalOpen(true)}
+              className="px-3 py-1.5 rounded-lg bg-[#141c2e] hover:bg-[#1a253d] border border-[#23314f] text-slate-300 hover:text-cyan-400 transition-all text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>View Generated PR Description</span>
-              <ExternalLink className="w-3 h-3" />
+              <span>Export SARIF</span>
             </button>
-          )}
+          </div>
         </div>
 
         {/* 1. VULNERABILITY FINDING SELECTOR (PROMINENT AT TOP!) */}
@@ -173,6 +183,13 @@ export function App() {
         isOpen={isPrModalOpen}
         onClose={() => setIsPrModalOpen(false)}
         result={result || undefined}
+      />
+
+      {/* Export SARIF & Audit Report Modal */}
+      <ExportAuditModal
+        isOpen={isSarifModalOpen}
+        onClose={() => setIsSarifModalOpen(false)}
+        result={result}
       />
 
       {/* Footer */}
