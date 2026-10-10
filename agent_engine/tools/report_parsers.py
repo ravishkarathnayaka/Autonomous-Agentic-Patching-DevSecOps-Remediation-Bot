@@ -203,10 +203,10 @@ def load_findings_from_file(file_path: Union[str, Path]) -> List[Finding]:
         if "dependencies" in data and isinstance(data["dependencies"], list):
             from agent_engine.tools.pip_audit_parser import parse_pip_audit_report
             return parse_pip_audit_report(data)
-        if "metrics" in data and "results" in data:
-            from agent_engine.tools.bandit_parser import parse_bandit_json
-            return parse_bandit_json(data)
         if "results" in data and isinstance(data["results"], list):
+            if data["results"] and ("test_id" in data["results"][0] or "issue_cwe" in data["results"][0]):
+                from agent_engine.tools.bandit_parser import parse_bandit_report
+                return parse_bandit_report(path)
             return parse_semgrep_json(data)
         if "Results" in data or "SchemaVersion" in data:
             return parse_trivy_json(data)
