@@ -1,0 +1,74 @@
+rules:
+  - id: terraform.s3.public-read-acl
+    languages: [terraform, hcl]
+    message: "S3 bucket configured with public-read or public-read-write ACL exposes sensitive objects to internet (CWE-284)."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-284"]
+      owasp: ["A01:2021 - Broken Access Control"]
+      confidence: HIGH
+    patterns:
+      - pattern: |
+          resource "aws_s3_bucket" "$NAME" {
+            ...
+            acl = "public-read"
+            ...
+          }
+
+  - id: terraform.security-group.ssh-open-to-world
+    languages: [terraform, hcl]
+    message: "Security group ingress rule exposes SSH port 22 to 0.0.0.0/0 (CWE-284). Restrict CIDR blocks to internal bastion or VPN IPs."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-284"]
+      owasp: ["A05:2021 - Security Misconfiguration"]
+      confidence: HIGH
+    patterns:
+      - pattern: |
+          ingress {
+            ...
+            from_port = 22
+            to_port = 22
+            cidr_blocks = ["0.0.0.0/0"]
+            ...
+          }
+
+  - id: dockerfile.user.missing-nonroot-directive
+    languages: [dockerfile]
+    message: "Container image runs as default root user. Add 'USER nonroot' or specific UID directive to mitigate container breakout (CWE-250)."
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-250"]
+      owasp: ["A04:2021 - Insecure Design"]
+      confidence: HIGH
+    patterns:
+      - pattern-not: USER $UID
+
+  - id: kubernetes.pod.privileged-container
+    languages: [yaml]
+    message: "Privileged container in Kubernetes pod grants host kernel access and bypasses node isolation (CWE-250)."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-250"]
+      owasp: ["A05:2021 - Security Misconfiguration"]
+      confidence: HIGH
+    patterns:
+      - pattern: |
+          securityContext:
+            privileged: true
+
+  - id: terraform.rds.storage-unencrypted
+    languages: [terraform, hcl]
+    message: "AWS RDS instance provisioned without storage_encrypted = true violates encryption at rest standard (CWE-311)."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-311"]
+      owasp: ["A02:2021 - Cryptographic Failures"]
+      confidence: HIGH
+    patterns:
+      - pattern: |
+          resource "aws_db_instance" "$NAME" {
+            ...
+            storage_encrypted = false
+            ...
+          }
