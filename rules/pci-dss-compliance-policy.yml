@@ -1,0 +1,34 @@
+# Corporate Remediation Policy Profile: PCI-DSS v4.0 Standard
+remediation_policy:
+  policy_name: "PCI-DSS-v4.0-Production-Remediation"
+  compliance_profile: "PCI-DSS"
+  min_cvss: 4.0
+  allowed_severities:
+    - "CRITICAL"
+    - "HIGH"
+    - "MEDIUM"
+
+  # CWEs permitted for fully automated patch generation and test verification
+  allowed_cwes:
+    - "CWE-89"    # SQL Injection
+    - "CWE-78"    # OS Command Injection
+    - "CWE-22"    # Path Traversal
+    - "CWE-79"    # Cross-Site Scripting
+    - "CWE-502"   # Deserialization of Untrusted Data
+    - "CWE-918"   # SSRF
+    - "CWE-327"   # Broken Cryptography (requires dual sign-off)
+    - "CWE-798"   # Hardcoded Credentials (requires dual sign-off)
+
+  # Mandates manual peer review sign-off prior to pull request auto-merge
+  require_peer_review: true
+
+  # Excluded directories (third party vendors, test mocks, build artifacts)
+  ignored_path_patterns:
+    - "vendor/"
+    - "node_modules/"
+    - ".git/"
+    - "mock_data/"
+    - "tests/fixtures/"
+
+  # PCI-DSS Req 6.4: Mandates isolated sandbox execution for test verification
+  require_sandbox: true
