@@ -311,5 +311,85 @@ def search():
 -    return f"<h1>Search Results for: {query}</h1><p>No results found.</p>"
 +    return f"<div>{query}</div>"`,
     remediationExplanation: 'Escaped HTML entities in untrusted query parameter using html.escape() to prevent script tag injection and browser context hijacking.'
+  },
+  {
+    id: 'ssrf',
+    name: 'SSRF Server-Side Request Forgery (CWE-918)',
+    icon: 'Globe',
+    category: 'SAST',
+    finding: {
+      id: 'semgrep-ssrf-fetch-01',
+      scanner: 'semgrep',
+      type: 'SAST',
+      ruleId: 'rules.python.security.ssrf_fetch',
+      title: 'Server-Side Request Forgery in /fetch-url',
+      description: 'Arbitrary URL fetched by server enables accessing cloud metadata (169.254.169.254) and internal services.',
+      severity: 'HIGH',
+      cwe: ['CWE-918'],
+      cvss: 8.6,
+      filePath: 'target_repo/app.py',
+      startLine: 110,
+      endLine: 112,
+      vulnerableCode: '    target = request.args.get("url")\n    resp = requests.get(target)',
+      astContext: 'Function: fetch_url() | Lines: 108-115\nImports: import requests, urllib.parse'
+    },
+    initialSourceCode: `@app.route("/fetch-url", methods=["GET"])
+def fetch_url():
+    target = request.args.get("url", "")
+    resp = requests.get(target)
+    return resp.text`,
+    passingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -110,2 +110,5 @@
+-    resp = requests.get(target)
++    parsed = urllib.parse.urlparse(target)
++    if parsed.scheme not in ("http", "https") or parsed.hostname in ("127.0.0.1", "localhost", "169.254.169.254"):
++        return "Forbidden host", 403
++    resp = requests.get(target, timeout=5, allow_redirects=False)`,
+    failingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -110,1 +110,1 @@
+-    resp = requests.get(target)
++    resp = requests.get(target, allow_redirects=True)`,
+    remediationExplanation: 'Enforced URL scheme validation, blocked loopback and cloud metadata endpoints, and disabled recursive HTTP redirects.'
+  },
+  {
+    id: 'idor',
+    name: 'Insecure Direct Object Reference (CWE-639)',
+    icon: 'Key',
+    category: 'SAST',
+    finding: {
+      id: 'semgrep-idor-user-doc-01',
+      scanner: 'semgrep',
+      type: 'SAST',
+      ruleId: 'rules.python.security.idor_authorization',
+      title: 'Missing authorization check on document access',
+      description: 'Document record retrieved directly by primary key without validating current user ownership.',
+      severity: 'HIGH',
+      cwe: ['CWE-639'],
+      cvss: 7.5,
+      filePath: 'target_repo/app.py',
+      startLine: 125,
+      endLine: 128,
+      vulnerableCode: '    doc = db.query(Document).filter_by(id=doc_id).first()',
+      astContext: 'Function: get_doc(doc_id) | Lines: 122-132\nImports: from flask_login import current_user'
+    },
+    initialSourceCode: `@app.route("/documents/<int:doc_id>", methods=["GET"])
+def get_doc(doc_id):
+    doc = db.query(Document).filter_by(id=doc_id).first()
+    return jsonify(doc.to_dict())`,
+    passingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -125,2 +125,4 @@
+-    doc = db.query(Document).filter_by(id=doc_id).first()
++    doc = db.query(Document).filter_by(id=doc_id, owner_id=current_user.id).first()
++    if not doc:
++        abort(404)`,
+    failingPatchDiff: `--- a/target_repo/app.py
++++ b/target_repo/app.py
+@@ -125,1 +125,1 @@
+-    doc = db.query(Document).filter_by(id=doc_id).first()
++    doc = db.query(Document).get(doc_id)`,
+    remediationExplanation: 'Scope database query with owner_id matching authenticated user session to enforce multi-tenant tenant isolation.'
   }
 ];
