@@ -1,0 +1,47 @@
+name: Multi-Scanner Integration Test Matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  scanner-compatibility-matrix:
+    name: Scanner Compatibility Matrix
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+        scanner-suite:
+          - "sast"       # Semgrep, Bandit, Horusec, SonarQube
+          - "sca"        # Trivy, Snyk, Pip-audit, Grype
+          - "iac"        # Checkov, KICS
+          - "secrets"    # Gitleaks, TruffleHog
+          - "dast"       # OWASP ZAP
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Execute Scanner Integration Tests (${{ matrix.scanner-suite }})
+        run: |
+          pytest -v tests/test_*parser.py tests/test_extended_scanners_autodetect.py
+
+      - name: Validate OASIS SARIF Exporter Conformance
+        run: |
+          python -m cli.sarif_cli --input tests/fixtures/semgrep_findings.json --output /tmp/test_semgrep.sarif
+          python scripts/validate_sarif.py /tmp/test_semgrep.sarif
