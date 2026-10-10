@@ -1,0 +1,41 @@
+{
+  "version": "v2.9.0",
+  "analysisID": "b1b01777-3cb8-4bc2-8924-f7617c5b96d9",
+  "status": "success",
+  "analysisVulnerabilities": [
+    {
+      "vulnerabilityID": "c2084c6c-8ef6-4dfc-a49e-b79e44efb624",
+      "vulnerabilities": {
+        "rule_id": "HS-PYTHON-1",
+        "type": "Vulnerability",
+        "vulnHash": "5678abcdef",
+        "severity": "CRITICAL",
+        "details": "Possible SQL Injection with dynamic raw query execution.",
+        "securityTool": "HorusecEngine",
+        "language": "Python",
+        "confidence": "HIGH",
+        "file": "target_repo/app.py",
+        "line": "25",
+        "column": "8",
+        "code": "cursor.execute(f'SELECT * FROM users WHERE id = {user_id}')"
+      }
+    },
+    {
+      "vulnerabilityID": "d3094c6c-9ef6-4dfc-a49e-b79e44efb789",
+      "vulnerabilities": {
+        "rule_id": "HS-PYTHON-14",
+        "type": "Vulnerability",
+        "vulnHash": "1234bcdefa",
+        "severity": "HIGH",
+        "details": "Command Injection using dangerous subprocess system call.",
+        "securityTool": "HorusecEngine",
+        "language": "Python",
+        "confidence": "HIGH",
+        "file": "target_repo/app.py",
+        "line": "40",
+        "column": "5",
+        "code": "os.system(f'ping -c 1 {host}')"
+      }
+    }
+  ]
+}
