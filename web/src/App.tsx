@@ -8,6 +8,7 @@ import { SandboxTerminal } from './components/SandboxTerminal';
 import { PullRequestModal } from './components/PullRequestModal';
 import { ComplianceBadge } from './components/ComplianceBadge';
 import { ExportAuditModal } from './components/ExportAuditModal';
+import { MetricsWidget } from './components/MetricsWidget';
 import { PRESET_SCENARIOS, PresetScenario } from './data/scenarios';
 import { RemediationResult } from './types';
 import { runRemediationPipeline } from './engine/agentRunner';
@@ -96,6 +97,9 @@ export function App() {
           simulateRetry={simulateRetry}
           onToggleRetry={setSimulateRetry}
         />
+
+        {/* 1.5 METRICS & ROI WIDGET */}
+        <MetricsWidget remediatedCount={result?.status === 'SUCCESS' ? 1 : 0} />
 
         {/* 2. MULTI-AGENT STATE GRAPH */}
         <AgentPipeline
