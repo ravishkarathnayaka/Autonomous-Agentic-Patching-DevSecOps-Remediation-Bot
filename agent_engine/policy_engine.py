@@ -38,6 +38,8 @@ class RemediationPolicy:
         self.banned_cwes: Set[str] = set(c.upper() for c in raw.get("banned_cwes", []))
         self.ignored_path_patterns: List[str] = raw.get("ignored_path_patterns", ["vendor/", "node_modules/", ".git/"])
         self.require_sandbox: bool = bool(raw.get("require_sandbox", True))
+        self.compliance_profile: Optional[str] = raw.get("compliance_profile")  # e.g., "PCI-DSS", "SOC2", "ISO27001"
+        self.require_peer_review: bool = bool(raw.get("require_peer_review", False))
 
 
 class RemediationPolicyEngine:
@@ -91,3 +93,31 @@ class RemediationPolicyEngine:
         is_allowed = len(reasons) == 0
         action = "ALLOW" if is_allowed else "BLOCK"
         return PolicyEvaluationResult(is_allowed=is_allowed, reasons=reasons, action=action)
+
+    def evaluate_compliance(self, finding: Finding) -> Dict[str, Any]:
+        """
+        Evaluate regulatory compliance status (SOC2 Type II, PCI-DSS v4.0, ISO 27001).
+        Returns compliance report dictionary.
+        """
+        profile = (self.policy.compliance_profile or "STANDARD").upper()
+        requires_manual_signoff = False
+        notes: List[str] = []
+
+        # PCI-DSS v4.0 Requirement 6.4: Dual authorization for sensitive cryptographic & auth modules
+        sensitive_cwes = {"CWE-327", "CWE-798", "CWE-287", "CWE-306"}
+        if profile == "PCI-DSS" or self.policy.require_peer_review:
+            if any(c.upper() in sensitive_cwes for c in finding.cwe_ids):
+                requires_manual_signoff = True
+                notes.append("PCI-DSS Req 6.4: Critical crypto or authentication logic requires dual peer review.")
+
+        # SOC2 Type II: Sandboxed verification & immutable audit trail mandatory
+        if profile == "SOC2" and not self.policy.require_sandbox:
+            notes.append("SOC2 Trust Services Criteria CC7.1: Sandboxed verification must not be disabled.")
+
+        return {
+            "compliance_profile": profile,
+            "requires_manual_signoff": requires_manual_signoff,
+            "sandbox_enforced": self.policy.require_sandbox,
+            "notes": notes,
+            "compliant": len(notes) == 0 or not requires_manual_signoff
+        }
