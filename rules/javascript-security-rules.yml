@@ -1,0 +1,61 @@
+rules:
+  - id: javascript.dom.insecure-innerhtml-xss
+    languages: [javascript, typescript]
+    message: "Direct assignment to element.innerHTML allows Cross-Site Scripting (CWE-79). Use textContent or DOMPurify.sanitize()."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-79"]
+      owasp: ["A03:2021 - Injection"]
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: $EL.innerHTML = $INPUT
+          - pattern: document.write($INPUT)
+
+  - id: javascript.prototype-pollution.unsafe-assignment
+    languages: [javascript, typescript]
+    message: "Dynamic property assignment on object with user keys can cause prototype pollution (CWE-1321). Guard against __proto__ and constructor."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-1321"]
+      owasp: ["A03:2021 - Injection"]
+      confidence: HIGH
+    patterns:
+      - pattern: $TARGET[$KEY] = $VAL
+      - pattern-inside: |
+          function $FN(..., $KEY, ...) { ... }
+
+  - id: javascript.child-process.exec-injection
+    languages: [javascript, typescript]
+    message: "child_process.exec invokes system shell with concatenated strings allowing OS command injection (CWE-78). Use child_process.execFile with arguments array."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-78"]
+      owasp: ["A03:2021 - Injection"]
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: child_process.exec(`...${$VAR}...`, ...)
+          - pattern: exec(`...${$VAR}...`, ...)
+
+  - id: javascript.jwt.insecure-none-algorithm
+    languages: [javascript, typescript]
+    message: "JWT verification without explicit algorithms or allowing 'none' permits signature bypass (CWE-347). Enforce algorithms: ['HS256'] or ['RS256']."
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-347"]
+      owasp: ["A02:2021 - Cryptographic Failures"]
+      confidence: HIGH
+    patterns:
+      - pattern: jwt.verify($TOKEN, $KEY, { algorithms: ['none'] })
+
+  - id: javascript.regex.redos-vulnerable-pattern
+    languages: [javascript, typescript]
+    message: "Nested quantifiers in regular expression can cause catastrophic backtracking and Denial of Service (CWE-1333)."
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-1333"]
+      owasp: ["A05:2021 - Security Misconfiguration"]
+      confidence: MEDIUM
+    patterns:
+      - pattern: new RegExp("([a-zA-Z]+)+", ...)
