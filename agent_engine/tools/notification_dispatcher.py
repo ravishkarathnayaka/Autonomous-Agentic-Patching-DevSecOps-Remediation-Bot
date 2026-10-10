@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 class NotificationDispatcher:
     """Dispatches webhook alerts for security remediation events."""
 
-    def __init__(self, webhook_url: Optional[str] = None):
+    def __init__(self, webhook_url: Optional[str] = None, channel: str = "auto"):
         self.webhook_url = webhook_url
+        self.channel = channel.lower()
 
     def dispatch_pr_created(self, state: RemediationState) -> bool:
         """Send notification when Pull Request is generated."""
@@ -55,9 +56,30 @@ class NotificationDispatcher:
         )
         return self._send_webhook(payload)
 
-    def _build_payload(self, title: str, color: str, fields: list) -> Dict[str, Any]:
-        """Build universal webhook payload compatible with Discord and Slack webhooks."""
+    def build_teams_payload(self, title: str, color: str, fields: list) -> Dict[str, Any]:
+        """Build Microsoft Teams Office 365 Connector card payload."""
+        facts = [{"name": f["name"], "value": f["value"]} for f in fields]
         return {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "summary": title,
+            "themeColor": color.lstrip("#"),
+            "title": title,
+            "sections": [
+                {
+                    "activityTitle": "Autonomous Remediation Bot",
+                    "facts": facts,
+                    "markdown": True
+                }
+            ]
+        }
+
+    def _build_payload(self, title: str, color: str, fields: list) -> Dict[str, Any]:
+        """Build universal webhook payload compatible with Discord, Slack, and Microsoft Teams."""
+        if self.channel == "teams":
+            return self.build_teams_payload(title, color, fields)
+
+        payload: Dict[str, Any] = {
             "text": title,
             "attachments": [
                 {
@@ -75,6 +97,15 @@ class NotificationDispatcher:
                 }
             ]
         }
+        if self.channel == "auto":
+            payload.update({
+                "@type": "MessageCard",
+                "@context": "https://schema.org/extensions",
+                "summary": title,
+                "themeColor": color.lstrip("#"),
+                "sections": [{"facts": [{"name": f["name"], "value": f["value"]} for f in fields]}]
+            })
+        return payload
 
     def _send_webhook(self, payload: Dict[str, Any]) -> bool:
         """Execute HTTP POST to webhook endpoint."""
