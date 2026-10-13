@@ -1,77 +1,75 @@
-"""Parser for normalizing Horusec multi-language SAST scan reports into Finding models."""
+"""Parser for Horusec multi-language SAST JSON reports."""
 
 import json
+import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-import uuid
+from typing import Any, Dict, List, Union
 
 from agent_engine.state import Finding, FindingType, SeverityLevel
 
+logger = logging.getLogger(__name__)
 
-def _map_horusec_severity(raw_severity: str) -> SeverityLevel:
-    """Map Horusec severity (CRITICAL, HIGH, MEDIUM, LOW, INFO) to SeverityLevel."""
-    s = (raw_severity or "").strip().upper()
-    if s == "CRITICAL":
-        return SeverityLevel.CRITICAL
-    if s == "HIGH":
-        return SeverityLevel.HIGH
-    if s == "MEDIUM":
-        return SeverityLevel.MEDIUM
-    if s == "LOW":
-        return SeverityLevel.LOW
-    if s in ("INFO", "AUDIT"):
-        return SeverityLevel.INFO
-    return SeverityLevel.MEDIUM
+HORUSEC_SEV_MAP = {
+    "CRITICAL": SeverityLevel.CRITICAL,
+    "HIGH": SeverityLevel.HIGH,
+    "MEDIUM": SeverityLevel.MEDIUM,
+    "LOW": SeverityLevel.LOW,
+    "INFO": SeverityLevel.INFO,
+}
 
 
-def parse_horusec_report(data: Dict[str, Any]) -> List[Finding]:
-    """Parse Horusec JSON report into normalized Finding objects."""
+def parse_horusec_report(report_data: Union[str, Dict[str, Any], Path]) -> List[Finding]:
+    """Parse Horusec JSON report into normalized Finding models.
+
+    Args:
+        report_data: Raw JSON string, parsed dict, or Path to Horusec output JSON.
+
+    Returns:
+        List of normalized Finding models.
+    """
+    if isinstance(report_data, Path):
+        with open(report_data, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    elif isinstance(report_data, str):
+        data = json.loads(report_data)
+    else:
+        data = report_data
+
+    vuln_entries = data.get("analysisVulnerabilities", []) if isinstance(data, dict) else []
     findings: List[Finding] = []
-    items = data.get("analysisVulnerabilities", [])
 
-    for item in items:
-        vuln = item.get("vulnerabilities", {})
-        rule_id = vuln.get("rule_id", "HS-SAST-VULN")
-        severity_str = vuln.get("severity", "MEDIUM")
-        severity = _map_horusec_severity(severity_str)
-        details = vuln.get("details", f"Horusec SAST issue {rule_id}")
-        file_path = vuln.get("file", "app.py")
-        code = vuln.get("code", "")
-        language = vuln.get("language", "Unknown")
-
+    for entry in vuln_entries:
         try:
-            line = int(vuln.get("line", 1))
-        except (ValueError, TypeError):
-            line = 1
+            v = entry.get("vulnerabilities", {})
+            rule_id = v.get("rule_id", "horusec-vuln")
+            details = v.get("details", "Security vulnerability flagged by Horusec")
+            raw_sev = str(v.get("severity", "MEDIUM")).upper()
+            severity = HORUSEC_SEV_MAP.get(raw_sev, SeverityLevel.MEDIUM)
+            file_path = v.get("file", "target_repo/app.py")
+            line = int(v.get("line", 1) or 1)
+            code = v.get("code", "")
+            vuln_type = v.get("type", "Vulnerability")
 
-        cwe_ids: List[str] = []
-        details_lower = details.lower()
-        if "sql" in details_lower:
-            cwe_ids.append("CWE-89")
-        elif "command" in details_lower:
-            cwe_ids.append("CWE-78")
-        elif "xss" in details_lower or "cross site" in details_lower:
-            cwe_ids.append("CWE-79")
-        elif "path" in details_lower or "traversal" in details_lower:
-            cwe_ids.append("CWE-22")
+            finding = Finding(
+                id=f"horusec-{rule_id[:8]}-{line}",
+                scanner="horusec",
+                finding_type=FindingType.SAST,
+                rule_id=rule_id,
+                title=f"Horusec: {details[:80]}",
+                description=details,
+                severity=severity,
+                cwe_ids=["CWE-20"],
+                cvss_score=8.0 if severity in (SeverityLevel.CRITICAL, SeverityLevel.HIGH) else 5.0,
+                file_path=file_path,
+                start_line=line,
+                end_line=line,
+                vulnerable_code=code or f"# Line {line}",
+                references=[]
+            )
+            findings.append(finding)
+        except Exception as e:
+            logger.warning("Failed to parse Horusec vulnerability entry: %s", e)
+            continue
 
-        finding_id = f"horusec-{rule_id.lower()}-{uuid.uuid4().hex[:8]}"
-
-        finding = Finding(
-            id=finding_id,
-            scanner="horusec",
-            finding_type=FindingType.SAST,
-            rule_id=rule_id,
-            title=f"[{language}] {details[:60]}",
-            description=details,
-            severity=severity,
-            cwe_ids=cwe_ids,
-            file_path=file_path,
-            start_line=line,
-            end_line=line,
-            vulnerable_code=code,
-            references=["https://horusec.io/"]
-        )
-        findings.append(finding)
-
+    logger.info("Successfully parsed %d findings from Horusec report.", len(findings))
     return findings
