@@ -1,0 +1,26 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2023-44487",
+        "severity": "High",
+        "description": "HTTP/2 Rapid Reset Denial of Service in curl/libnghttp2",
+        "cvss": [
+          {
+            "metrics": {
+              "baseScore": 7.5
+            }
+          }
+        ],
+        "fix": {
+          "versions": ["1.58.0-1"]
+        },
+        "urls": ["https://nvd.nist.gov/vuln/detail/CVE-2023-44487"]
+      },
+      "artifact": {
+        "name": "libnghttp2-14",
+        "version": "1.52.0-1"
+      }
+    }
+  ]
+}
