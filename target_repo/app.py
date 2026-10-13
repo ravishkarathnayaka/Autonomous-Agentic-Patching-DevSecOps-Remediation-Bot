@@ -133,6 +133,15 @@ def verify_token():
     return jsonify({"authenticated": False}), 401
 
 
+@app.route("/api/user-data", methods=["GET"])
+def get_user_data():
+    # Vulnerable: Overly permissive wildcard CORS header on authenticated endpoint (CWE-942)
+    resp = jsonify({"account_id": "ACC-1029", "balance": 5000})
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Credentials"] = "true"
+    return resp, 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
