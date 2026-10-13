@@ -88,3 +88,11 @@ def test_redirect_default(client):
     resp = client.get("/redirect")
     assert resp.status_code == 302
     assert "/" in resp.headers.get("Location", "")
+
+
+def test_parse_xml_valid(client):
+    """Verify standard XML snippet parses successfully."""
+    xml_payload = b"<inventory><item id='1'>laptop</item></inventory>"
+    resp = client.post("/parse-xml", data=xml_payload, content_type="application/xml")
+    assert resp.status_code == 200
+    assert resp.get_json()["root_tag"] == "inventory"
