@@ -12,14 +12,16 @@ export type RemediationStatus =
 
 export interface Finding {
   id: string;
-  scanner: 'semgrep' | 'trivy';
-  type: 'SAST' | 'SCA';
+  scanner: string;
+  type: 'SAST' | 'SCA' | 'SECRET' | 'IAC';
   ruleId: string;
   title: string;
   description: string;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   cwe: string[];
   cvss: number;
+  epssProbability?: number;
+  blastRadiusTier?: 'LOW' | 'MEDIUM' | 'HIGH';
   filePath: string;
   startLine: number;
   endLine: number;
