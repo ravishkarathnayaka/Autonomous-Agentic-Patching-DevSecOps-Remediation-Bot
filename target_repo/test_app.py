@@ -96,3 +96,11 @@ def test_parse_xml_valid(client):
     resp = client.post("/parse-xml", data=xml_payload, content_type="application/xml")
     assert resp.status_code == 200
     assert resp.get_json()["root_tag"] == "inventory"
+
+
+def test_verify_token_valid(client):
+    """Verify bearer authentication with internal secret."""
+    headers = {"Authorization": "Bearer sk_live_99a88b77cc66dd55ee44"}
+    resp = client.post("/verify-token", headers=headers)
+    assert resp.status_code == 200
+    assert resp.get_json()["authenticated"] is True
