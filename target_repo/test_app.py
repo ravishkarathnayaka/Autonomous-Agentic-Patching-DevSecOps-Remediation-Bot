@@ -104,3 +104,11 @@ def test_verify_token_valid(client):
     resp = client.post("/verify-token", headers=headers)
     assert resp.status_code == 200
     assert resp.get_json()["authenticated"] is True
+
+
+def test_user_data_cors(client):
+    """Verify user data endpoint returns account information."""
+    resp = client.get("/api/user-data")
+    assert resp.status_code == 200
+    assert resp.get_json()["account_id"] == "ACC-1029"
+    assert "Access-Control-Allow-Origin" in resp.headers
