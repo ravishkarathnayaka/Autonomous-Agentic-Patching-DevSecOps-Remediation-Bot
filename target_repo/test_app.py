@@ -75,3 +75,9 @@ def test_search_html_valid(client):
     resp = client.get("/search?q=laptop")
     assert resp.status_code == 200
     assert b"Search Results for: laptop" in resp.data
+
+
+def test_fetch_url_missing_param(client):
+    """Verify that requesting fetch-url without url returns 400."""
+    resp = client.post("/fetch-url", json={})
+    assert resp.status_code == 400
