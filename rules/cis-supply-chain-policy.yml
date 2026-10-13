@@ -1,0 +1,19 @@
+# CIS Software Supply Chain Security Benchmark v1.0 Policy
+policy_name: cis-software-supply-chain
+version: "1.0.0"
+description: "Mitigation rules for third-party dependencies, build pipelines, and base images."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.5
+  auto_remediate_critical: true
+
+mandatory_rules:
+  - CWE-1395  # Vulnerable Third-Party Dependencies (CIS 2.1)
+  - CWE-250   # Execution with Unnecessary Privileges (CIS 3.2 - Non-root container)
+  - CWE-798   # Hardcoded Credentials in Source Code (CIS 1.2)
+  - CWE-918   # Server-Side Request Forgery in Service Integrations (CIS 4.1)
+
+automation:
+  pr_auto_merge_on_sandbox_pass: false
+  require_signed_commits: true
