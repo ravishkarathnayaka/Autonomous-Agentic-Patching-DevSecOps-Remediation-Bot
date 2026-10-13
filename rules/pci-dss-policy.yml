@@ -1,0 +1,19 @@
+# PCI-DSS v4.0 Requirement 6 Security Remediation Policy
+policy_name: pci-dss-v4-compliance
+version: "1.0.0"
+description: "Zero-tolerance remediation policy for cardholder data environments (CDE)."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+
+mandatory_rules:
+  - CWE-89    # Injection Flaws (Req 6.2.4)
+  - CWE-327   # Broken Cryptographic Algorithms (Req 3.4)
+  - CWE-798   # Hardcoded Cryptographic Keys (Req 3.5)
+  - CWE-384   # Session Fixation (Req 6.5.10)
+
+sandbox:
+  enforce_strict_network_isolation: true
+  max_retries: 3
