@@ -1,0 +1,20 @@
+# HIPAA Security Rule (45 CFR § 164.312) Technical Safeguards Policy
+policy_name: hipaa-technical-safeguards
+version: "1.0.0"
+description: "Automated patch policy enforcing technical safeguards for protected health information (ePHI)."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.5
+  auto_remediate_critical: true
+
+mandatory_rules:
+  - CWE-319   # Cleartext Transmission of Sensitive Information (§ 164.312(e)(1))
+  - CWE-327   # Broken or Weak Cryptographic Algorithms (§ 164.312(a)(2)(iv))
+  - CWE-79    # Reflected/Stored Cross-Site Scripting
+  - CWE-89    # SQL Injection (§ 164.312(c)(1))
+  - CWE-639   # Insecure Direct Object References (IDOR)
+
+governance:
+  require_audit_hash_chain: true
+  auto_tag_compliance_pr: "HIPAA-Safeguard"
