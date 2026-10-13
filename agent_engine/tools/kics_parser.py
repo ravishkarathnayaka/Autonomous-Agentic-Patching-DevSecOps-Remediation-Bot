@@ -1,74 +1,79 @@
-"""Parser for normalizing Checkmarx KICS Infrastructure-as-Code (IaC) scan reports into Finding models."""
+"""Parser for KICS (Keeping Infrastructure as Code Secure) JSON scan reports."""
 
 import json
+import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-import uuid
+from typing import Any, Dict, List, Union
 
 from agent_engine.state import Finding, FindingType, SeverityLevel
 
+logger = logging.getLogger(__name__)
 
-def _map_kics_severity(severity_str: str) -> SeverityLevel:
-    """Map KICS severity (HIGH, MEDIUM, LOW, INFO) to standardized SeverityLevel."""
-    s = (severity_str or "").strip().upper()
-    if s == "HIGH":
-        return SeverityLevel.HIGH
-    if s == "MEDIUM":
-        return SeverityLevel.MEDIUM
-    if s == "LOW":
-        return SeverityLevel.LOW
-    if s in ("INFO", "TRACE"):
-        return SeverityLevel.INFO
-    return SeverityLevel.MEDIUM
+KICS_SEV_MAP = {
+    "HIGH": SeverityLevel.HIGH,
+    "MEDIUM": SeverityLevel.MEDIUM,
+    "LOW": SeverityLevel.LOW,
+    "INFO": SeverityLevel.INFO,
+}
 
 
-def parse_kics_report(data: Dict[str, Any]) -> List[Finding]:
-    """Parse KICS JSON output dictionary into normalized Finding objects."""
+def parse_kics_report(report_data: Union[str, Dict[str, Any], Path]) -> List[Finding]:
+    """Parse KICS IaC scan JSON into normalized Finding models.
+
+    Args:
+        report_data: Raw JSON string, parsed dict, or Path to KICS output JSON.
+
+    Returns:
+        List of normalized Finding models for IaC issues.
+    """
+    if isinstance(report_data, Path):
+        with open(report_data, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    elif isinstance(report_data, str):
+        data = json.loads(report_data)
+    else:
+        data = report_data
+
+    queries = data.get("queries", []) if isinstance(data, dict) else []
     findings: List[Finding] = []
-    queries = data.get("queries", [])
 
     for query in queries:
-        query_name = query.get("query_name", "KICS IaC Misconfiguration")
-        query_id = query.get("query_id", "kics-query")
-        severity_str = query.get("severity", "MEDIUM")
-        severity = _map_kics_severity(severity_str)
-        category = query.get("category", "IaC Security")
-        description = query.get("description", f"IaC misconfiguration detected: {query_name}")
-        platform = query.get("platform", "Terraform")
-
-        cwe_raw = query.get("cwe", "")
-        cwe_ids: List[str] = []
-        if cwe_raw:
-            cwe_clean = f"CWE-{cwe_raw}" if not str(cwe_raw).upper().startswith("CWE-") else str(cwe_raw)
-            cwe_ids.append(cwe_clean)
+        query_id = query.get("query_id", "KICS-QUERY")
+        query_name = query.get("query_name", "IaC Security Misconfiguration")
+        raw_sev = str(query.get("severity", "MEDIUM")).upper()
+        severity = KICS_SEV_MAP.get(raw_sev, SeverityLevel.MEDIUM)
+        desc = query.get("description", query_name)
+        cwe = query.get("cwe")
+        cwe_ids = [f"CWE-{cwe}"] if cwe else ["CWE-16"]
 
         files = query.get("files", [])
-        for file_item in files:
-            file_name = file_item.get("file_name", "main.tf")
-            line = file_item.get("line", 1)
-            search_key = file_item.get("search_key", "")
-            issue_type = file_item.get("issue_type", "")
-            key_actual_value = file_item.get("key_actual_value", "")
+        for file_info in files:
+            try:
+                file_name = file_info.get("file_name", "Dockerfile")
+                line = file_info.get("line", 1)
+                search_key = file_info.get("search_key", "")
+                actual_val = file_info.get("actual_value", "")
 
-            finding_id = f"kics-{query_id[:8]}-{uuid.uuid4().hex[:8]}"
+                finding = Finding(
+                    id=f"kics-{query_id}-{line}",
+                    scanner="kics",
+                    finding_type=FindingType.IAC,
+                    rule_id=query_id,
+                    title=f"KICS IaC: {query_name}",
+                    description=desc,
+                    severity=severity,
+                    cwe_ids=cwe_ids,
+                    cvss_score=8.0 if severity == SeverityLevel.HIGH else 5.5,
+                    file_path=file_name,
+                    start_line=line,
+                    end_line=line,
+                    vulnerable_code=f"# {search_key}: {actual_val}",
+                    references=[query.get("platformUrl")] if query.get("platformUrl") else []
+                )
+                findings.append(finding)
+            except Exception as e:
+                logger.warning("Failed to parse KICS finding file item: %s", e)
+                continue
 
-            vulnerable_snippet = f"Search Key: {search_key}\nIssue Type: {issue_type}\nDetail: {key_actual_value}"
-
-            finding = Finding(
-                id=finding_id,
-                scanner="kics",
-                finding_type=FindingType.IAC,
-                rule_id=query_id,
-                title=f"[{platform}] {query_name}",
-                description=f"{description} (Category: {category})",
-                severity=severity,
-                cwe_ids=cwe_ids,
-                file_path=file_name,
-                start_line=line,
-                end_line=line,
-                vulnerable_code=vulnerable_snippet,
-                references=[f"https://docs.kics.io/latest/queries/{platform.lower()}-queries/"]
-            )
-            findings.append(finding)
-
+    logger.info("Successfully parsed %d findings from KICS report.", len(findings))
     return findings
