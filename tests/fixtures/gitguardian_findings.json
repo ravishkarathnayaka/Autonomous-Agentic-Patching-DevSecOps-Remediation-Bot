@@ -1,0 +1,19 @@
+{
+  "entities_with_incidents": [
+    {
+      "filename": "target_repo/app.py",
+      "incidents": [
+        {
+          "detector": "stripe_secret_key",
+          "validity": "valid",
+          "occurrences": [
+            {
+              "line_start": 18,
+              "line_end": 18
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
