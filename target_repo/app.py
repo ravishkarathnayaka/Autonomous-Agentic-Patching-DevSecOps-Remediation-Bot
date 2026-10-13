@@ -103,6 +103,14 @@ def fetch_url():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/redirect", methods=["GET"])
+def handle_redirect():
+    target = request.args.get("next", "/")
+    # Vulnerable: Open Redirect (CWE-601) redirects to arbitrary untrusted external domains
+    from flask import redirect
+    return redirect(target)
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
