@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "CodeQL",
+          "rules": [
+            {
+              "id": "py/sql-injection",
+              "shortDescription": {
+                "text": "SQL query built from user-controlled sources"
+              },
+              "properties": {
+                "tags": ["security", "external/cwe/cwe-89"],
+                "security-severity": "8.8"
+              },
+              "helpUri": "https://codeql.github.com/codeql-query-help/python/py-sql-injection/"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "py/sql-injection",
+          "level": "error",
+          "message": {
+            "text": "This query depends on a user-provided value at line 28."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "target_repo/app.py"
+                },
+                "region": {
+                  "startLine": 28,
+                  "endLine": 29,
+                  "snippet": {
+                    "text": "cursor.execute(f'SELECT * FROM users WHERE name = {user}')"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
