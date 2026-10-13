@@ -86,6 +86,23 @@ def search():
     return html, 200, {"Content-Type": "text/html"}
 
 
+@app.route("/fetch-url", methods=["POST"])
+def fetch_url():
+    data = request.get_json(silent=True) or {}
+    url = data.get("url", "")
+    # Vulnerable: Server-Side Request Forgery (CWE-918) fetches arbitrary internal/external URLs
+    if not url:
+        return jsonify({"error": "URL required"}), 400
+    try:
+        import urllib.request
+        req = urllib.request.Request(url, headers={"User-Agent": "DevSecOpsBot/1.0"})
+        with urllib.request.urlopen(req, timeout=2) as resp:
+            content = resp.read()[:500].decode("utf-8", errors="ignore")
+            return jsonify({"status": "success", "content": content}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
