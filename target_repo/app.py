@@ -111,6 +111,18 @@ def handle_redirect():
     return redirect(target)
 
 
+@app.route("/parse-xml", methods=["POST"])
+def parse_xml():
+    xml_data = request.data.decode("utf-8", errors="ignore")
+    # Vulnerable: Insecure XML parsing allowing external entity resolution (CWE-611)
+    import xml.etree.ElementTree as ET
+    try:
+        root = ET.fromstring(xml_data)
+        return jsonify({"root_tag": root.tag}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
