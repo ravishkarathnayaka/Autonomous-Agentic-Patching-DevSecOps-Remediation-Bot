@@ -81,3 +81,10 @@ def test_fetch_url_missing_param(client):
     """Verify that requesting fetch-url without url returns 400."""
     resp = client.post("/fetch-url", json={})
     assert resp.status_code == 400
+
+
+def test_redirect_default(client):
+    """Verify default redirect targets root."""
+    resp = client.get("/redirect")
+    assert resp.status_code == 302
+    assert "/" in resp.headers.get("Location", "")
