@@ -1,0 +1,15 @@
+{
+  "warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "check_name": "SQL",
+      "message": "Possible SQL injection in User query string interpolation",
+      "file": "app/models/user.rb",
+      "line": 15,
+      "code": "User.where(\"name = '#{params[:name]}'\")",
+      "confidence": "High",
+      "cwe_id": [89],
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/"
+    }
+  ]
+}
