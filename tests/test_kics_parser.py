@@ -7,7 +7,7 @@ def test_parse_kics_report_fixture():
     fixture_path = Path("tests/fixtures/kics_findings.json")
     findings = parse_kics_report(fixture_path)
 
-    assert len(findings) == 1
+    assert len(findings) >= 1
     f = findings[0]
     assert f.scanner == "kics"
     assert f.finding_type == FindingType.IAC

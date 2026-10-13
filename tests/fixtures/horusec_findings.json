@@ -10,6 +10,17 @@
         "code": "os.system(f'ping -c 1 {host}')",
         "type": "Vulnerability"
       }
+    },
+    {
+      "vulnerabilities": {
+        "rule_id": "HS-PYTHON-2",
+        "details": "Hardcoded token or password variable assignment",
+        "severity": "HIGH",
+        "file": "target_repo/app.py",
+        "line": "12",
+        "code": "API_KEY = 'secret'",
+        "type": "Vulnerability"
+      }
     }
   ]
 }

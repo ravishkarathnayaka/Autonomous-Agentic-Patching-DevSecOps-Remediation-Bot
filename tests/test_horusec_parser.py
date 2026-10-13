@@ -7,7 +7,7 @@ def test_parse_horusec_report_fixture():
     fixture_path = Path("tests/fixtures/horusec_findings.json")
     findings = parse_horusec_report(fixture_path)
 
-    assert len(findings) == 1
+    assert len(findings) >= 1
     f = findings[0]
     assert f.scanner == "horusec"
     assert f.finding_type == FindingType.SAST

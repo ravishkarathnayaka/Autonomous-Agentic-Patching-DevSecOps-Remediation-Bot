@@ -14,6 +14,21 @@
           "actual_value": "No USER instruction found"
         }
       ]
+    },
+    {
+      "query_name": "Healthcheck Instruction Missing",
+      "query_id": "b03a748a-542d-4468-b800-75917e66da0a",
+      "severity": "LOW",
+      "description": "Ensure HEALTHCHECK is defined for container lifecycle monitoring.",
+      "cwe": "710",
+      "files": [
+        {
+          "file_name": "docker/sandbox.Dockerfile",
+          "line": 1,
+          "search_key": "HEALTHCHECK",
+          "actual_value": "Missing HEALTHCHECK instruction"
+        }
+      ]
     }
   ]
 }
