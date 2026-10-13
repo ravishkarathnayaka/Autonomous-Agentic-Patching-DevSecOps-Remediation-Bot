@@ -1,0 +1,14 @@
+[
+  {
+    "filePath": "web/src/utils/evaluator.ts",
+    "messages": [
+      {
+        "ruleId": "security/detect-eval-with-expression",
+        "severity": 2,
+        "message": "eval with expression can execute arbitrary javascript",
+        "line": 42,
+        "endLine": 42
+      }
+    ]
+  }
+]
