@@ -123,6 +123,16 @@ def parse_xml():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/verify-token", methods=["POST"])
+def verify_token():
+    auth_header = request.headers.get("Authorization", "")
+    # Vulnerable: Hardcoded API secret in source code (CWE-798)
+    HARDCODED_INTERNAL_SECRET = "sk_live_99a88b77cc66dd55ee44"
+    if auth_header == f"Bearer {HARDCODED_INTERNAL_SECRET}":
+        return jsonify({"authenticated": True, "scope": "admin"}), 200
+    return jsonify({"authenticated": False}), 401
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
