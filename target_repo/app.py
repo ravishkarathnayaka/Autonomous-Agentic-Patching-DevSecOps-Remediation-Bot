@@ -156,6 +156,21 @@ def generate_token():
     return jsonify({"token": token, "algorithm": "pseudo-random"}), 200
 
 
+@app.route("/extract-archive", methods=["POST"])
+def extract_archive():
+    # Vulnerable: Zip Slip path traversal during archive decompression (CWE-29)
+    data = request.get_json() or {}
+    filenames = data.get("files", [])
+    extracted = []
+    base_dir = "/tmp/app_extracted"
+    for fname in filenames:
+        # Insecurely joining path without checking if it escapes base_dir
+        target_path = os.path.join(base_dir, fname)
+        extracted.append(target_path)
+    return jsonify({"extracted_count": len(extracted), "targets": extracted}), 200
+
+
+
 
 def init_db():
     conn = get_db()
