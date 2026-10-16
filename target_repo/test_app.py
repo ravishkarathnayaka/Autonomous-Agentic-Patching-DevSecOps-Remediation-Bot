@@ -119,3 +119,13 @@ def test_check_headers(client):
     resp = client.get("/api/headers")
     assert resp.status_code == 200
     assert resp.get_json()["sensitive"] is True
+
+
+def test_generate_token(client):
+    """Verify pseudo-random token generation endpoint returns 32-char hex string."""
+    resp = client.get("/generate-token")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert len(data["token"]) == 32
+    assert data["algorithm"] == "pseudo-random"
+
