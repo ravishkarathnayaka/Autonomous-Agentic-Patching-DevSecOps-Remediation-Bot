@@ -1,0 +1,23 @@
+{
+  "vulnerabilities": {
+    "list": [
+      {
+        "advisory": {
+          "id": "RUSTSEC-2023-0001",
+          "title": "Use-after-free in hyper socket pool",
+          "description": "Potential memory corruption flaw in hyper socket pool reuse.",
+          "cvss": 8.1,
+          "cwe": "416",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2023-0001.html"
+        },
+        "package": {
+          "name": "hyper",
+          "version": "0.14.25"
+        },
+        "versions": {
+          "patched": [">= 0.14.27"]
+        }
+      }
+    ]
+  }
+}
