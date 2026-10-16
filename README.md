@@ -404,13 +404,41 @@ All four commands execute in the repository's GitHub Actions CI pipeline on ever
 
 ---
 
-## 🛡️ Supported Scanners & SARIF Export
+## 🛡️ Supported Scanners Matrix (16 Security Engines)
 
-| Scanner Type | Tool | Supported Format | Normalized Rule Mapping |
+The bot features a unified multi-scanner ingestion engine with automatic format detection across 16 leading open-source and commercial security scanners:
+
+| Scanner Type | Tool | Supported Ingestion Format | Target Artifacts |
 | :--- | :--- | :--- | :--- |
-| **SAST** | **Semgrep** | JSON output (`--json`) | CWE-89, CWE-22, CWE-78, custom rulesets |
-| **SAST** | **Bandit** | JSON output (`-f json`) | Python AST security flaws (B608, B602, etc.) |
-| **SCA** | **Trivy** | JSON output (`--format json`) | CVE advisories in dependencies (pip, npm) |
+| **SAST** | **Semgrep** | JSON (`--json`) | Python, JS/TS, Go, Java, C# |
+| **SAST** | **Bandit** | JSON (`-f json`) | Python AST flaws (B608, B602, etc.) |
+| **SAST** | **ESLint Security** | JSON (`-f json`) | JavaScript & TypeScript AST security |
+| **SAST** | **Horusec** | JSON (`-o json`) | Multi-language polyglot SAST |
+| **SAST** | **Flawfinder** | JSON (`--json`) | C / C++ static memory and buffer safety |
+| **SCA** | **Trivy** | JSON (`--format json`) | Container images & open-source dependencies |
+| **SCA** | **Grype** | JSON (`-o json`) | Container filesystem & SBOM vulnerability scan |
+| **SCA** | **Cargo-Audit** | JSON (`--json`) | Rust Cargo.lock advisory database |
+| **SCA** | **Govulncheck** | JSON / JSONL (`-json`) | Go module call-graph vulnerability analyzer |
+| **Secrets** | **Gitleaks** | JSON (`-f json`) | Git commit history secret scanner |
+| **Secrets** | **TruffleHog v3** | JSON / JSONL (`--json`) | Verified credential & API token detector |
+| **IaC** | **Checkov** | JSON (`-o json`) | Terraform, CloudFormation, Kubernetes |
+| **IaC** | **KICS** | JSON (`--report-formats json`) | Infrastructure-as-Code misconfigurations |
+| **IaC** | **TFSec** | JSON (`-f json`) | Terraform static analysis security scanner |
+| **Containers**| **Hadolint** | JSON (`-f json`) | Dockerfile best practices & security linter |
+| **DAST** | **OWASP ZAP** | JSON (`-J zap_report.json`) | Dynamic Application Security Testing alerts |
+
+---
+
+## 🏛️ Enterprise Compliance Policies
+
+Pre-configured YAML remediation and enforcement policies are located in `rules/`:
+- **NIST SP 800-53 Rev 5:** [`rules/nist-800-53-policy.yml`](rules/nist-800-53-policy.yml) (SI-2, SC-8, AC-3, IA-5)
+- **ISO/IEC 27001:2022:** [`rules/iso-27001-policy.yml`](rules/iso-27001-policy.yml) (Annex A Controls A.8.8, A.8.25, A.8.28)
+- **FedRAMP High Baseline:** [`rules/fedramp-high-policy.yml`](rules/fedramp-high-policy.yml) (RA-5, SC-13, CM-6)
+- **OWASP ASVS v4.0.3:** [`rules/owasp-asvs-policy.yml`](rules/owasp-asvs-policy.yml) (Levels 2 & 3 verification)
+- **SOC 2 Type II:** [`rules/soc2-policy.yml`](rules/soc2-policy.yml) (CC6.1 & CC6.8)
+- **PCI DSS v4.0:** [`rules/pci-dss-compliance-policy.yml`](rules/pci-dss-compliance-policy.yml) (Requirement 6.3)
+- **CIS Supply Chain:** [`rules/cis-supply-chain-policy.yml`](rules/cis-supply-chain-policy.yml) (Benchmark 1.1)
 
 ### Exporting Standard SARIF 2.1.0 for GitHub Code Scanning:
 ```bash
@@ -425,11 +453,19 @@ python -m cli.main \
 
 ## 📚 Documentation & Architecture Guides
 
-- [Threat Model & STRIDE Analysis](docs/THREAT_MODEL.md) — Deep dive into prompt injection defenses, ephemeral sandbox containment, and privilege drop.
-- [Local LLM Benchmark Guide](docs/LLM_BENCHMARKS.md) — Performance matrix comparing Qwen2.5-Coder, Llama 3, and DeepSeek for security diff generation.
+- [Developer Quickstart & Onboarding Guide](docs/DEVELOPER_QUICKSTART.md) — Setup local environment and CLI tools.
+- [STRIDE Enterprise Threat Modeling Guide](docs/THREAT_MODELING_GUIDE.md) — Security boundaries, trust domains, and mitigations.
+- [Ephemeral Sandbox Multi-Platform Isolation Spec](docs/SANDBOX_ISOLATION_SPEC.md) — Docker, gVisor, Podman, and Firecracker profiles.
+- [DevSecOps Supply Chain Security Whitepaper](docs/SUPPLY_CHAIN_SECURITY.md) — SBOM CycloneDX 1.5, SLSA Level 3, and Sigstore signing.
+- [Enterprise Deployment & Governance Guide](docs/ENTERPRISE_GUIDE.md) — Enterprise configuration, RBAC, and policy gates.
+- [DevSecOps Remediation Maturity Model](docs/DEVSECOPS_MATURITY_MODEL.md) — 5-stage organizational adoption framework.
+- [Zero-Trust Sandbox Hardening Whitepaper](docs/ZERO_TRUST_SANDBOX.md) — Deep dive into seccomp, cgroups, and network isolation.
+- [Architecture Specification v2.0](docs/ARCHITECTURE_SPEC_V2.md) — Technical blueprint for next-generation distributed orchestrator.
+- [Enterprise FAQ & Operational Troubleshooting](docs/TROUBLESHOOTING_FAQ.md) — Runbooks and diagnostic procedures.
+- [Local LLM Benchmark Guide](docs/LLM_BENCHMARKS.md) — Performance matrix comparing Qwen2.5-Coder, Llama 3, and DeepSeek.
 - [Contributing Guidelines](CONTRIBUTING.md) — Developer setup, coding standards, and pull request workflow.
-- [Code of Conduct](CODE_OF_CONDUCT.md) — Contributor Covenant 2.1 pledge and standards.
 - [Security Policy](SECURITY.md) — Coordinated vulnerability disclosure and supported versions.
+
 
 ---
 
