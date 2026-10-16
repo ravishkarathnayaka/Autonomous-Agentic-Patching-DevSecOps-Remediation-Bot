@@ -1,0 +1,9 @@
+[
+  {
+    "line": 15,
+    "code": "DL3002",
+    "message": "Last USER should not be root",
+    "level": "warning",
+    "file": "docker/sandbox.Dockerfile"
+  }
+]
