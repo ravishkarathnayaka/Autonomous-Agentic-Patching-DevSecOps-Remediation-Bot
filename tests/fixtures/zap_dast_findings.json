@@ -1,0 +1,23 @@
+{
+  "site": [
+    {
+      "@name": "http://localhost:5000",
+      "alerts": [
+        {
+          "pluginId": "10038",
+          "alert": "Content Security Policy (CSP) Header Not Set",
+          "riskcode": "2",
+          "desc": "Content Security Policy (CSP) is an added layer of security.",
+          "cweid": "693",
+          "instances": [
+            {
+              "uri": "http://localhost:5000/items",
+              "param": "",
+              "attack": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
