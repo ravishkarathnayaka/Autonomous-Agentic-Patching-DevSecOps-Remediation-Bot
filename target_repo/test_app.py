@@ -140,3 +140,18 @@ def test_extract_archive(client):
     assert len(data["targets"]) == 3
 
 
+def test_validate_hmac_valid(client):
+    """Verify HMAC endpoint accepts matching signature."""
+    resp = client.post("/validate-hmac", json={"signature": "8f4e2a1b9c3d7e5f6a0b"})
+    assert resp.status_code == 200
+    assert resp.get_json()["valid"] is True
+
+
+def test_validate_hmac_invalid(client):
+    """Verify HMAC endpoint rejects invalid signature."""
+    resp = client.post("/validate-hmac", json={"signature": "invalid_sig"})
+    assert resp.status_code == 403
+    assert resp.get_json()["valid"] is False
+
+
+
