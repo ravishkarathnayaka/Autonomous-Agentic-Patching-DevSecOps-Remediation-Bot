@@ -112,3 +112,10 @@ def test_user_data_cors(client):
     assert resp.status_code == 200
     assert resp.get_json()["account_id"] == "ACC-1029"
     assert "Access-Control-Allow-Origin" in resp.headers
+
+
+def test_check_headers(client):
+    """Verify headers endpoint returns sensitive payload."""
+    resp = client.get("/api/headers")
+    assert resp.status_code == 200
+    assert resp.get_json()["sensitive"] is True
