@@ -170,6 +170,18 @@ def extract_archive():
     return jsonify({"extracted_count": len(extracted), "targets": extracted}), 200
 
 
+@app.route("/validate-hmac", methods=["POST"])
+def validate_hmac():
+    # Vulnerable: Non-constant time comparison of HMAC signatures susceptible to timing attacks (CWE-208)
+    data = request.get_json() or {}
+    signature = data.get("signature", "")
+    expected = "8f4e2a1b9c3d7e5f6a0b"
+    # Vulnerable comparison: == terminates early on first mismatch
+    is_valid = signature == expected
+    return jsonify({"valid": is_valid}), 200 if is_valid else 403
+
+
+
 
 
 def init_db():
