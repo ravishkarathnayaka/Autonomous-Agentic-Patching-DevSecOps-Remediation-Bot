@@ -1,0 +1,23 @@
+{
+  "osv": {
+    "id": "GO-2023-1571",
+    "aliases": ["CVE-2023-24538"],
+    "details": "Denial of Service in golang.org/x/net/http2 multipart parser",
+    "affected": [
+      {
+        "package": {
+          "name": "golang.org/x/net"
+        },
+        "ranges": [
+          {
+            "type": "SEMVER",
+            "events": [
+              { "introduced": "0" },
+              { "fixed": "v0.7.0" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

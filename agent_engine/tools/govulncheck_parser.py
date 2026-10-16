@@ -26,21 +26,27 @@ def parse_govulncheck_report(
     entries = []
     if isinstance(report_data, Path):
         text = report_data.read_text(encoding="utf-8")
-        for line in text.strip().splitlines():
-            line = line.strip()
-            if line:
-                try:
-                    entries.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
+        try:
+            parsed = json.loads(text)
+            entries = parsed if isinstance(parsed, list) else [parsed]
+        except json.JSONDecodeError:
+            for line in text.strip().splitlines():
+                if line.strip():
+                    try:
+                        entries.append(json.loads(line.strip()))
+                    except json.JSONDecodeError:
+                        continue
     elif isinstance(report_data, str):
-        for line in report_data.strip().splitlines():
-            line = line.strip()
-            if line:
-                try:
-                    entries.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
+        try:
+            parsed = json.loads(report_data)
+            entries = parsed if isinstance(parsed, list) else [parsed]
+        except json.JSONDecodeError:
+            for line in report_data.strip().splitlines():
+                if line.strip():
+                    try:
+                        entries.append(json.loads(line.strip()))
+                    except json.JSONDecodeError:
+                        continue
     elif isinstance(report_data, list):
         entries = report_data
     elif isinstance(report_data, dict):
