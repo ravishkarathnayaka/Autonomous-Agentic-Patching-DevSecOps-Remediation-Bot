@@ -1,0 +1,53 @@
+# NIST SP 800-53 Rev 5 Federal Information System Remediation Policy
+# Aligns with Control Baselines: SI-2 (Flaw Remediation), SC-8 (Transmission Integrity),
+# AC-3 (Access Enforcement), IA-5 (Authenticator Management), and SA-11 (Developer Testing).
+
+policy_name: nist-sp-800-53-rev5-remediation
+version: "1.0.0"
+framework: "NIST SP 800-53 Rev 5"
+description: "Federal compliance baseline governing autonomous patching and DevSecOps controls."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  max_remediation_window_days:
+    critical: 7
+    high: 15
+    medium: 30
+    low: 90
+
+controls:
+  - id: "SI-2"
+    name: "Flaw Remediation"
+    rules:
+      - CWE-89    # SQL Injection
+      - CWE-78    # Command Injection
+      - CWE-502   # Insecure Deserialization
+    enforce_ci_block: true
+
+  - id: "SC-8"
+    name: "Transmission Confidentiality and Integrity"
+    rules:
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+      - CWE-693   # Missing Security Headers (HSTS, CSP)
+    enforce_ci_block: true
+
+  - id: "AC-3"
+    name: "Access Enforcement"
+    rules:
+      - CWE-287   # Improper Authentication
+      - CWE-942   # Permissive CORS Policy
+      - CWE-22    # Path Traversal
+
+  - id: "IA-5"
+    name: "Authenticator Management"
+    rules:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-338   # Insecure Randomness in Token Generation
+
+sandbox:
+  enforce_strict_network_isolation: true
+  seccomp_profile: "docker/seccomp-profile.json"
+  read_only_root_filesystem: true
+  max_execution_timeout_seconds: 300
