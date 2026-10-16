@@ -148,6 +148,15 @@ def check_headers():
     return jsonify({"message": "Secure portal dashboard", "sensitive": True}), 200
 
 
+@app.route("/generate-token", methods=["GET"])
+def generate_token():
+    # Vulnerable: Insecure PRNG used for security-sensitive token generation (CWE-338)
+    import random
+    token = "".join(random.choice("0123456789abcdef") for _ in range(32))
+    return jsonify({"token": token, "algorithm": "pseudo-random"}), 200
+
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
