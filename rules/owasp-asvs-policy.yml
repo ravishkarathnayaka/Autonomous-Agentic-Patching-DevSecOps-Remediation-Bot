@@ -1,0 +1,49 @@
+# OWASP Application Security Verification Standard (ASVS) v4.0.3 Remediation Policy
+# Establishes rigorous verification criteria for Level 2 (Standard Enterprise) and Level 3 (Advanced/High-Assurance).
+
+policy_name: owasp-asvs-v4-remediation
+version: "4.0.3"
+framework: "OWASP ASVS v4.0.3"
+description: "Application security baseline for autonomous vulnerability remediation and code verification."
+
+verification_level: "Level 2 (Standard Commercial)"
+
+chapters:
+  - id: "V2"
+    name: "Authentication Verification Requirement"
+    requirements:
+      - "Verify all passwords and tokens are generated using cryptographically secure PRNG."
+      - "Verify no hardcoded credentials or API keys exist in source control."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-338   # Insecure Randomness
+
+  - id: "V3"
+    name: "Session Management Verification Requirement"
+    requirements:
+      - "Verify cookies are set with Secure, HttpOnly, and SameSite attributes."
+    cwes:
+      - CWE-614   # Sensitive Cookie Without 'Secure' or 'HttpOnly' Attribute
+
+  - id: "V5"
+    name: "Validation, Sanitization and Encoding Requirement"
+    requirements:
+      - "Verify all user input is sanitized or parameterized to prevent injection flaws."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # Command Injection
+      - CWE-79    # Cross-Site Scripting (XSS)
+      - CWE-22    # Path Traversal
+
+  - id: "V14"
+    name: "Configuration Verification Requirement"
+    requirements:
+      - "Verify Content Security Policy, Frame Options, and HSTS headers are transmitted."
+      - "Verify CORS headers do not reflect wildcards with credentials."
+    cwes:
+      - CWE-693   # Missing Security Headers
+      - CWE-942   # Permissive CORS Policy
+
+enforcement:
+  block_pr_on_unverified_patch: true
+  require_deterministic_sandbox_run: true
