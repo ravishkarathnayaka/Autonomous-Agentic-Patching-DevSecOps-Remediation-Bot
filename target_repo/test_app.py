@@ -129,3 +129,14 @@ def test_generate_token(client):
     assert len(data["token"]) == 32
     assert data["algorithm"] == "pseudo-random"
 
+
+def test_extract_archive(client):
+    """Verify archive extraction endpoint extracts relative path targets."""
+    payload = {"files": ["document.pdf", "image.png", "../../etc/passwd"]}
+    resp = client.post("/extract-archive", json=payload)
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["extracted_count"] == 3
+    assert len(data["targets"]) == 3
+
+
