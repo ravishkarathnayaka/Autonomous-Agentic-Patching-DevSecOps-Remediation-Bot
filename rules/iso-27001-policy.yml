@@ -1,0 +1,51 @@
+# ISO/IEC 27001:2022 Annex A Security Control Remediation Policy
+# Maps autonomous DevSecOps patching triggers to Annex A Controls A.8.8, A.8.25, A.8.26, and A.8.28.
+
+policy_name: iso-27001-2022-annex-a
+version: "1.0.0"
+framework: "ISO/IEC 27001:2022"
+description: "Information security management policy governing vulnerability remediation and secure development."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  slas:
+    critical_hours: 24
+    high_hours: 72
+    medium_days: 14
+
+controls:
+  - control: "A.8.8"
+    title: "Management of Technical Vulnerabilities"
+    requirements:
+      - "Automated discovery of vulnerabilities in all deployed codebase artifacts."
+      - "Automated generation and verification of corrective patches in sandboxes."
+    targets:
+      - CWE-89
+      - CWE-78
+      - CWE-22
+      - CWE-502
+
+  - control: "A.8.28"
+    title: "Secure Coding Principles"
+    requirements:
+      - "Static code analysis verification before branch merge."
+      - "Zero hardcoded credentials or API tokens in version control."
+    targets:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-200   # Information Exposure
+      - CWE-338   # Insecure Randomness
+
+  - control: "A.8.26"
+    title: "Application Security Requirements"
+    requirements:
+      - "Transmission encryption and restrictive cross-origin resource sharing."
+    targets:
+      - CWE-942   # Permissive CORS
+      - CWE-693   # Missing Security Headers
+
+sandbox:
+  isolation_engine: "docker"
+  network_disabled: true
+  seccomp_enabled: true
