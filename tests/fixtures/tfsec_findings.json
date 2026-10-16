@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "rule_id": "aws-s3-enable-bucket-encryption",
+      "rule_description": "Unencrypted S3 bucket",
+      "severity": "HIGH",
+      "resolution": "Enable server side encryption block",
+      "location": {
+        "filename": "terraform/storage.tf",
+        "start_line": 12,
+        "end_line": 18
+      },
+      "links": ["https://aquasecurity.github.io/tfsec/latest/checks/aws/s3/enable-bucket-encryption/"]
+    }
+  ]
+}
