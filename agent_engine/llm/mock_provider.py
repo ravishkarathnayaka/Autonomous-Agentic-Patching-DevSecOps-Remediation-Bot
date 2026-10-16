@@ -42,11 +42,13 @@ class MockLLMProvider:
         return """```diff
 --- a/target_repo/app.py
 +++ b/target_repo/app.py
-@@ -28,2 +28,2 @@
+@@ -35,4 +35,4 @@
+     cursor = get_db().cursor()
 -    query = f"SELECT * FROM items WHERE name = '{name}'"
 -    cursor.execute(query)
 +    query = "SELECT * FROM items WHERE name = ?"
 +    cursor.execute(query, (name,  # INTENTIONAL SYNTAX ERROR
+     rows = cursor.fetchall()
 ```"""
 
     def _generate_sqli_patch(self) -> str:
@@ -54,12 +56,15 @@ class MockLLMProvider:
         return """```diff
 --- a/target_repo/app.py
 +++ b/target_repo/app.py
-@@ -28,3 +28,3 @@
+@@ -35,4 +35,4 @@
+     cursor = get_db().cursor()
 -    query = f"SELECT * FROM items WHERE name = '{name}'"
 -    cursor.execute(query)
 +    query = "SELECT * FROM items WHERE name = ?"
 +    cursor.execute(query, (name,))
+     rows = cursor.fetchall()
 ```
+
 ### Remediation Rationale
 Replaced untrusted string interpolation with parameterized SQL query using standard SQLite placeholder `?`.
 This prevents SQL injection attacks (CWE-89) by separating SQL query code from user-supplied data arguments."""
