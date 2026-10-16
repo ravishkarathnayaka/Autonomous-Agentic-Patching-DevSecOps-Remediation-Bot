@@ -1,0 +1,11 @@
+[
+  {
+    "file": "target_repo/native_crypto.c",
+    "line": 45,
+    "level": 4,
+    "rule_id": "buffer/strcpy",
+    "warning": "Buffer overflow risk with strcpy; consider strlcpy or snprintf",
+    "cwe": "120",
+    "context": "strcpy(dest, src);"
+  }
+]
