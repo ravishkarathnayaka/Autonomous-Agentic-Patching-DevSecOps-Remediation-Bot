@@ -1,4 +1,11 @@
-export type AgentName = 'TriageAgent' | 'PatchAgent' | 'VerifierAgent' | 'PRAgent';
+export type AgentName = 
+  | 'TriageAgent' 
+  | 'PatchAgent' 
+  | 'VerifierAgent' 
+  | 'PRAgent' 
+  | 'DASTSanitizerAgent' 
+  | 'DockerfileAgent' 
+  | 'ComplianceAgent';
 
 export type RemediationStatus = 
   | 'IDLE' 
@@ -13,7 +20,7 @@ export type RemediationStatus =
 export interface Finding {
   id: string;
   scanner: string;
-  type: 'SAST' | 'SCA' | 'SECRET' | 'IAC';
+  type: 'SAST' | 'SCA' | 'SECRET' | 'IAC' | 'DAST' | 'CONTAINER';
   ruleId: string;
   title: string;
   description: string;
@@ -67,3 +74,25 @@ export interface RemediationResult {
   commitSha?: string;
   logs: AgentLog[];
 }
+
+export interface ComplianceAuditSummary {
+  standard: string;
+  scorePercent: number;
+  passedCount: number;
+  totalCount: number;
+  findings: Array<{
+    controlId: string;
+    description: string;
+    passed: boolean;
+  }>;
+}
+
+export interface LicenseAuditResult {
+  package: string;
+  version: string;
+  license: string;
+  tier: 'PERMISSIVE' | 'WEAK_COPYLEFT' | 'STRONG_COPYLEFT' | 'NETWORK_COPYLEFT' | 'UNKNOWN';
+  compliant: boolean;
+  reason?: string;
+}
+
