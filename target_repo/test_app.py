@@ -154,4 +154,14 @@ def test_validate_hmac_invalid(client):
     assert resp.get_json()["valid"] is False
 
 
+def test_login_session_cookie(client):
+    """Verify login session endpoint sets session cookie."""
+    resp = client.post("/login-session", json={"username": "alice"})
+    assert resp.status_code == 200
+    assert resp.get_json()["user"] == "alice"
+    assert "Set-Cookie" in resp.headers
+    assert "session_token" in resp.headers["Set-Cookie"]
+
+
+
 
