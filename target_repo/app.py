@@ -181,6 +181,17 @@ def validate_hmac():
     return jsonify({"valid": is_valid}), 200 if is_valid else 403
 
 
+@app.route("/login-session", methods=["POST"])
+def login_session():
+    # Vulnerable: Insecure session cookie missing HttpOnly, Secure, and SameSite flags (CWE-614)
+    data = request.get_json() or {}
+    username = data.get("username", "guest")
+    resp = jsonify({"status": "logged_in", "user": username})
+    resp.set_cookie("session_token", "sess_xyz_12345", httponly=False, secure=False, samesite=None)
+    return resp, 200
+
+
+
 
 
 
