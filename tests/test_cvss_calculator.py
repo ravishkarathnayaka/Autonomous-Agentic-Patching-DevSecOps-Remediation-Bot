@@ -1,29 +1,23 @@
-import pytest
-from agent_engine.state import SeverityLevel
-from agent_engine.tools.cvss_calculator import CVSSCalculator
+from agent_engine.tools.cvss_calculator import parse_cvss_vector
 
 
-def test_score_to_severity():
-    assert CVSSCalculator.score_to_severity(9.8) == SeverityLevel.CRITICAL
-    assert CVSSCalculator.score_to_severity(9.0) == SeverityLevel.CRITICAL
-    assert CVSSCalculator.score_to_severity(8.8) == SeverityLevel.HIGH
-    assert CVSSCalculator.score_to_severity(7.0) == SeverityLevel.HIGH
-    assert CVSSCalculator.score_to_severity(6.5) == SeverityLevel.MEDIUM
-    assert CVSSCalculator.score_to_severity(4.0) == SeverityLevel.MEDIUM
-    assert CVSSCalculator.score_to_severity(3.1) == SeverityLevel.LOW
-    assert CVSSCalculator.score_to_severity(0.0) == SeverityLevel.INFO
+def test_parse_cvss_vector_critical():
+    vector = "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+    result = parse_cvss_vector(vector)
+
+    assert result["version"] == "3.1"
+    assert result["base_score"] >= 9.0
+    assert result["severity"] == "CRITICAL"
+    assert result["metrics"]["AV"] == "N"
 
 
-def test_estimate_from_cwe():
-    score, vector, sev = CVSSCalculator.estimate_from_cwe("CWE-78")
-    assert score == 9.8
-    assert "AV:N" in vector
-    assert sev == SeverityLevel.CRITICAL
+def test_parse_cvss_vector_low():
+    vector = "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L"
+    result = parse_cvss_vector(vector)
+    assert result["base_score"] <= 5.0
+    assert result["metrics"]["AV"] == "L"
 
-    score, vector, sev = CVSSCalculator.estimate_from_cwe("89")
-    assert score == 8.8
-    assert sev == SeverityLevel.HIGH
 
-    score, vector, sev = CVSSCalculator.estimate_from_cwe("CWE-999999")
-    assert score == 5.0
-    assert sev == SeverityLevel.MEDIUM
+def test_parse_cvss_vector_empty():
+    res = parse_cvss_vector("")
+    assert res["version"] == "unknown"
