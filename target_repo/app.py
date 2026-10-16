@@ -142,6 +142,12 @@ def get_user_data():
     return resp, 200
 
 
+@app.route("/api/headers", methods=["GET"])
+def check_headers():
+    # Vulnerable: Endpoint returning sensitive data without CSP or X-Frame-Options (CWE-693)
+    return jsonify({"message": "Secure portal dashboard", "sensitive": True}), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
