@@ -1,0 +1,2 @@
+{"DetectorName": "AWS", "Verified": true, "Raw": "AKIAIOSFODNN7EXAMPLE", "SourceMetadata": {"Data": {"Filesystem": {"file": "target_repo/app.py", "line": 15}}}}
+{"DetectorName": "Slack", "Verified": false, "Raw": "xoxb-1234-5678-abcdef", "SourceMetadata": {"Data": {"Filesystem": {"file": "target_repo/config.py", "line": 22}}}}

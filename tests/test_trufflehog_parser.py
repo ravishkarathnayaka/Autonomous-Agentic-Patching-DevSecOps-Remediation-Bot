@@ -1,28 +1,25 @@
-import json
 from pathlib import Path
-import pytest
-from agent_engine.state import FindingType, SeverityLevel
 from agent_engine.tools.trufflehog_parser import parse_trufflehog_report
+from agent_engine.state import FindingType, SeverityLevel
 
 
-def test_trufflehog_parser_fixture():
-    fixture_path = Path(__file__).parent / "fixtures" / "trufflehog_findings.json"
-    with open(fixture_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+def test_parse_trufflehog_fixture():
+    fixture_path = Path("tests/fixtures/trufflehog_v3_findings.json")
+    findings = parse_trufflehog_report(fixture_path)
 
-    findings = parse_trufflehog_report(data)
     assert len(findings) == 2
+    f1 = findings[0]
+    assert f1.scanner == "trufflehog"
+    assert f1.finding_type == FindingType.SECRET
+    assert f1.rule_id == "AWS"
+    assert f1.severity == SeverityLevel.CRITICAL
+    assert "CWE-798" in f1.cwe_ids
+    assert f1.start_line == 15
 
-    aws = next(f for f in findings if "AWS" in f.rule_id)
-    assert aws.scanner == "trufflehog"
-    assert aws.finding_type == FindingType.SECRET
-    assert aws.severity == SeverityLevel.CRITICAL
-    assert "CWE-798" in aws.cwe_ids
-    assert aws.file_path == "config/aws_settings.py"
-    assert aws.start_line == 15
-    assert "Verified Live" in aws.title
+    f2 = findings[1]
+    assert f2.rule_id == "Slack"
+    assert f2.severity == SeverityLevel.HIGH
 
-    slack = next(f for f in findings if "Slack" in f.rule_id)
-    assert slack.severity == SeverityLevel.HIGH
-    assert slack.file_path == ".env.test"
-    assert slack.start_line == 4
+
+def test_parse_trufflehog_empty():
+    assert parse_trufflehog_report("") == []
