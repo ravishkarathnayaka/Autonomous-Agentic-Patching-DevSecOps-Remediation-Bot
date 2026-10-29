@@ -1,0 +1,17 @@
+{
+  "queries": [
+    {
+      "queryId": "10023",
+      "queryName": "Stored_XSS",
+      "cweId": "79",
+      "severity": "High",
+      "results": [
+        {
+          "filename": "target_repo/app.py",
+          "line": 42,
+          "snippet": "return render_template_string(user_input)"
+        }
+      ]
+    }
+  ]
+}
