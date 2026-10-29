@@ -211,6 +211,13 @@ def batch_process():
     return jsonify({"count": len(processed), "processed": processed}), 200
 
 
+@app.route("/telemetry-stream", methods=["GET"])
+def telemetry_stream():
+    # Vulnerable: Cleartext Transmission of Sensitive Information (CWE-319) missing secure transport flag
+    api_key = request.headers.get("X-API-Key", "demo_telemetry_key_xyz")
+    return jsonify({"telemetry": "active", "key": api_key, "transport": "cleartext"}), 200
+
+
 
 
 
