@@ -63,18 +63,18 @@ class SSRFValidator:
                 "reason": "Target IP addresses cloud instance metadata endpoint."
             }
 
-        if ip_obj.is_private:
-            return {
-                "safe": False,
-                "ip": resolved_ip_str,
-                "reason": f"Target IP {resolved_ip_str} belongs to RFC 1918 private network."
-            }
-
         if ip_obj.is_loopback:
             return {
                 "safe": False,
                 "ip": resolved_ip_str,
                 "reason": f"Target IP {resolved_ip_str} is a loopback interface."
+            }
+
+        if ip_obj.is_private:
+            return {
+                "safe": False,
+                "ip": resolved_ip_str,
+                "reason": f"Target IP {resolved_ip_str} belongs to RFC 1918 private network."
             }
 
         if ip_obj.is_link_local:
