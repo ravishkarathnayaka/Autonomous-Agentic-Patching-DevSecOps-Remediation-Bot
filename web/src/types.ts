@@ -5,7 +5,39 @@ export type AgentName =
   | 'PRAgent' 
   | 'DASTSanitizerAgent' 
   | 'DockerfileAgent' 
-  | 'ComplianceAgent';
+  | 'ComplianceAgent'
+  | 'KubernetesHardeningAgent'
+  | 'TerraformRemediationAgent'
+  | 'GraphQLSanitizerAgent'
+  | 'SSRFRemediationAgent'
+  | 'RegexDosRemediationAgent'
+  | 'CORSHardeningAgent';
+
+export type ScannerType =
+  | 'semgrep'
+  | 'codeql'
+  | 'bandit'
+  | 'trivy'
+  | 'snyk'
+  | 'sonarqube'
+  | 'kics'
+  | 'horusec'
+  | 'zap'
+  | 'nuclei'
+  | 'hadolint'
+  | 'pip-audit'
+  | 'npm-audit'
+  | 'flawfinder'
+  | 'safety'
+  | 'checkov'
+  | 'kubescape'
+  | 'syft'
+  | 'clang-tidy'
+  | 'gosec'
+  | 'spotbugs'
+  | 'checkmarx'
+  | 'semgrep-secrets'
+  | 'semgrep-supply-chain';
 
 export type RemediationStatus = 
   | 'IDLE' 
