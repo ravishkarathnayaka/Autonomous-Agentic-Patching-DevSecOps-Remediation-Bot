@@ -234,6 +234,19 @@ def debug_query():
         return jsonify({"error": str(e), "db_path": DB_PATH, "trace": sys.exc_info()[0].__name__}), 500
 
 
+@app.route("/eval-expression", methods=["POST"])
+def eval_expression():
+    # Vulnerable: Code Injection through eval() (CWE-95)
+    data = request.get_json(silent=True) or {}
+    expr = data.get("expr", "1 + 1")
+    # Insecure dynamic evaluation of untrusted expression string
+    try:
+        result = eval(expr, {"__builtins__": {}})
+        return jsonify({"result": result}), 200
+    except Exception as e:
+        return jsonify({"error": "Evaluation error"}), 400
+
+
 
 
 
