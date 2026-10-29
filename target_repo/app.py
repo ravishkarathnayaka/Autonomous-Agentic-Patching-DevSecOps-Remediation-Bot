@@ -191,14 +191,15 @@ def login_session():
     return resp, 200
 
 
-@app.route("/fetch-url", methods=["POST"])
-def fetch_url():
-    # Vulnerable: Server-Side Request Forgery (SSRF) without egress IP bounds checking (CWE-918)
-    data = request.get_json() or {}
-    target_url = data.get("url", "")
-    if not target_url.startswith("http://") and not target_url.startswith("https://"):
-        return jsonify({"error": "Invalid scheme"}), 400
-    return jsonify({"status": "fetched", "url": target_url}), 200
+@app.route("/validate-regex", methods=["POST"])
+def validate_regex_pattern():
+    # Vulnerable: Regular Expression Denial of Service (CWE-1333) with catastrophic backtracking
+    import re
+    data = request.get_json(silent=True) or {}
+    user_str = data.get("text", "")
+    pattern = re.compile(r"^([a-zA-Z0-9]+)+$")
+    matched = bool(pattern.match(user_str))
+    return jsonify({"matched": matched}), 200
 
 
 
