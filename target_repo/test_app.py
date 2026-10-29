@@ -163,5 +163,13 @@ def test_login_session_cookie(client):
     assert "session_token" in resp.headers["Set-Cookie"]
 
 
+def test_validate_regex_valid(client):
+    """Verify regex validation endpoint matches alphanumeric string."""
+    resp = client.post("/validate-regex", json={"text": "validUser123"})
+    assert resp.status_code == 200
+    assert resp.get_json()["matched"] is True
+
+
+
 
 
