@@ -1,0 +1,12 @@
+{
+  "Diagnostics": [
+    {
+      "DiagnosticName": "cert-err34-c",
+      "DiagnosticMessage": {
+        "Message": "do not use 'atoi' as it does not check for out-of-range errors",
+        "FilePath": "src/parser.c",
+        "FileOffset": 120
+      }
+    }
+  ]
+}
