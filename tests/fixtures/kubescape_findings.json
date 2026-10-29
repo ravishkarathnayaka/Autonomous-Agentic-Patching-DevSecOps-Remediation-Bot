@@ -1,0 +1,14 @@
+{
+  "results": [
+    {
+      "controlID": "C-0046",
+      "name": "HostPath Volume Mount",
+      "description": "Workload mounts host filesystem paths allowing potential container breakout.",
+      "status": "failed",
+      "baseScore": 8.5,
+      "filePath": "deploy/k8s.yaml",
+      "lineNumber": 24,
+      "highlightedCode": "hostPath:\n  path: /var/run/docker.sock"
+    }
+  ]
+}
