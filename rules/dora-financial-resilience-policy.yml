@@ -1,0 +1,48 @@
+# EU Digital Operational Resilience Act (DORA) ICT Risk Management Policy
+# Regulation (EU) 2022/2554 standards for financial entity operational resilience and software supply chain security.
+
+policy_name: dora-ict-operational-resilience
+version: "1.0.0"
+framework: "Regulation (EU) 2022/2554 (DORA)"
+description: "Autonomous DevSecOps patching requirements, ICT risk controls, and automated recovery SLAs for financial entities."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 6.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12    # Rapid SLA for critical ICT assets
+    high: 24
+    medium: 72
+
+mandatory_security_rules:
+  - rule: "DORA-Art-9"
+    description: "Protection and prevention: identification of vulnerabilities, swift patching, and encryption of confidential data."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # OS Command Injection
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+      - CWE-312   # Cleartext Storage of Sensitive Information
+      - CWE-327   # Broken/Risky Cryptographic Algorithm
+
+  - rule: "DORA-Art-10"
+    description: "Detection of anomalous activities, system degradation, and threat vector identification."
+    cwes:
+      - CWE-770   # Allocation of Resources Without Limits or Throttling
+      - CWE-1333  # ReDoS
+      - CWE-400   # Resource Exhaustion
+
+  - rule: "DORA-Art-28"
+    description: "ICT third-party risk management: software bill of materials (SBOM) validation and supply chain signature verification."
+    supply_chain_checks:
+      - "Mandatory SPDX 2.3 or CycloneDX 1.5 SBOM generated for every build artifact."
+      - "Cryptographic Sigstore Cosign verification of all upstream container base images."
+      - "Zero known high/critical CVEs in direct or transitive third-party dependencies."
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 240
+  verify_business_logic_continuity: true
