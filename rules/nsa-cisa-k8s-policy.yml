@@ -1,0 +1,47 @@
+# NSA / CISA Kubernetes Hardening Guidance Remediation Policy
+# Enforces automated manifest auditing, Pod Security Standards (Restricted), and network isolation.
+
+policy_name: nsa-cisa-kubernetes-hardening
+version: "1.0.0"
+framework: "NSA-CISA Kubernetes Hardening Cybersecurity Technical Report"
+description: "Security baselines and automated policy enforcement for cloud-native Kubernetes workloads."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "POD-SECURITY-RESTRICTED"
+    description: "Enforce Kubernetes Pod Security Standards at the 'Restricted' profile level."
+    manifest_checks:
+      - "spec.securityContext.runAsNonRoot: true"
+      - "spec.securityContext.allowPrivilegeEscalation: false"
+      - "spec.securityContext.readOnlyRootFilesystem: true"
+      - "spec.securityContext.capabilities.drop: ['ALL']"
+      - "spec.securityContext.seccompProfile.type: RuntimeDefault"
+
+  - rule: "HOST-ISOLATION"
+    description: "Prohibit host namespace sharing and host volume mounts in workload manifests."
+    manifest_checks:
+      - "spec.hostPID: false"
+      - "spec.hostIPC: false"
+      - "spec.hostNetwork: false"
+      - "No hostPath volume mounts allowed without cluster security review."
+
+  - rule: "NETWORK-SEGMENTATION"
+    description: "Enforce default-deny NetworkPolicies for all pod ingress and egress traffic."
+    cwes:
+      - CWE-918   # Server-Side Request Forgery (SSRF)
+      - CWE-200   # Information Exposure (Metadata API access)
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 120
