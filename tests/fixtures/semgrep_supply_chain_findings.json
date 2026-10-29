@@ -1,0 +1,18 @@
+{
+  "results": [
+    {
+      "check_id": "ssc-CVE-2023-45803",
+      "path": "requirements.txt",
+      "extra": {
+        "message": "Reachable vulnerability in urllib3 allowing request body leakage",
+        "severity": "ERROR",
+        "sca_info": {
+          "reachable": true,
+          "dependency_name": "urllib3",
+          "dependency_version": "1.26.17",
+          "fixed_version": "1.26.18"
+        }
+      }
+    }
+  ]
+}
