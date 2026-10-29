@@ -1,0 +1,47 @@
+# Australian Cyber Security Centre (ACSC) ASD Essential Eight Policy
+# Enforces automated patch management, application control, and privilege reduction to achieve Maturity Level 3.
+
+policy_name: asd-essential-eight-maturity-level-3
+version: "1.0.0"
+framework: "ACSC Essential Eight Maturity Model"
+description: "Mitigation strategies for autonomous vulnerability remediation aligned with ASD Essential Eight standards."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 48    # Patch applications within 48 hours for ML3
+    high: 48
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "E8-01-PATCH-APPS"
+    description: "Automated patch deployment for web applications, dependencies, and container base images within 48 hours."
+    cwes:
+      - CWE-94    # Improper Control of Generation of Code (Code Injection)
+      - CWE-502   # Deserialization of Untrusted Data
+      - CWE-78    # OS Command Injection
+      - CWE-89    # SQL Injection
+
+  - rule: "E8-02-APP-CONTROL"
+    description: "Strict application hardening preventing execution of untrusted scripts, macros, or unauthorized binaries."
+    cwes:
+      - CWE-434   # Unrestricted Upload of File with Dangerous Type
+      - CWE-73    # External Control of File Name or Path
+      - CWE-95    # Improper Neutralization of Directives in Dynamically Evaluated Code
+
+  - rule: "E8-03-RESTRICT-PRIVS"
+    description: "Enforce least privilege, rootless runtime environments, and removal of administrative rights."
+    container_rules:
+      - "Run containers without privileged mode."
+      - "Enforce seccomp default profile."
+      - "Disable setuid and setgid binaries."
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
+  verify_no_external_egress: true
