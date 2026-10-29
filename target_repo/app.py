@@ -16,6 +16,7 @@ import pickle
 import sqlite3
 import subprocess
 import sys
+import tempfile
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -245,6 +246,23 @@ def eval_expression():
         return jsonify({"result": result}), 200
     except Exception as e:
         return jsonify({"error": "Evaluation error"}), 400
+
+
+@app.route("/upload-profile-image", methods=["POST"])
+def upload_profile_image():
+    # Vulnerable: Unrestricted Upload of File with Dangerous Type (CWE-434)
+    # Accepts file without MIME type validation or extension whitelist
+    if "file" not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+    filename = file.filename
+    upload_dir = os.path.join(tempfile.gettempdir(), "user_uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+    destination = os.path.join(upload_dir, filename)
+    file.save(destination)
+    return jsonify({"status": "uploaded", "filename": filename, "path": destination}), 201
 
 
 
