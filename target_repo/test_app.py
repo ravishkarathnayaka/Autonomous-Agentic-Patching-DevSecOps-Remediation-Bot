@@ -197,6 +197,13 @@ def test_debug_query_error_leak(client):
     assert "db_path" in data
 
 
+def test_eval_expression_valid(client):
+    """Verify eval-expression calculates mathematical expression."""
+    resp = client.post("/eval-expression", json={"expr": "10 * 5"})
+    assert resp.status_code == 200
+    assert resp.get_json()["result"] == 50
+
+
 
 
 
