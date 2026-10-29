@@ -1,0 +1,12 @@
+{
+  "artifacts": [
+    {
+      "name": "cryptography",
+      "version": "41.0.2",
+      "type": "python",
+      "licenses": [{"value": "Apache-2.0"}],
+      "cpes": [{"cpe": "cpe:2.3:a:cryptography:cryptography:41.0.2:*:*:*:*:*:*:*"}],
+      "locations": [{"path": "requirements.txt"}]
+    }
+  ]
+}
