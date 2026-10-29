@@ -1,0 +1,14 @@
+{
+  "bugs": [
+    {
+      "type": "SQL_INJECTION_JDBC",
+      "category": "SECURITY",
+      "priority": 1,
+      "message": "Potential SQL injection in Statement.executeQuery() parameter",
+      "SourceLine": {
+        "sourcepath": "src/main/java/com/example/UserService.java",
+        "start": 58
+      }
+    }
+  ]
+}
