@@ -1,0 +1,50 @@
+# Center for Internet Security (CIS) Docker Benchmark v1.6.0 Policy
+# Automated linting and remediation rules for Dockerfiles and container configurations.
+
+policy_name: cis-docker-benchmark-remediation
+version: "1.6.0"
+framework: "CIS Docker Community Edition Benchmark v1.6.0"
+description: "Prescriptive guidelines for securing Dockerfile directives, image builds, and container runtime environments."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 4.5
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "CIS-4.1"
+    description: "Ensure a user for the container has been created and set (non-root UID)."
+    docker_rules:
+      - "USER instruction must exist and specify UID >= 1000 or a non-root user name."
+
+  - rule: "CIS-4.2"
+    description: "Ensure that containers use only trusted, approved base images."
+    docker_rules:
+      - "FROM instruction must not use 'latest' tag; specific version tag or sha256 digest is required."
+
+  - rule: "CIS-4.6"
+    description: "Ensure HEALTHCHECK instructions are present in container images."
+    docker_rules:
+      - "HEALTHCHECK directive must be defined for container readiness and liveness telemetry."
+
+  - rule: "CIS-4.9"
+    description: "Ensure COPY is used instead of ADD in Dockerfiles to prevent remote decompression exploits."
+    docker_rules:
+      - "ADD instruction prohibited unless explicitly expanding local archives."
+
+  - rule: "CIS-5.1"
+    description: "Ensure AppArmor, Seccomp, or SELinux profiles are enabled for containers."
+    runtime_rules:
+      - "--security-opt=no-new-privileges:true must be enabled."
+      - "--read-only root filesystem flag recommended."
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 120
