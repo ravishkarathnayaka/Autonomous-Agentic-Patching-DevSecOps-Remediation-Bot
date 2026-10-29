@@ -1,0 +1,14 @@
+{
+  "Issues": [
+    {
+      "severity": "HIGH",
+      "confidence": "HIGH",
+      "cwe": {"id": "89", "url": "https://cwe.mitre.org/data/definitions/89.html"},
+      "rule_id": "G201",
+      "details": "SQL query construction using string formatting",
+      "file": "server/db.go",
+      "code": "db.Query(fmt.Sprintf(\"SELECT * FROM users WHERE id = '%s'\", id))",
+      "line": 45
+    }
+  ]
+}
