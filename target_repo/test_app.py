@@ -188,6 +188,15 @@ def test_telemetry_stream(client):
     assert data["key"] == "my-secret-key"
 
 
+def test_debug_query_error_leak(client):
+    """Verify debug query error response returns detailed database error structure."""
+    resp = client.post("/debug-query", json={"table": "nonexistent_table_xyz"})
+    assert resp.status_code == 500
+    data = resp.get_json()
+    assert "error" in data
+    assert "db_path" in data
+
+
 
 
 
