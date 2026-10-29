@@ -179,6 +179,15 @@ def test_batch_process(client):
     assert "item_0" in data["processed"]
 
 
+def test_telemetry_stream(client):
+    """Verify telemetry stream endpoint returns telemetry metadata."""
+    resp = client.get("/telemetry-stream", headers={"X-API-Key": "my-secret-key"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["telemetry"] == "active"
+    assert data["key"] == "my-secret-key"
+
+
 
 
 
