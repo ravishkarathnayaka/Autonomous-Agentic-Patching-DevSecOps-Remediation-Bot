@@ -1,0 +1,48 @@
+# German Federal Office for Information Security (BSI) IT-Grundschutz Policy
+# Enforces automated patch management and secure configuration according to BSI Standard 200-2 & APP.3.1 / SYS.1.6.
+
+policy_name: bsi-it-grundschutz-baseline
+version: "1.0.0"
+framework: "BSI IT-Grundschutz Standard 200-2 (Edition 2023)"
+description: "Information security management controls for web applications and container infrastructure."
+
+thresholds:
+  min_severity: LOW
+  min_cvss_score: 4.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "APP.3.1.A4"
+    description: "Input sanitization, output encoding, and boundary check validation for web services."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-79    # Cross-Site Scripting
+      - CWE-20    # Improper Input Validation
+      - CWE-22    # Improper Limitation of a Pathname to a Restricted Directory
+      - CWE-78    # OS Command Injection
+
+  - rule: "APP.3.1.A9"
+    description: "Session management security and cryptographic authentication protection."
+    cwes:
+      - CWE-384   # Session Fixation
+      - CWE-287   # Improper Authentication
+      - CWE-798   # Use of Hard-coded Credentials
+      - CWE-338   # Use of Cryptographically Weak Pseudo-Random Number Generator
+
+  - rule: "SYS.1.6.A7"
+    description: "Container image hardening, non-root user execution, and immutable root file system."
+    docker_rules:
+      - "Run containers as unprivileged non-root user (UID >= 1000)."
+      - "Enforce read-only root filesystems across workload containers."
+      - "Strip unneeded Linux capabilities including CAP_SYS_ADMIN and CAP_NET_RAW."
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 120
