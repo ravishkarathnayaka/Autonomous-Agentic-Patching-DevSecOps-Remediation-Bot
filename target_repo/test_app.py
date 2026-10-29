@@ -170,6 +170,15 @@ def test_validate_regex_valid(client):
     assert resp.get_json()["matched"] is True
 
 
+def test_batch_process(client):
+    """Verify batch process endpoint executes item transformation."""
+    resp = client.post("/batch-process", json={"items": ["a", "b", "c"]})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["count"] == 3
+    assert "item_0" in data["processed"]
+
+
 
 
 
