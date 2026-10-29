@@ -218,6 +218,22 @@ def telemetry_stream():
     return jsonify({"telemetry": "active", "key": api_key, "transport": "cleartext"}), 200
 
 
+@app.route("/debug-query", methods=["POST"])
+def debug_query():
+    # Vulnerable: Information Exposure Through an Error Message (CWE-209) leaking database path and stack traces
+    data = request.get_json(silent=True) or {}
+    table_name = data.get("table", "unknown_table")
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM {table_name}")
+        rows = cursor.fetchall()
+        return jsonify({"rows": rows}), 200
+    except Exception as e:
+        # Sensitive stack/db info leaked to caller
+        return jsonify({"error": str(e), "db_path": DB_PATH, "trace": sys.exc_info()[0].__name__}), 500
+
+
 
 
 
