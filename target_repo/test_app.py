@@ -5,6 +5,7 @@ both before and after security remediation patches are applied.
 """
 
 import base64
+import io
 import os
 import pickle
 import pytest
@@ -202,6 +203,24 @@ def test_eval_expression_valid(client):
     resp = client.post("/eval-expression", json={"expr": "10 * 5"})
     assert resp.status_code == 200
     assert resp.get_json()["result"] == 50
+
+
+def test_upload_profile_image_valid(client):
+    """Verify upload profile image endpoint stores file and returns 201."""
+    data = {
+        "file": (io.BytesIO(b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR..."), "avatar.png")
+    }
+    resp = client.post("/upload-profile-image", data=data, content_type="multipart/form-data")
+    assert resp.status_code == 201
+    res_data = resp.get_json()
+    assert res_data["status"] == "uploaded"
+    assert res_data["filename"] == "avatar.png"
+
+
+def test_upload_profile_image_missing_file(client):
+    """Verify upload profile image endpoint returns 400 when no file is provided."""
+    resp = client.post("/upload-profile-image", data={})
+    assert resp.status_code == 400
 
 
 
