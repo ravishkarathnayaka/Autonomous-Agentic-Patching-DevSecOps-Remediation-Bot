@@ -14,15 +14,24 @@
 - [Live Web Portal & Vercel Deployment](#-live-web-portal--vercel-deployment)
 - [Executive Overview](#-executive-overview)
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
+- [Supported 24-Scanner Security Matrix](#-supported-24-scanner-security-matrix)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
-- [Enterprise Deployment & Governance Guide](docs/ENTERPRISE_GUIDE.md)
-- [DevSecOps Remediation Maturity Model](docs/DEVSECOPS_MATURITY_MODEL.md)
-- [Zero-Trust Sandbox Hardening Whitepaper](docs/ZERO_TRUST_SANDBOX.md)
-- [Architecture Specification v2.0](docs/ARCHITECTURE_SPEC_V2.md)
-- [Enterprise FAQ & Troubleshooting](docs/TROUBLESHOOTING_FAQ.md)
-- [LinkedIn Showcase & Social Announcement](docs/LINKEDIN_SHOWCASE.md)
-- [Video Demo & Presentation Walkthrough](docs/DEMO_PRESENTATION_SCRIPT.md)
+- [Enterprise Compliance Policies](#-enterprise-compliance-policies)
+- [Architecture & Technical Specifications](#-architecture--technical-specifications)
+  - [Multi-Agent Consensus & Voting Protocol](docs/MULTI_AGENT_CONSENSUS_SPEC.md)
+  - [Incident Response Runbook](docs/INCIDENT_RESPONSE_RUNBOOK.md)
+  - [GitOps Continuous Remediation Deployment Guide](docs/GITOPS_DEPLOYMENT_GUIDE.md)
+  - [Zero-Day Triage & Virtual Patching Framework](docs/ZERO_DAY_TRIAGE_FRAMEWORK.md)
+  - [OWASP API Security Top 10 Benchmark](docs/API_SECURITY_BENCHMARK.md)
+  - [AI Agent Guardrails & Prompt Injection Defense](docs/AI_GUARDRAILS_SPEC.md)
+  - [Enterprise Deployment & Governance Guide](docs/ENTERPRISE_GUIDE.md)
+  - [DevSecOps Remediation Maturity Model](docs/DEVSECOPS_MATURITY_MODEL.md)
+  - [Zero-Trust Sandbox Hardening Whitepaper](docs/ZERO_TRUST_SANDBOX.md)
+  - [Architecture Specification v2.0](docs/ARCHITECTURE_SPEC_V2.md)
+  - [Enterprise FAQ & Troubleshooting](docs/TROUBLESHOOTING_FAQ.md)
+  - [LinkedIn Showcase & Social Announcement](docs/LINKEDIN_SHOWCASE.md)
+  - [Video Demo & Presentation Walkthrough](docs/DEMO_PRESENTATION_SCRIPT.md)
 - [Project Directory Layout](#-project-directory-layout)
 - [Getting Started ($0 Local Execution)](#-getting-started-0-local-execution)
   - [Prerequisites](#prerequisites)
@@ -113,6 +122,39 @@ flowchart TD
 
 ---
 
+## 🔍 Supported 24-Scanner Security Matrix
+
+The bot features native, zero-dependency JSON and SARIF parsers supporting 24 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
+
+| Category | Scanner Tool | Engine Target | Parser Implementation |
+|---|---|---|---|
+| **SAST** | Semgrep | Multi-language AST analysis | `agent_engine/tools/report_parsers.py` |
+| **SAST** | GitHub CodeQL | SARIF 2.1.0 Static Analysis | `agent_engine/tools/codeql_parser.py` |
+| **SAST** | Bandit | Python AST security linter | `agent_engine/tools/bandit_parser.py` |
+| **SAST** | SonarQube | Clean Code enterprise analysis | `agent_engine/tools/sonarqube_parser.py` |
+| **SAST** | Horusec | Multi-language source analysis | `agent_engine/tools/horusec_parser.py` |
+| **SAST** | Flawfinder | C/C++ source code vulnerability | `agent_engine/tools/flawfinder_parser.py` |
+| **SAST** | Clang-Tidy | C/C++ static diagnostic engine | `agent_engine/tools/clang_tidy_parser.py` |
+| **SAST** | Gosec | Golang AST security checker | `agent_engine/tools/gosec_parser.py` |
+| **SAST** | SpotBugs | Java bytecode security analyzer | `agent_engine/tools/spotbugs_parser.py` |
+| **SAST** | Checkmarx One | Enterprise CxSAST findings | `agent_engine/tools/checkmarx_parser.py` |
+| **SCA** | Trivy | OS package & library dependency | `agent_engine/tools/trivy_parser.py` |
+| **SCA** | Snyk | Open source dependency scanner | `agent_engine/tools/snyk_parser.py` |
+| **SCA** | pip-audit | Python PyPI package advisories | `agent_engine/tools/pip_audit_parser.py` |
+| **SCA** | npm-audit | Node.js ecosystem advisories | `agent_engine/tools/npm_audit_parser.py` |
+| **SCA** | Safety | Python PyUp advisory vulnerability | `agent_engine/tools/safety_parser.py` |
+| **SCA** | Semgrep Supply Chain | Reachable dependency call-graph | `agent_engine/tools/semgrep_supply_chain_parser.py` |
+| **Secrets** | Gitleaks | Regex token & high-entropy scan | `agent_engine/tools/gitleaks_parser.py` |
+| **Secrets** | Semgrep Secrets | Semantic credential detection | `agent_engine/tools/semgrep_secrets_parser.py` |
+| **IaC** | KICS | Kubernetes, Terraform, CloudFormation | `agent_engine/tools/kics_parser.py` |
+| **IaC** | Checkov | Infrastructure-as-Code hardening | `agent_engine/tools/checkov_parser.py` |
+| **IaC** | Kubescape | Kubernetes security & NSA posture | `agent_engine/tools/kubescape_parser.py` |
+| **Container** | Hadolint | Dockerfile best-practice linter | `agent_engine/tools/hadolint_parser.py` |
+| **DAST** | OWASP ZAP & Nuclei | Dynamic API & blackbox scanning | `agent_engine/tools/dast_parser.py` |
+| **SBOM** | Anchore Syft | SPDX 2.3 & CycloneDX SBOM catalog | `agent_engine/tools/syft_parser.py` |
+
+---
+
 ## 🤖 Agent Engine Deep Dive
 
 | Agent | Module | Primary Responsibility | Key Techniques |
@@ -121,6 +163,15 @@ flowchart TD
 | **Patch Agent** | `agent_engine/agents/patch_agent.py` | Security diff synthesis and prompt orchestration | Unified diff parsing, CWE mitigation patterns, error-conditioned prompts |
 | **Verifier Agent** | `agent_engine/agents/verifier_agent.py` | Regression testing and security verification in sandbox | Docker Python SDK, resource limits, capability dropping, AST pre-flight checks |
 | **PR Agent** | `agent_engine/agents/pr_agent.py` | Branch creation, atomic commits, PR documentation | Git automation, CVSS threat modeling, markdown report synthesis |
+| **K8s Hardening Agent** | `agent_engine/agents/k8s_hardening_agent.py` | Kubernetes manifest security context enforcement | Pod Security Standards, non-root UID, drop ALL capabilities |
+| **Terraform Agent** | `agent_engine/agents/terraform_agent.py` | Cloud infrastructure hardening (S3, SG, KMS) | Server-side encryption, public access blocks, restricted ingress |
+| **GraphQL Sanitizer** | `agent_engine/agents/graphql_sanitizer_agent.py` | GraphQL query depth limiting & introspection control | Schema hardening, depth validation, production introspection disabling |
+| **SSRF Remediation** | `agent_engine/agents/ssrf_agent.py` | Egress filtering & private IP / metadata isolation | RFC 1918 filtering, AWS IMDSv2 protection, URL scheme whitelisting |
+| **ReDoS Remediation** | `agent_engine/agents/redos_agent.py` | Catastrophic regex backtracking mitigation | Static regex analysis, polynomial bounds, atomic grouping |
+| **CORS Hardening** | `agent_engine/agents/cors_agent.py` | Cross-Origin Resource Sharing allowlist enforcement | Origin whitelist validation, credential restrictions |
+| **DAST Sanitizer** | `agent_engine/agents/dast_sanitizer_agent.py` | Dynamic API vulnerability sanitization | Route parameter validation, HTTP security header injection |
+| **Dockerfile Agent** | `agent_engine/agents/dockerfile_agent.py` | Container build hardening & least privilege | Non-root USER directives, pinned base image hashes, COPY over ADD |
+| **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
 
 ---
 
@@ -142,6 +193,27 @@ All tests and code execution are executed inside ephemeral Docker containers (`d
 ### 3. Non-Destructive Git Operations
 - Patches are validated on temporary working copies or isolated branches (`security/fix-<cwe>-<timestamp>`).
 - If tests fail, the working tree is reverted to a clean state via `git_tools.reset_working_tree()`.
+
+---
+
+## 📜 Enterprise Compliance Policies
+
+The bot includes turnkey YAML policy profiles under `rules/` governing autonomous remediation SLAs, severity thresholds, CWE scope, and hermetic verification requirements:
+
+| Policy Profile | Standard / Authority | Regulatory Domain | SLA (Critical / High) |
+|---|---|---|---|
+| `rules/fedramp-high-policy.yml` | FedRAMP High (Rev 5 Baseline) | Federal Cloud Systems | 24h / 72h |
+| `rules/nist-800-53-policy.yml` | NIST SP 800-53 Rev 5 | U.S. Federal Information Systems | 24h / 72h |
+| `rules/iso-27001-policy.yml` | ISO/IEC 27001:2022 | Global Information Security Management | 48h / 96h |
+| `rules/owasp-asvs-policy.yml` | OWASP ASVS v4.0.3 (Level 3) | Web Application Security Verification | 24h / 48h |
+| `rules/gdpr-article-32-policy.yml` | Regulation (EU) 2016/679 | EU Personal Data Protection | 24h / 48h |
+| `rules/dora-financial-resilience-policy.yml` | Regulation (EU) 2022/2554 (DORA) | Financial ICT Resilience | 12h / 24h |
+| `rules/bsi-it-grundschutz-policy.yml` | BSI Standard 200-2 (Germany) | Public & Critical Infrastructure | 24h / 72h |
+| `rules/asd-essential-eight-policy.yml` | ACSC Essential Eight (ML3) | Australian Cyber Security Baseline | 48h / 48h |
+| `rules/nsa-cisa-k8s-policy.yml` | NSA-CISA Kubernetes Hardening | Container & Pod Security Standards | 24h / 72h |
+| `rules/cis-docker-benchmark-policy.yml` | CIS Docker Benchmark v1.6.0 | Container Runtime & Image Hygiene | 24h / 72h |
+| `rules/pci-dss-compliance-policy.yml` | PCI-DSS v4.0 | Payment Card Data Security | 24h / 72h |
+| `rules/hipaa-policy.yml` | HIPAA Security Rule (45 CFR § 164.312) | Electronic Protected Health Info (ePHI) | 24h / 48h |
 
 ---
 
