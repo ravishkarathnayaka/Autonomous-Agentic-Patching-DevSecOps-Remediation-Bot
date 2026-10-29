@@ -202,6 +202,15 @@ def validate_regex_pattern():
     return jsonify({"matched": matched}), 200
 
 
+@app.route("/batch-process", methods=["POST"])
+def batch_process():
+    # Vulnerable: Allocation of Resources Without Limits (CWE-770) allows unbounded loop allocation
+    data = request.get_json(silent=True) or {}
+    items = data.get("items", [])
+    processed = [f"item_{i}" for i in range(len(items))]
+    return jsonify({"count": len(processed), "processed": processed}), 200
+
+
 
 
 
