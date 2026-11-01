@@ -247,3 +247,13 @@ def test_get_document_not_found(client):
     """Verify document retrieval returns 404 for unknown ID."""
     resp = client.get("/api/documents/999")
     assert resp.status_code == 404
+
+
+def test_account_summary_cors(client):
+    """Verify account summary endpoint returns account data with CORS origin reflection."""
+    resp = client.get("/api/account-summary", headers={"Origin": "https://trusted-portal.internal"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "account_number" in data
+    assert "balance_usd" in data
+    assert resp.headers.get("Access-Control-Allow-Origin") == "https://trusted-portal.internal"
