@@ -257,3 +257,18 @@ def test_account_summary_cors(client):
     assert "account_number" in data
     assert "balance_usd" in data
     assert resp.headers.get("Access-Control-Allow-Origin") == "https://trusted-portal.internal"
+
+
+def test_ldap_lookup_valid_user(client):
+    """Verify ldap lookup returns user details for existing user."""
+    resp = client.post("/user/ldap-lookup", json={"username": "alice"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["user"]["cn"] == "Alice Smith"
+    assert "(&(objectClass=user)" in data["filter"]
+
+
+def test_ldap_lookup_not_found(client):
+    """Verify ldap lookup returns 404 for nonexistent user."""
+    resp = client.post("/user/ldap-lookup", json={"username": "nonexistent"})
+    assert resp.status_code == 404
