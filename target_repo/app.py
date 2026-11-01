@@ -318,6 +318,22 @@ def ldap_lookup():
     return jsonify({"filter": ldap_filter, "error": "User not found"}), 404
 
 
+@app.route("/user/update-profile", methods=["POST"])
+def update_profile():
+    # Vulnerable: Modification of Assumed-Immutable Attribute (Mass Assignment / CWE-915)
+    # Directly binds all request JSON fields into user record without property whitelisting
+    data = request.get_json(silent=True) or {}
+    user_record = {
+        "user_id": 42,
+        "username": "developer1",
+        "email": "dev1@corp.internal",
+        "is_admin": False,
+        "role": "engineer"
+    }
+    user_record.update(data)
+    return jsonify({"status": "profile_updated", "user": user_record}), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
