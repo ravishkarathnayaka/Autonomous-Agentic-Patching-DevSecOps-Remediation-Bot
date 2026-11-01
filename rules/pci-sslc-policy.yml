@@ -1,0 +1,45 @@
+# PCI Software Security Framework: Secure Software Lifecycle (Secure SLC) Standard Policy
+# Enforces automated patch management, vulnerability triage, and software integrity for payment software.
+
+policy_name: pci-secure-slc-standard
+version: "1.1.0"
+framework: "PCI Secure Software Standard v1.1"
+description: "Autonomous DevSecOps requirements satisfying PCI Secure SLC Control Objective 3 & 4."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+mandatory_security_rules:
+  - rule: "PCI-SSLC-3.1"
+    description: "Input sanitization and query parameterization preventing account data injection."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # OS Command Injection
+      - CWE-90    # LDAP Query Injection
+      - CWE-915   # Mass Assignment
+
+  - rule: "PCI-SSLC-4.2"
+    description: "Protection of cardholder and sensitive authentication data at rest and during transmission."
+    cwes:
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+      - CWE-312   # Cleartext Storage of Sensitive Information
+      - CWE-209   # Sensitive Error Exposure
+
+  - rule: "PCI-SSLC-7.1"
+    description: "Third-party and open source software component monitoring and immediate patching."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Component
+      - CWE-502   # Insecure Deserialization
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
