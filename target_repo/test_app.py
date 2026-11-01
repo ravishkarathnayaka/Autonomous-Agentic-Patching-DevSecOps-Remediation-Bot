@@ -272,3 +272,13 @@ def test_ldap_lookup_not_found(client):
     """Verify ldap lookup returns 404 for nonexistent user."""
     resp = client.post("/user/ldap-lookup", json={"username": "nonexistent"})
     assert resp.status_code == 404
+
+
+def test_update_profile_valid(client):
+    """Verify update profile endpoint updates benign profile fields."""
+    resp = client.post("/user/update-profile", json={"email": "alice_updated@corp.internal"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "profile_updated"
+    assert data["user"]["email"] == "alice_updated@corp.internal"
+    assert data["user"]["username"] == "developer1"
