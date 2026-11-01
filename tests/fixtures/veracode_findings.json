@@ -1,0 +1,16 @@
+{
+  "findings": [
+    {
+      "issue_id": "FLAW-4089",
+      "cwe_id": "78",
+      "display_text": "Improper Neutralization of Special Elements used in an OS Command (OS Command Injection)",
+      "severity": 4,
+      "files": {
+        "source_file": {
+          "file": "target_repo/app.py",
+          "line": 57
+        }
+      }
+    }
+  ]
+}
