@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "id": 1001,
+      "issueName": "SQL Injection",
+      "friority": "Critical",
+      "fullFileName": "target_repo/app.py",
+      "lineNumber": 38,
+      "cwe": "89",
+      "abstract": "The method executes a dynamically constructed SQL query."
+    }
+  ]
+}
