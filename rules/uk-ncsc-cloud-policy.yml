@@ -1,0 +1,45 @@
+# UK National Cyber Security Centre (NCSC) Cloud Security Principles Policy
+# Framework governing continuous vulnerability management, data in transit, and separation.
+
+policy_name: uk-ncsc-cloud-security-principles
+version: "1.0.0"
+framework: "UK NCSC 14 Cloud Security Principles"
+description: "Autonomous remediation standards ensuring compliance with UK Government cloud security guidance."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.5
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "NCSC-Principle-1"
+    description: "Data in transit protection: TLS 1.3 enforcement and encrypted communication."
+    cwes:
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+      - CWE-326   # Inadequate Encryption Strength
+
+  - rule: "NCSC-Principle-5"
+    description: "Operational security: Automated patching of known security vulnerabilities."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # OS Command Injection
+      - CWE-434   # Unrestricted File Upload
+      - CWE-22    # Path Traversal
+
+  - rule: "NCSC-Principle-10"
+    description: "Identity and authentication: Protection of user tokens and session credentials."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-614   # Insecure Cookie Flags
+      - CWE-798   # Hardcoded Credentials
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 150
