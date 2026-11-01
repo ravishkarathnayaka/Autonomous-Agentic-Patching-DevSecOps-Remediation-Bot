@@ -1,0 +1,49 @@
+# NIST Cybersecurity Framework (CSF) 2.0 Autonomous Remediation Policy
+# Aligns DevSecOps continuous patching with NIST CSF 2.0 Functions: GOVERN, IDENTIFY, PROTECT, DETECT, RESPOND, RECOVER.
+
+policy_name: nist-csf-2-baseline-remediation
+version: "2.0.0"
+framework: "NIST Cybersecurity Framework (CSF) 2.0"
+description: "Enterprise automated vulnerability mitigation baseline conforming to NIST CSF 2.0 security outcomes."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "PR.PS-01"
+    description: "Configuration management and secure software development lifecycle enforcement."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # OS Command Injection
+      - CWE-22    # Path Traversal
+      - CWE-502   # Insecure Deserialization
+
+  - rule: "PR.DS-01"
+    description: "Protection of sensitive data in transit and at rest through approved cryptography."
+    cwes:
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+      - CWE-312   # Cleartext Storage of Sensitive Information
+      - CWE-327   # Broken or Risky Cryptographic Algorithm
+      - CWE-338   # Weak Pseudo-Random Number Generator
+
+  - rule: "PR.AA-01"
+    description: "Identity management, authentication, and access control credential hygiene."
+    cwes:
+      - CWE-798   # Use of Hardcoded Credentials
+      - CWE-287   # Improper Authentication
+      - CWE-639   # Insecure Direct Object References (IDOR)
+      - CWE-915   # Mass Assignment / Parameter Tampering
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
+  verify_no_exfiltration: true
