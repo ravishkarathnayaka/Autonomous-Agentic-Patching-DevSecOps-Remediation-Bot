@@ -1,0 +1,46 @@
+# HITRUST Common Security Framework (CSF) v11 Remediation Policy
+# Enforces automated DevSecOps remediation standards for healthcare applications handling ePHI.
+
+policy_name: hitrust-csf-v11-baseline
+version: "11.0.0"
+framework: "HITRUST Common Security Framework (CSF) v11.0"
+description: "Prescriptive remediation requirements for healthcare, life sciences, and cloud electronic health records."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.5
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "HITRUST-Control-01.c"
+    description: "Protection of electronic Protected Health Information (ePHI) from injection and unauthorized disclosure."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-79    # Cross-Site Scripting
+      - CWE-639   # Insecure Direct Object References (IDOR)
+      - CWE-200   # Exposure of Sensitive Information
+
+  - rule: "HITRUST-Control-09.m"
+    description: "Network protection and egress filtering preventing data exfiltration of patient records."
+    cwes:
+      - CWE-918   # Server-Side Request Forgery (SSRF)
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+
+  - rule: "HITRUST-Control-10.a"
+    description: "Identification and autonomous remediation of technical vulnerabilities within established timeframes."
+    cwes:
+      - CWE-502   # Insecure Deserialization
+      - CWE-78    # OS Command Injection
+      - CWE-434   # Unrestricted File Upload
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
+  verify_no_external_egress: true
