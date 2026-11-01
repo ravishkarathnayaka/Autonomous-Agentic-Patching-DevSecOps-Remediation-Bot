@@ -1,0 +1,17 @@
+{
+  "results": {
+    "violations": [
+      {
+        "rule_name": "s3EnforceServerSideEncryption",
+        "description": "S3 bucket server side encryption should be enabled.",
+        "rule_id": "AC_AWS_0207",
+        "severity": "HIGH",
+        "category": "S3",
+        "resource_name": "app_bucket",
+        "resource_type": "aws_s3_bucket",
+        "file": "terraform/storage.tf",
+        "line_number": 14
+      }
+    ]
+  }
+}
