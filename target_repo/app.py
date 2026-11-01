@@ -276,8 +276,18 @@ def render_template_endpoint():
     return jsonify({"rendered": rendered}), 200
 
 
-
-
+@app.route("/api/documents/<int:doc_id>", methods=["GET"])
+def get_document(doc_id):
+    # Vulnerable: Insecure Direct Object References (IDOR / CWE-639)
+    # Directly retrieves document without verifying caller identity or ownership
+    sample_docs = {
+        101: {"id": 101, "title": "Public Quarterly Report", "owner": "admin"},
+        102: {"id": 102, "title": "Confidential Memo", "owner": "cfo"},
+        103: {"id": 103, "title": "Engineering Roadmap", "owner": "lead"}
+    }
+    if doc_id in sample_docs:
+        return jsonify(sample_docs[doc_id]), 200
+    return jsonify({"error": "Document not found"}), 404
 
 
 def init_db():
