@@ -1,0 +1,45 @@
+# European Union Cyber Resilience Act (CRA) Security-by-Design Policy
+# Mandates secure defaults, automated vulnerability mitigation, and software bill of materials (SBOM).
+
+policy_name: eu-cyber-resilience-act-baseline
+version: "1.0.0"
+framework: "Regulation (EU) Cyber Resilience Act (CRA / COM/2022/454)"
+description: "Autonomous DevSecOps requirements satisfying CRA essential cybersecurity requirements for software products."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+mandatory_security_rules:
+  - rule: "CRA-Annex-I(1)(a)"
+    description: "Protection against unauthorized access through secure session management and authentication."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-384   # Session Fixation
+      - CWE-614   # Sensitive Cookie Without 'HttpOnly'/'Secure'
+      - CWE-798   # Hardcoded Credentials
+
+  - rule: "CRA-Annex-I(1)(d)"
+    description: "Protection of data integrity and confidentiality in transit and at rest."
+    cwes:
+      - CWE-319   # Cleartext Transmission of Sensitive Information
+      - CWE-327   # Broken or Risky Cryptographic Algorithm
+      - CWE-208   # Timing Attack on Hash/HMAC
+
+  - rule: "CRA-Annex-I(2)(1)"
+    description: "Software supply chain transparency and automated SBOM maintenance."
+    supply_chain_checks:
+      - "Mandatory SPDX 2.3 or CycloneDX 1.5 document generated on every patch."
+      - "Automated zero-CVE SLA across direct and transitive dependencies."
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
