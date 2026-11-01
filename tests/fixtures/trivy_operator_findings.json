@@ -1,0 +1,21 @@
+{
+  "apiVersion": "aquasecurity.github.io/v1alpha1",
+  "kind": "VulnerabilityReport",
+  "metadata": {
+    "name": "payment-api-deployment-7f99",
+    "namespace": "production"
+  },
+  "report": {
+    "vulnerabilities": [
+      {
+        "vulnerabilityID": "CVE-2023-38545",
+        "pkgName": "curl",
+        "installedVersion": "7.88.1-10",
+        "fixedVersion": "7.88.1-10+deb12u4",
+        "severity": "CRITICAL",
+        "score": 9.8,
+        "title": "curl: SOCKS5 heap buffer overflow"
+      }
+    ]
+  }
+}
