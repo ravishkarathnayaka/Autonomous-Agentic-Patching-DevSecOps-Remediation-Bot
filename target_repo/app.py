@@ -17,7 +17,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, render_template_string, request
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -263,6 +263,17 @@ def upload_profile_image():
     destination = os.path.join(upload_dir, filename)
     file.save(destination)
     return jsonify({"status": "uploaded", "filename": filename, "path": destination}), 201
+
+
+@app.route("/render-template", methods=["POST"])
+def render_template_endpoint():
+    # Vulnerable: Server-Side Template Injection (CWE-1336)
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "Guest")
+    # Untrusted user input concatenated directly into template string
+    template = f"Hello {name}! Welcome to the platform."
+    rendered = render_template_string(template)
+    return jsonify({"rendered": rendered}), 200
 
 
 
