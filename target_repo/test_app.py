@@ -223,6 +223,13 @@ def test_upload_profile_image_missing_file(client):
     assert resp.status_code == 400
 
 
+def test_render_template_valid(client):
+    """Verify render template endpoint processes valid template string."""
+    resp = client.post("/render-template", json={"name": "Alice"})
+    assert resp.status_code == 200
+    assert "Hello Alice!" in resp.get_json()["rendered"]
+
+
 
 
 
