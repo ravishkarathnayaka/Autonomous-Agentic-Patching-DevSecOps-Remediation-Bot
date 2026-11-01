@@ -11,7 +11,14 @@ export type AgentName =
   | 'GraphQLSanitizerAgent'
   | 'SSRFRemediationAgent'
   | 'RegexDosRemediationAgent'
-  | 'CORSHardeningAgent';
+  | 'CORSHardeningAgent'
+  | 'SSTIRemediationAgent'
+  | 'OpenRedirectAgent'
+  | 'MassAssignmentAgent'
+  | 'RateLimitingAgent'
+  | 'SessionHardeningAgent'
+  | 'ContentSecurityPolicyAgent'
+  | 'SQLAlchemySanitizerAgent';
 
 export type ScannerType =
   | 'semgrep'
@@ -37,7 +44,15 @@ export type ScannerType =
   | 'spotbugs'
   | 'checkmarx'
   | 'semgrep-secrets'
-  | 'semgrep-supply-chain';
+  | 'semgrep-supply-chain'
+  | 'cyclonedx'
+  | 'terrascan'
+  | 'fortify'
+  | 'veracode'
+  | 'mend'
+  | 'trivy-operator'
+  | 'pylint-security'
+  | 'sonarqube-hotspots';
 
 export type RemediationStatus = 
   | 'IDLE' 
