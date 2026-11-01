@@ -301,6 +301,23 @@ def get_account_summary():
     return resp, 200
 
 
+@app.route("/user/ldap-lookup", methods=["POST"])
+def ldap_lookup():
+    # Vulnerable: Improper Neutralization of Special Elements used in an LDAP Query (CWE-90)
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "")
+    # Insecure string formatting into LDAP filter query without sanitization
+    ldap_filter = f"(&(objectClass=user)(sAMAccountName={username}))"
+    directory = {
+        "alice": {"cn": "Alice Smith", "mail": "alice@corp.internal", "department": "Security"},
+        "bob": {"cn": "Bob Jones", "mail": "bob@corp.internal", "department": "DevOps"}
+    }
+    user_info = directory.get(username)
+    if user_info:
+        return jsonify({"filter": ldap_filter, "user": user_info}), 200
+    return jsonify({"filter": ldap_filter, "error": "User not found"}), 404
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
