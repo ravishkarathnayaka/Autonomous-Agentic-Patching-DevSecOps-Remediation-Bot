@@ -1,0 +1,18 @@
+{
+  "vulnerabilities": [
+    {
+      "name": "CVE-2023-43804",
+      "description": "urllib3 Cookie header leak on cross-origin redirects.",
+      "score": 8.1,
+      "cvss3_score": 8.1,
+      "severity": "high",
+      "library": {
+        "artifactId": "urllib3",
+        "version": "1.26.17"
+      },
+      "topFix": {
+        "fixResolution": "Upgrade to version 2.0.7 or 1.26.18"
+      }
+    }
+  ]
+}
