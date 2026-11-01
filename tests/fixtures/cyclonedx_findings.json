@@ -1,0 +1,24 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "vulnerabilities": [
+    {
+      "id": "CVE-2023-30861",
+      "description": "Flask session cookie disclosure vulnerability via improper signature handling.",
+      "ratings": [
+        {
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31"
+        }
+      ],
+      "cwes": [384],
+      "affects": [
+        {
+          "ref": "pkg:pypi/flask@2.2.0"
+        }
+      ]
+    }
+  ]
+}
