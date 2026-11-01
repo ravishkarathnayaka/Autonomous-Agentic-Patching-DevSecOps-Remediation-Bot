@@ -1,0 +1,46 @@
+# Monetary Authority of Singapore (MAS) Technology Risk Management (TRM) Guidelines Policy
+# Remediation standards for financial institutions and fintech critical software applications.
+
+policy_name: mas-trm-guidelines-baseline
+version: "1.0.0"
+framework: "MAS Technology Risk Management Guidelines (January 2021)"
+description: "Autonomous patching and secure coding baseline satisfying MAS TRM requirements for banking systems."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12    # Rapid SLA for financial assets
+    high: 24
+    medium: 72
+
+mandatory_security_rules:
+  - rule: "MAS-TRM-8.1"
+    description: "Secure application development: automated code reviews and prompt remediation of OWASP Top 10."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-79    # Cross-Site Scripting
+      - CWE-78    # OS Command Injection
+      - CWE-601   # URL Redirection to Untrusted Site (Open Redirect)
+
+  - rule: "MAS-TRM-8.3"
+    description: "Application authentication and session tokens: multi-factor tokens and secure cookies."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-614   # Sensitive Cookie Missing HttpOnly/Secure
+      - CWE-384   # Session Fixation
+
+  - rule: "MAS-TRM-9.1"
+    description: "Cryptographic key management and algorithm lifecycle: use of approved strong algorithms."
+    cwes:
+      - CWE-327   # Broken or Risky Cryptographic Algorithm
+      - CWE-338   # Weak Pseudo-Random Number Generator
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
+  verify_audit_log_generation: true
