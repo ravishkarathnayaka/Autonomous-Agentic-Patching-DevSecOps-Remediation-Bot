@@ -233,3 +233,17 @@ def test_render_template_valid(client):
 
 
 
+
+
+def test_get_document_valid(client):
+    """Verify document retrieval returns document data for existing ID."""
+    resp = client.get("/api/documents/101")
+    assert resp.status_code == 200
+    assert resp.get_json()["id"] == 101
+    assert "title" in resp.get_json()
+
+
+def test_get_document_not_found(client):
+    """Verify document retrieval returns 404 for unknown ID."""
+    resp = client.get("/api/documents/999")
+    assert resp.status_code == 404
