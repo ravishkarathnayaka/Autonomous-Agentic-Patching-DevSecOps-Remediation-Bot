@@ -290,6 +290,17 @@ def get_document(doc_id):
     return jsonify({"error": "Document not found"}), 404
 
 
+@app.route("/api/account-summary", methods=["GET"])
+def get_account_summary():
+    # Vulnerable: Insecure CORS with Null Origin (CWE-942)
+    # Reflects origin directly with credentials enabled
+    origin = request.headers.get("Origin", "null")
+    resp = jsonify({"account_number": "ACC-99812", "balance_usd": 12500.50, "currency": "USD"})
+    resp.headers["Access-Control-Allow-Origin"] = origin
+    resp.headers["Access-Control-Allow-Credentials"] = "true"
+    return resp, 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
