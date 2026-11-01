@@ -1,0 +1,13 @@
+[
+  {
+    "type": "error",
+    "module": "app",
+    "obj": "eval_expression",
+    "line": 245,
+    "column": 17,
+    "path": "target_repo/app.py",
+    "symbol": "eval-used",
+    "message": "Use of eval() detected, which may allow arbitrary code execution.",
+    "message-id": "W0123"
+  }
+]
