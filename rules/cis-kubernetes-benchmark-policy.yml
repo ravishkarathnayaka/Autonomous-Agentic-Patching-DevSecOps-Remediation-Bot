@@ -1,0 +1,46 @@
+# Center for Internet Security (CIS) Kubernetes Benchmark v1.8.0 Policy
+# Automated controls for Kubernetes pod specifications, control plane, and container runtime security.
+
+policy_name: cis-kubernetes-benchmark-v1-8
+version: "1.8.0"
+framework: "CIS Kubernetes Benchmark v1.8.0"
+description: "Prescriptive security configuration recommendations for Kubernetes clusters and manifests."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 72
+    medium: 168
+
+mandatory_security_rules:
+  - rule: "CIS-5.2.1"
+    description: "Minimize the admission of privileged containers in pod specifications."
+    manifest_checks:
+      - "spec.containers[*].securityContext.privileged: false"
+      - "spec.containers[*].securityContext.allowPrivilegeEscalation: false"
+
+  - rule: "CIS-5.2.6"
+    description: "Ensure that root containers are not admitted."
+    manifest_checks:
+      - "spec.containers[*].securityContext.runAsNonRoot: true"
+      - "spec.containers[*].securityContext.runAsUser: >=1000"
+
+  - rule: "CIS-5.2.7"
+    description: "Ensure that containers have capabilities dropped (ALL) with least privilege."
+    manifest_checks:
+      - "spec.containers[*].securityContext.capabilities.drop: ['ALL']"
+
+  - rule: "CIS-5.2.8"
+    description: "Ensure that containers run with a read-only root filesystem."
+    manifest_checks:
+      - "spec.containers[*].securityContext.readOnlyRootFilesystem: true"
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 120
