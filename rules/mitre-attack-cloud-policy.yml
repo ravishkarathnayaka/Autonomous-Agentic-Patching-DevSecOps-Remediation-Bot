@@ -1,0 +1,47 @@
+# MITRE ATT&CK for Cloud Autonomous DevSecOps Remediation Policy
+# Maps autonomous code repairs and cloud infrastructure hardening to adversarial techniques.
+
+policy_name: mitre-attack-cloud-remediation
+version: "1.0.0"
+framework: "MITRE ATT&CK Matrix for Enterprise (Cloud / IaaS / PaaS)"
+description: "Autonomous defense policy mapping CVE remediation to MITRE ATT&CK tactics and techniques."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 48
+    medium: 96
+
+mandatory_security_rules:
+  - rule: "T1190"
+    technique: "Exploit Public-Facing Application"
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # OS Command Injection
+      - CWE-918   # Server-Side Request Forgery (SSRF)
+      - CWE-1336  # Server-Side Template Injection (SSTI)
+
+  - rule: "T1552"
+    technique: "Unsecured Credentials"
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-312   # Cleartext Storage of Sensitive Information
+      - CWE-200   # Information Exposure
+
+  - rule: "T1059"
+    technique: "Command and Scripting Interpreter"
+    cwes:
+      - CWE-94    # Code Injection
+      - CWE-95    # Dynamic Code Evaluation (eval)
+      - CWE-434   # Unrestricted File Upload
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  drop_all_capabilities: true
+  read_only_root_filesystem: true
+  allowed_sandbox_time_seconds: 180
+  verify_no_outbound_sockets: true
