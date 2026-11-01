@@ -1,0 +1,12 @@
+{
+  "hotspots": [
+    {
+      "key": "AX1008-HOTSPOT",
+      "component": "project:target_repo/app.py",
+      "line": 191,
+      "message": "Make sure that creating this cookie without 'HttpOnly' flag is safe.",
+      "securityCategory": "insecure-cookie",
+      "vulnerabilityProbability": "HIGH"
+    }
+  ]
+}
