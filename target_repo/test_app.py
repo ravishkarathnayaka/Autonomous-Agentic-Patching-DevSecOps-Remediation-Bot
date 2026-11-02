@@ -314,3 +314,19 @@ def test_load_yaml_config_empty(client):
     """Verify load-yaml-config returns 400 for empty payload."""
     resp = client.post("/load-yaml-config", data="", content_type="application/x-yaml")
     assert resp.status_code == 400
+
+
+def test_check_dns_localhost(client):
+    """Verify check-dns endpoint resolves localhost."""
+    resp = client.post("/check-dns", json={"host": "localhost"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["resolved"] is True
+    assert data["host"] == "localhost"
+    assert data["ip"] in ["127.0.0.1", "::1"]
+
+
+def test_check_dns_missing_host(client):
+    """Verify check-dns returns 400 when host is empty."""
+    resp = client.post("/check-dns", json={})
+    assert resp.status_code == 400
