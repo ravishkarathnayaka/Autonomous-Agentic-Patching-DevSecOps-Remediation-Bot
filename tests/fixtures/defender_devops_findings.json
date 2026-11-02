@@ -1,0 +1,27 @@
+{
+  "runs": [
+    {
+      "results": [
+        {
+          "ruleId": "MS_DevOps_SQL_Injection",
+          "level": "error",
+          "message": {
+            "text": "Potential SQL injection vulnerability through raw database execution."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "target_repo/app.py"
+                },
+                "region": {
+                  "startLine": 38
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
