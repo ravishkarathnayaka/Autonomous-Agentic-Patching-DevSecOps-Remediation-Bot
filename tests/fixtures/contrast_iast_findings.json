@@ -1,0 +1,17 @@
+{
+  "traces": [
+    {
+      "rule_name": "cmd-injection",
+      "title": "Command Injection in subprocess call",
+      "severity": "CRITICAL",
+      "cwe": "78",
+      "sub_title": "Tainted input flows into subprocess command interpreter.",
+      "events": [
+        {
+          "file_name": "target_repo/app.py",
+          "line_number": 57
+        }
+      ]
+    }
+  ]
+}
