@@ -1,0 +1,13 @@
+{
+  "vulnerabilities": [
+    {
+      "id": "CVE-2023-38039",
+      "cve": "CVE-2023-38039",
+      "severity": "high",
+      "cvss": 7.5,
+      "packageName": "curl",
+      "packageVersion": "7.88.1-10",
+      "description": "curl HTTP headers buffer overflow vulnerability."
+    }
+  ]
+}
