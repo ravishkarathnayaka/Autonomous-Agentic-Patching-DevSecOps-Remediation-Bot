@@ -1,0 +1,21 @@
+{
+  "vulnerabilities": [
+    {
+      "id": "cve-2023-32681",
+      "category": "dependency_scanning",
+      "name": "CVE-2023-32681",
+      "message": "Requests session proxy header leakage vulnerability.",
+      "cve": "CVE-2023-32681",
+      "severity": "High",
+      "location": {
+        "file": "requirements.txt",
+        "dependency": {
+          "package": {
+            "name": "requests"
+          },
+          "version": "2.28.1"
+        }
+      }
+    }
+  ]
+}
