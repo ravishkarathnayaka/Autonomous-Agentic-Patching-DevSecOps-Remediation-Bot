@@ -1,0 +1,39 @@
+# ISO/IEC 27034 Application Security Management Policy
+# Specifies Application Security Control (ASC) integration across SDLC.
+
+policy_name: iso-27034-application-security
+version: "1.0.0"
+framework: "ISO/IEC 27034-1:2011 / ISO/IEC 27034-5:2017"
+description: "Application Security Control (ASC) verification and automated remediation standards."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 144
+
+application_security_controls:
+  - asc_id: "ASC-INPUT-VALIDATION"
+    name: "Application Boundary Data Sanitization"
+    cwes:
+      - CWE-20    # Improper Input Validation
+      - CWE-79    # Cross-site Scripting
+      - CWE-89    # SQL Injection
+      - CWE-643   # XPath Injection
+
+  - asc_id: "ASC-SESSION-MGMT"
+    name: "Cryptographic State & Session Hygiene"
+    cwes:
+      - CWE-384   # Session Fixation
+      - CWE-614   # Insecure Cookie Flags
+      - CWE-208   # Observable Timing Discrepancy
+
+  - asc_id: "ASC-COMPONENT-ASSURANCE"
+    name: "Third-Party Component Risk Mitigation"
+    cwes:
+      - CWE-1395  # Dependency on Vulnerable Third-Party Component
+      - CWE-502   # Deserialization of Untrusted Data
