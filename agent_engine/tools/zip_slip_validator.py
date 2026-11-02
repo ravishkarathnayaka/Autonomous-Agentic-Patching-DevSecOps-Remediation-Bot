@@ -23,8 +23,8 @@ class ZipSlipValidator:
 
         name = member_name.strip()
 
-        # Reject absolute paths or Windows drive letters
-        if os.path.isabs(name) or (len(name) > 1 and name[1] == ":"):
+        # Reject absolute paths, leading slashes, or Windows drive letters
+        if os.path.isabs(name) or name.startswith(("/", "\\")) or (len(name) > 1 and name[1] == ":"):
             return False, f"Archive member has absolute or drive-relative path: {name}"
 
         # Normalize and resolve realpaths
