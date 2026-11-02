@@ -1,0 +1,39 @@
+# BSI C5 (Cloud Computing Compliance Criteria Catalogue) Baseline Policy
+# German Federal Office for Information Security (BSI) cloud security criteria.
+
+policy_name: bsi-c5-cloud-security
+version: "2020.1"
+framework: "BSI C5:2020 Cloud Computing Criteria"
+description: "Autonomous policy ensuring adherence to BSI C5 requirements for cloud workloads."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 18
+    high: 36
+    medium: 96
+
+criteria_domains:
+  - domain: "ID-01: Identity and Access Management"
+    description: "Strict credential governance, secrets rotation, and elimination of hardcoded API tokens."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-287   # Improper Authentication
+      - CWE-862   # Missing Authorization
+
+  - domain: "CRY-01: Cryptography and Key Management"
+    description: "Modern ciphers, TLS 1.3 enforcement, and elimination of weak hash functions."
+    cwes:
+      - CWE-327   # Broken Cryptography
+      - CWE-328   # Weak Hash
+      - CWE-338   # Weak PRNG
+
+  - domain: "OPS-05: Vulnerability Management"
+    description: "Automated scanning, hermetic verification, and zero known critical vulnerabilities."
+    cwes:
+      - CWE-22    # Path Traversal
+      - CWE-78    # OS Command Injection
+      - CWE-918   # Server-Side Request Forgery
