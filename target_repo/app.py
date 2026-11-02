@@ -350,6 +350,21 @@ def query_xml():
     return jsonify({"xpath": xpath_query, "error": "User not found"}), 404
 
 
+@app.route("/load-yaml-config", methods=["POST"])
+def load_yaml_config():
+    # Vulnerable: Deserialization of Untrusted Data (CWE-502) using unsafe yaml.load
+    import yaml
+    raw_yaml = request.data.decode("utf-8", errors="ignore")
+    if not raw_yaml:
+        return jsonify({"error": "Empty YAML payload"}), 400
+    try:
+        # Insecure: Loader=yaml.Loader allows instantiation of arbitrary Python objects
+        parsed_config = yaml.load(raw_yaml, Loader=yaml.Loader)
+        return jsonify({"status": "config_loaded", "config": parsed_config}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
