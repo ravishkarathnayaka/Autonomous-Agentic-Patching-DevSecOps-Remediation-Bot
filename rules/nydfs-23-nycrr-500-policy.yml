@@ -1,0 +1,39 @@
+# New York Department of Financial Services (NYDFS) 23 NYCRR 500 Policy
+# Cybersecurity requirements for financial services and fintech applications.
+
+policy_name: nydfs-23-nycrr-500-financial
+version: "2023.2"
+framework: "NYDFS 23 NYCRR Part 500"
+description: "Compliance controls for financial systems handling nonpublic information (NPI)."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+sections:
+  - section: "500.07: Access Privileges"
+    description: "Multi-factor authentication and server-side RBAC authorization verification."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-602   # Client-Side Security Check
+      - CWE-862   # Missing Authorization
+
+  - section: "500.08: Application Security"
+    description: "Guidelines for in-house developed applications and automated security remediation."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-79    # Cross-site Scripting
+      - CWE-502   # Deserialization of Untrusted Data
+      - CWE-918   # Server-Side Request Forgery
+
+  - section: "500.15: Encryption of Nonpublic Information"
+    description: "Mandatory strong encryption for data in transit and at rest."
+    cwes:
+      - CWE-319   # Cleartext Transmission
+      - CWE-327   # Broken Cryptography
