@@ -334,6 +334,22 @@ def update_profile():
     return jsonify({"status": "profile_updated", "user": user_record}), 200
 
 
+@app.route("/query-xml", methods=["POST"])
+def query_xml():
+    # Vulnerable: Improper Neutralization of Data within XPath Expressions (CWE-643)
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "guest")
+    # Insecure concatenation of user input into XPath query
+    xpath_query = f"/users/user[username/text()='{username}']"
+    mock_users = {
+        "admin": {"username": "admin", "role": "superuser", "email": "admin@internal.net"},
+        "guest": {"username": "guest", "role": "viewer", "email": "guest@internal.net"}
+    }
+    if username in mock_users:
+        return jsonify({"xpath": xpath_query, "user": mock_users[username]}), 200
+    return jsonify({"xpath": xpath_query, "error": "User not found"}), 404
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
