@@ -349,3 +349,13 @@ def test_toggle_maintenance_forbidden(client):
     """Verify toggle maintenance endpoint blocks unauthorized callers."""
     resp = client.post("/admin/toggle-maintenance", json={"maintenance_mode": True})
     assert resp.status_code == 403
+
+
+def test_generate_report_temp_valid(client):
+    """Verify generate-report-temp writes temporary report and returns 201."""
+    resp = client.post("/generate-report-temp", json={"title": "Q3 Incident Log"})
+    assert resp.status_code == 201
+    data = resp.get_json()
+    assert data["status"] == "generated"
+    assert "report_q3_incident_log.txt" in data["path"]
+    assert os.path.exists(data["path"])
