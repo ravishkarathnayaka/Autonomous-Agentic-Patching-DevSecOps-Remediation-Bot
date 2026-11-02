@@ -330,3 +330,22 @@ def test_check_dns_missing_host(client):
     """Verify check-dns returns 400 when host is empty."""
     resp = client.post("/check-dns", json={})
     assert resp.status_code == 400
+
+
+def test_toggle_maintenance_authorized(client):
+    """Verify toggle maintenance endpoint allows admin update."""
+    resp = client.post(
+        "/admin/toggle-maintenance",
+        headers={"X-Client-Is-Admin": "true"},
+        json={"maintenance_mode": True}
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "updated"
+    assert data["maintenance_mode"] is True
+
+
+def test_toggle_maintenance_forbidden(client):
+    """Verify toggle maintenance endpoint blocks unauthorized callers."""
+    resp = client.post("/admin/toggle-maintenance", json={"maintenance_mode": True})
+    assert resp.status_code == 403
