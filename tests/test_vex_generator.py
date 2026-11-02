@@ -28,8 +28,8 @@ def test_vex_document_generator_success():
     )
 
     statuses = {
-        "cve-2023-1001": RemediationStatus.PATCH_VALIDATED,
-        "cve-2023-2002": RemediationStatus.PENDING,
+        "cve-2023-1001": RemediationStatus.VERIFIED,
+        "cve-2023-2002": RemediationStatus.INITIALIZED,
     }
 
     doc = VexDocumentGenerator.generate_openvex(

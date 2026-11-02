@@ -37,8 +37,8 @@ class VexDocumentGenerator:
         statements: List[Dict[str, Any]] = []
 
         for finding in findings:
-            status = statuses.get(finding.id, RemediationStatus.PENDING)
-            if status in [RemediationStatus.PATCH_VALIDATED, RemediationStatus.PR_CREATED]:
+            status = statuses.get(finding.id, RemediationStatus.INITIALIZED)
+            if status in [RemediationStatus.VERIFIED, RemediationStatus.PR_READY]:
                 vex_status = "fixed"
                 justification = None
                 impact = None
