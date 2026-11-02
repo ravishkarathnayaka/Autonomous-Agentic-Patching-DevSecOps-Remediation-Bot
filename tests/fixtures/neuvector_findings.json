@@ -1,0 +1,13 @@
+{
+  "vulnerabilities": [
+    {
+      "name": "CVE-2023-44487",
+      "severity": "High",
+      "score": 7.5,
+      "package_name": "nghttp2",
+      "package_version": "1.43.0-1",
+      "fixed_version": "1.43.0-1+deb11u1",
+      "description": "HTTP/2 Rapid Reset attack leading to denial of service."
+    }
+  ]
+}
