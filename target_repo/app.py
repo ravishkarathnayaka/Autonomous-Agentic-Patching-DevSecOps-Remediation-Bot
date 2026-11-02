@@ -365,6 +365,21 @@ def load_yaml_config():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/check-dns", methods=["POST"])
+def check_dns():
+    # Vulnerable: Server-Side Request Forgery via DNS Resolution (CWE-918)
+    import socket
+    data = request.get_json(silent=True) or {}
+    hostname = data.get("host", "")
+    if not hostname:
+        return jsonify({"error": "Host required"}), 400
+    try:
+        ip = socket.gethostbyname(hostname)
+        return jsonify({"host": hostname, "ip": ip, "resolved": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e), "resolved": False}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
