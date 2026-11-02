@@ -1,0 +1,47 @@
+# CIS Amazon Web Services Foundations Benchmark v3.0 Policy
+# Enforces automated scanning and remediation for cloud infrastructure and IaC templates.
+
+policy_name: cis-aws-foundations-v3
+version: "3.0.0"
+framework: "Center for Internet Security (CIS) AWS Foundations Benchmark v3.0"
+description: "Autonomous remediation criteria for AWS Terraform and CloudFormation configurations."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.5
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+mandatory_security_rules:
+  - rule: "CIS-AWS-1.16"
+    description: "Ensure IAM policies do not allow unrestricted administrative privileges (AdministratorAccess/Wildcard)."
+    cwes:
+      - CWE-732   # Incorrect Permission Assignment
+      - CWE-269   # Improper Privilege Management
+
+  - rule: "CIS-AWS-2.1.1"
+    description: "Ensure S3 bucket block public access settings are enabled."
+    cwes:
+      - CWE-284   # Improper Access Control
+      - CWE-732   # Incorrect Permission Assignment
+
+  - rule: "CIS-AWS-3.1"
+    description: "Ensure CloudTrail is enabled across all multi-region AWS accounts."
+    cwes:
+      - CWE-778   # Insufficient Logging
+
+  - rule: "CIS-AWS-5.1"
+    description: "Ensure no Network ACLs or Security Groups allow ingress from 0.0.0.0/0 to port 22 or 3389."
+    cwes:
+      - CWE-284   # Improper Access Control
+
+iac_enforcement:
+  scanners:
+    - checkov
+    - tfsec
+    - terrascan
+  auto_patch_terraform: true
