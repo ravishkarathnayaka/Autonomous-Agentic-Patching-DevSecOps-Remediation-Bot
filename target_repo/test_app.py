@@ -297,3 +297,20 @@ def test_query_xml_not_found(client):
     """Verify query-xml returns 404 for unknown username."""
     resp = client.post("/query-xml", json={"username": "unknown_user"})
     assert resp.status_code == 404
+
+
+def test_load_yaml_config_valid(client):
+    """Verify load-yaml-config correctly parses valid YAML structure."""
+    yaml_payload = "app_name: devsecops-demo\nmax_connections: 50\n"
+    resp = client.post("/load-yaml-config", data=yaml_payload, content_type="application/x-yaml")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "config_loaded"
+    assert data["config"]["app_name"] == "devsecops-demo"
+    assert data["config"]["max_connections"] == 50
+
+
+def test_load_yaml_config_empty(client):
+    """Verify load-yaml-config returns 400 for empty payload."""
+    resp = client.post("/load-yaml-config", data="", content_type="application/x-yaml")
+    assert resp.status_code == 400
