@@ -1,0 +1,42 @@
+# NIST FIPS 140-3 Cryptographic Module Security Requirements Policy
+# Mandates approved cryptographic algorithms, high-entropy PRNGs, and zero cleartext secrets.
+
+policy_name: fips-140-3-cryptographic-baseline
+version: "1.0.0"
+framework: "NIST FIPS PUB 140-3 / ISO/IEC 19790:2012"
+description: "Autonomous policy enforcing approved cryptographic algorithms, CSPRNGs, and timing-resilient operations."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+mandatory_security_rules:
+  - rule: "FIPS-140-3-CRYPTO-ALGO"
+    description: "Enforce NIST-approved ciphers (AES-GCM, SHA-256+, HMAC-SHA256) and eliminate legacy ciphers (MD5, SHA1, DES, RC4)."
+    cwes:
+      - CWE-327   # Broken or Risky Cryptographic Algorithm
+      - CWE-328   # Use of Weak Hash
+      - CWE-326   # Inadequate Encryption Strength
+
+  - rule: "FIPS-140-3-RNG"
+    description: "Enforce cryptographically secure pseudo-random number generation via secrets module."
+    cwes:
+      - CWE-338   # Use of Cryptographically Weak PRNG
+      - CWE-330   # Use of Insufficiently Random Values
+
+  - rule: "FIPS-140-3-SIDE-CHANNEL"
+    description: "Prevent secret leakage via timing side channels and non-constant-time comparisons."
+    cwes:
+      - CWE-208   # Observable Timing Discrepancy
+      - CWE-385   # Covert Timing Channel
+
+sandbox_verification:
+  require_hermetic_isolation: true
+  fips_mode_check: true
+  allowed_sandbox_time_seconds: 120
