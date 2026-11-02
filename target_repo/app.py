@@ -392,6 +392,22 @@ def toggle_maintenance():
     return jsonify({"status": "updated", "maintenance_mode": mode}), 200
 
 
+@app.route("/generate-report-temp", methods=["POST"])
+def generate_report_temp():
+    # Vulnerable: Insecure Temporary File Creation (CWE-377)
+    # Uses predictable file path without atomic creation or secure tempfile module
+    data = request.get_json(silent=True) or {}
+    report_title = data.get("title", "Daily Security Report")
+    temp_dir = tempfile.gettempdir()
+    temp_path = os.path.join(temp_dir, f"report_{report_title.replace(' ', '_').lower()}.txt")
+    try:
+        with open(temp_path, "w", encoding="utf-8") as f:
+            f.write(f"Report: {report_title}\nGenerated on automated trigger.\n")
+        return jsonify({"status": "generated", "path": temp_path}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
