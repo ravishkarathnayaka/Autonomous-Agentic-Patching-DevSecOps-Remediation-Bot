@@ -1,0 +1,43 @@
+# CISA Secure Software Development Attestation Common Form Policy
+# Enforces Executive Order 14028 / NIST SP 800-218 requirements for software vendors.
+
+policy_name: cisa-secure-software-attestation
+version: "1.0.0"
+framework: "CISA / OMB M-22-18 / NIST SP 800-218"
+description: "Compliance policy ensuring automated attestation of secure software development practices."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 14
+    high: 30
+    medium: 96
+
+attestation_pillars:
+  - pillar: "1. Secure Development Environment"
+    requirements:
+      - "Enforce strict MFA and role-based access control for source code repos."
+      - "Maintain automated cryptographic logging of all commit histories."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-862   # Missing Authorization
+
+  - pillar: "2. Trusted Supply Chain"
+    requirements:
+      - "Generate CycloneDX and SPDX SBOMs with provenance assertions."
+      - "Continuous SCA scanning for all direct and transitive third-party dependencies."
+    cwes:
+      - CWE-1104  # Use of Unmaintained Third Party Components
+      - CWE-1395  # Dependency on Vulnerable Third-Party Component
+
+  - pillar: "3. Vulnerability Mitigation and Testing"
+    requirements:
+      - "Run automated SAST, DAST, and secret detection on every pull request."
+      - "Maintain automated VEX documents disclosing resolved vulnerabilities."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-89    # SQL Injection
+      - CWE-79    # Cross-site Scripting
