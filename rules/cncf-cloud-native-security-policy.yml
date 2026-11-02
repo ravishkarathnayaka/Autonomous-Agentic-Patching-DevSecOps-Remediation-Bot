@@ -1,0 +1,44 @@
+# Cloud Native Computing Foundation (CNCF) Cloud Native Security Whitepaper Policy
+# Four Cs of Cloud Native Security: Cloud, Cluster, Container, Code.
+
+policy_name: cncf-cloud-native-baseline
+version: "2.0.0"
+framework: "CNCF Security TAG / Cloud Native Security Whitepaper v2"
+description: "Holistic policy covering container image hardening, pod security, and pipeline provenance."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+layers:
+  - layer: "1. Code Security"
+    controls:
+      - "Automated AST-level remediation of OWASP Top 10 web vulnerabilities."
+      - "Zero secrets or unencrypted keys checked into Git history."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-208   # Timing Attack
+
+  - layer: "2. Container Security"
+    controls:
+      - "Enforce rootless container execution (USER non-root)."
+      - "Read-only root filesystems and minimal base images (distroless / chainguard)."
+    cwes:
+      - CWE-250   # Execution with Unnecessary Privileges
+      - CWE-732   # Incorrect Permission Assignment
+
+  - layer: "3. Cluster Security"
+    controls:
+      - "Pod Security Standards (PSS) set to 'Restricted' profile."
+      - "NetworkPolicy default deny ingress and egress rules."
+
+  - layer: "4. Cloud Security"
+    controls:
+      - "Encrypted storage volumes (KMS-managed keys)."
+      - "Zero public egress from database subnets."
