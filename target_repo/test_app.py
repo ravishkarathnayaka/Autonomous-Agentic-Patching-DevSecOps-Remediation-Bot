@@ -282,3 +282,18 @@ def test_update_profile_valid(client):
     assert data["status"] == "profile_updated"
     assert data["user"]["email"] == "alice_updated@corp.internal"
     assert data["user"]["username"] == "developer1"
+
+
+def test_query_xml_valid(client):
+    """Verify query-xml endpoint retrieves user details for existing username."""
+    resp = client.post("/query-xml", json={"username": "admin"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["user"]["role"] == "superuser"
+    assert "admin" in data["xpath"]
+
+
+def test_query_xml_not_found(client):
+    """Verify query-xml returns 404 for unknown username."""
+    resp = client.post("/query-xml", json={"username": "unknown_user"})
+    assert resp.status_code == 404
