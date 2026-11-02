@@ -380,6 +380,18 @@ def check_dns():
         return jsonify({"error": str(e), "resolved": False}), 400
 
 
+@app.route("/admin/toggle-maintenance", methods=["POST"])
+def toggle_maintenance():
+    # Vulnerable: Client-Side Security Check without Server Authorization (CWE-602)
+    # Relies on client-controlled header 'X-Client-Is-Admin' without server verification
+    is_client_admin = request.headers.get("X-Client-Is-Admin", "false").lower() == "true"
+    if not is_client_admin:
+        return jsonify({"error": "Admin access required"}), 403
+    data = request.get_json(silent=True) or {}
+    mode = bool(data.get("maintenance_mode", False))
+    return jsonify({"status": "updated", "maintenance_mode": mode}), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
