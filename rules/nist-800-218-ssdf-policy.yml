@@ -1,0 +1,41 @@
+# NIST SP 800-218 Secure Software Development Framework (SSDF) v1.1 Policy
+# Mitigating the risk of software vulnerabilities in development life cycles.
+
+policy_name: nist-sp-800-218-ssdf
+version: "1.1.0"
+framework: "NIST Special Publication 800-218"
+description: "Core practices for secure software preparation, protection, and response."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 6.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 18
+    high: 36
+    medium: 96
+
+practice_groups:
+  - group: "PO: Prepare the Organization"
+    practices:
+      - "PO.1.3: Automate toolchain security policy validation across CI/CD."
+      - "PO.3.2: Maintain complete software inventories and SBOM declarations."
+
+  - group: "PS: Protect the Software"
+    practices:
+      - "PS.1.1: Store all software artifacts in cryptographically attested repositories."
+      - "PS.3.2: Verify digital signatures and provenance for all components."
+    cwes:
+      - CWE-494   # Download of Code Without Integrity Check
+      - CWE-353   # Missing Support for Integrity Check
+
+  - group: "PW: Produce Well-Secured Software"
+    practices:
+      - "PW.4.1: Perform automated code analysis for common vulnerabilities."
+      - "PW.4.4: Remediate known vulnerabilities before code merging."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-78    # Command Injection
+      - CWE-643   # XPath Injection
+      - CWE-377   # Insecure Temporary File
