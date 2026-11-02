@@ -1,0 +1,17 @@
+{
+  "vulnerabilities": [
+    {
+      "id": "SNYK-DEBIAN11-OPENSSL-5932",
+      "title": "Use of Outdated OpenSSL Component in Container Image",
+      "description": "Denial of service through timing side-channel in OpenSSL.",
+      "severity": "high",
+      "cvssScore": 7.5,
+      "packageName": "openssl",
+      "version": "1.1.1n-0+deb11u4",
+      "nearestFixedInVersion": "1.1.1n-0+deb11u5",
+      "identifiers": {
+        "CVE": ["CVE-2023-0286"]
+      }
+    }
+  ]
+}
