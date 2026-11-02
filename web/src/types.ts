@@ -18,7 +18,14 @@ export type AgentName =
   | 'RateLimitingAgent'
   | 'SessionHardeningAgent'
   | 'ContentSecurityPolicyAgent'
-  | 'SQLAlchemySanitizerAgent';
+  | 'SQLAlchemySanitizerAgent'
+  | 'XPathSanitizerAgent'
+  | 'YamlDeserializationAgent'
+  | 'TempFileHardeningAgent'
+  | 'MissingAuthorizationAgent'
+  | 'TimingAttackRemediationAgent'
+  | 'ZipSlipRemediationAgent'
+  | 'RandomnessHardeningAgent';
 
 export type ScannerType =
   | 'semgrep'
@@ -52,7 +59,15 @@ export type ScannerType =
   | 'mend'
   | 'trivy-operator'
   | 'pylint-security'
-  | 'sonarqube-hotspots';
+  | 'sonarqube-hotspots'
+  | 'defender-devops'
+  | 'contrast'
+  | 'gitlab-dependency'
+  | 'github-secret'
+  | 'blackduck'
+  | 'neuvector'
+  | 'prisma-cloud'
+  | 'snyk-container';
 
 export type RemediationStatus = 
   | 'IDLE' 
