@@ -359,3 +359,13 @@ def test_generate_report_temp_valid(client):
     assert data["status"] == "generated"
     assert "report_q3_incident_log.txt" in data["path"]
     assert os.path.exists(data["path"])
+
+
+def test_preview_mako_template_valid(client):
+    """Verify preview template endpoint renders template with context."""
+    resp = client.post(
+        "/api/v1/preview/mako-template",
+        json={"template": "Welcome {{user}}!", "context": {"user": "Alice"}}
+    )
+    assert resp.status_code == 200
+    assert resp.get_json()["rendered"] == "Welcome Alice!"
