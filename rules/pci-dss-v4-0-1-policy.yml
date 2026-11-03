@@ -1,0 +1,38 @@
+# Payment Card Industry Data Security Standard (PCI DSS) v4.0.1 Policy
+# Requirements for protecting cardholder data in bespoke and open source software.
+
+policy_name: pci-dss-v4-0-1-cardholder-protection
+version: "4.0.1"
+framework: "PCI DSS v4.0.1 Requirement 6"
+description: "Develop and maintain secure systems and software for processing cardholder data."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+requirements:
+  - requirement: "6.2.4: Software Vulnerability Mitigation"
+    description: "Prevent common software vulnerabilities including injection, broken access, and CSRF."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-79    # Cross-site Scripting
+      - CWE-352   # CSRF
+      - CWE-90    # LDAP Injection
+      - CWE-643   # XPath Injection
+
+  - requirement: "6.3.2: Bespoke Software Inventory"
+    description: "Maintain an accurate inventory of bespoke and custom software components with SBOM."
+    cwes:
+      - CWE-1104  # Use of Unmaintained Components
+
+  - requirement: "6.4.3: Payment Page Script Integrity"
+    description: "Ensure scripts loaded on payment pages have tamper protection and CSP headers."
+    cwes:
+      - CWE-353   # Missing Support for Integrity Check
+      - CWE-1021  # Restriction of Rendered UI Layers
