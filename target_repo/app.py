@@ -457,6 +457,23 @@ def write_audit_log():
     return jsonify({"status": "logged", "entry": log_entry}), 201
 
 
+@app.route("/api/v1/directory/ldap-search", methods=["POST"])
+def directory_ldap_search():
+    # Vulnerable: Improper Neutralization of Special Elements used in an LDAP Query (CWE-90)
+    # Direct concatenation of user input into LDAP query filter without RFC 4515 escaping
+    data = request.get_json(silent=True) or {}
+    query = data.get("query", "")
+    if not query:
+        return jsonify({"error": "Query required"}), 400
+    ldap_filter = f"(&(objectCategory=person)(sAMAccountName={query}))"
+    # Mock directory search response matching filter
+    return jsonify({
+        "status": "success",
+        "filter_executed": ldap_filter,
+        "results": [{"dn": f"uid={query},ou=engineering,dc=corp,dc=internal"}]
+    }), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
