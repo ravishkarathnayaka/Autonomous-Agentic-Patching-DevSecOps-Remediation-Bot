@@ -25,7 +25,12 @@ export type AgentName =
   | 'MissingAuthorizationAgent'
   | 'TimingAttackRemediationAgent'
   | 'ZipSlipRemediationAgent'
-  | 'RandomnessHardeningAgent';
+  | 'RandomnessHardeningAgent'
+  | 'LdapSanitizerAgent'
+  | 'LogInjectionSanitizerAgent'
+  | 'PrototypePollutionRemediationAgent'
+  | 'KeyDerivationHardeningAgent'
+  | 'MakoSandboxAgent';
 
 export type ScannerType =
   | 'semgrep'
@@ -67,7 +72,13 @@ export type ScannerType =
   | 'blackduck'
   | 'neuvector'
   | 'prisma-cloud'
-  | 'snyk-container';
+  | 'snyk-container'
+  | 'aqua'
+  | 'spectral'
+  | 'anchore'
+  | 'appcheck'
+  | 'bearer'
+  | 'invicti';
 
 export type RemediationStatus = 
   | 'IDLE' 
