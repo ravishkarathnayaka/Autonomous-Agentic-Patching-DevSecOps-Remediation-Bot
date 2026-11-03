@@ -491,6 +491,23 @@ def crypto_derive_key():
     }), 200
 
 
+@app.route("/api/v1/storage/read-symlink", methods=["POST"])
+def read_storage_symlink():
+    # Vulnerable: Improper Link Resolution Before File Access (CWE-59 / CWE-22)
+    # Reads file contents directly without resolving symlinks or ensuring target is inside SAFE_DIR
+    data = request.get_json(silent=True) or {}
+    filename = data.get("filename", "")
+    if not filename:
+        return jsonify({"error": "Filename required"}), 400
+    target_path = os.path.join(SAFE_DIR, filename)
+    try:
+        with open(target_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        return jsonify({"status": "read", "content": content}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
