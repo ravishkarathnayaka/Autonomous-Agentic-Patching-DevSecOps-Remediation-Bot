@@ -1,6 +1,6 @@
 """Multi-scanner report aggregator with deduplication, severity merging, and prioritized sorting."""
 
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 from agent_engine.state import Finding, FindingType, SeverityLevel
 
 
@@ -76,3 +76,31 @@ class FindingAggregator:
             reverse=True
         )
         return sorted_findings
+
+    def parse_and_add(self, scanner_name: str, report_data: Any) -> List[Finding]:
+        """Dispatch report parsing dynamically based on scanner identifier and buffer findings."""
+        name = scanner_name.lower().strip()
+        parsed: List[Finding] = []
+
+        if name == "aqua":
+            from agent_engine.tools.aqua_scanner_parser import parse_aqua_report
+            parsed = parse_aqua_report(report_data)
+        elif name == "spectral":
+            from agent_engine.tools.spectral_parser import parse_spectral_report
+            parsed = parse_spectral_report(report_data)
+        elif name in ["anchore", "anchore-enterprise"]:
+            from agent_engine.tools.anchore_enterprise_parser import parse_anchore_enterprise_report
+            parsed = parse_anchore_enterprise_report(report_data)
+        elif name == "appcheck":
+            from agent_engine.tools.appcheck_parser import parse_appcheck_report
+            parsed = parse_appcheck_report(report_data)
+        elif name == "bearer":
+            from agent_engine.tools.bearer_parser import parse_bearer_report
+            parsed = parse_bearer_report(report_data)
+        elif name in ["invicti", "netsparker"]:
+            from agent_engine.tools.invicti_parser import parse_invicti_report
+            parsed = parse_invicti_report(report_data)
+
+        if parsed:
+            self.add_findings(parsed)
+        return parsed
