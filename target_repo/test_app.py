@@ -383,3 +383,15 @@ def test_config_deep_merge_valid(client):
     assert data["config"]["features"]["metrics"] is True
     assert data["config"]["features"]["telemetry"] is True
     assert data["config"]["cluster"] == "us-east-1"
+
+
+def test_write_audit_log_valid(client):
+    """Verify write audit log endpoint appends entry and returns 201."""
+    resp = client.post(
+        "/api/v1/auth/audit-log",
+        json={"username": "bob_smith", "action": "view_dashboard"}
+    )
+    assert resp.status_code == 201
+    data = resp.get_json()
+    assert data["status"] == "logged"
+    assert "user='bob_smith'" in data["entry"]
