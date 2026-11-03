@@ -1,0 +1,36 @@
+# NIST SP 800-132 Recommendation for Password-Based Key Derivation Policy
+# Enforces cryptographically approved iteration thresholds, random salting, and modern key derivation.
+
+policy_name: nist-sp-800-132-kdf-baseline
+version: "1.0.0"
+framework: "NIST Special Publication 800-132"
+description: "Compliance controls governing password hashing and key derivation computational requirements."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+derivation_requirements:
+  - requirement: "Section 5.1: Salt Generation"
+    description: "Salt shall be generated using an approved Random Bit Generator (RBG) and shall be at least 128 bits."
+    cwes:
+      - CWE-326   # Inadequate Encryption Strength
+      - CWE-330   # Insufficiently Random Values
+      - CWE-760   # Predictable Salt
+
+  - requirement: "Section 5.2: Iteration Count"
+    description: "Iteration count shall be established to make brute-force attacks computationally infeasible (minimum 600,000 for PBKDF2-HMAC-SHA256)."
+    cwes:
+      - CWE-916   # Use of Password Hash With Insufficient Computational Effort
+
+  - requirement: "Section 5.3: Approved Pseudorandom Functions"
+    description: "HMAC shall use approved cryptographic hash functions (SHA-256 or higher). Deprecated MD5 and SHA-1 prohibited."
+    cwes:
+      - CWE-327   # Broken Cryptography
+      - CWE-328   # Weak Hash
