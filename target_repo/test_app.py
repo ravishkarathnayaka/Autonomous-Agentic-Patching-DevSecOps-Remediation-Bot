@@ -427,3 +427,16 @@ def test_crypto_derive_key_missing_password(client):
     """Verify key derivation returns 400 when password is omitted."""
     resp = client.post("/api/v1/crypto/derive-key", json={})
     assert resp.status_code == 400
+
+
+def test_read_storage_symlink_valid(client):
+    """Verify read-symlink endpoint reads safe file in storage."""
+    resp = client.post("/api/v1/storage/read-symlink", json={"filename": "welcome.txt"})
+    assert resp.status_code == 200
+    assert "Welcome to the sample target repository" in resp.get_json()["content"]
+
+
+def test_read_storage_symlink_missing_filename(client):
+    """Verify read-symlink returns 400 when filename is omitted."""
+    resp = client.post("/api/v1/storage/read-symlink", json={})
+    assert resp.status_code == 400
