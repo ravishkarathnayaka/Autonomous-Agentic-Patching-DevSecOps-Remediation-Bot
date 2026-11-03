@@ -474,6 +474,23 @@ def directory_ldap_search():
     }), 200
 
 
+@app.route("/api/v1/crypto/derive-key", methods=["POST"])
+def crypto_derive_key():
+    # Vulnerable: Use of Password Hash With Insufficient Computational Effort (CWE-916 / CWE-326)
+    # Uses hardcoded static salt and low iteration count (100) instead of CSPRNG salt & 600,000+ iterations
+    data = request.get_json(silent=True) or {}
+    password = data.get("password", "")
+    if not password:
+        return jsonify({"error": "Password required"}), 400
+    static_salt = b"hardcoded_salt_123"
+    derived = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), static_salt, 100)
+    return jsonify({
+        "status": "derived",
+        "key_hex": derived.hex(),
+        "algorithm": "PBKDF2-HMAC-SHA256"
+    }), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
