@@ -1,0 +1,20 @@
+{
+  "Vulnerabilities": [
+    {
+      "type": "XPath Injection",
+      "Overview": "Dynamic XPath statement executed with unsanitized parameter",
+      "Severity": "Critical",
+      "Url": "/api/v1/query-xml",
+      "Parameter": "expression",
+      "Cwe": "643"
+    },
+    {
+      "type": "Insecure Deserialization",
+      "Overview": "Untrusted YAML object deserialization via yaml.load",
+      "Severity": "High",
+      "Url": "/api/v1/config/load-yaml",
+      "Parameter": "config",
+      "Cwe": "502"
+    }
+  ]
+}
