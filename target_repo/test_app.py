@@ -369,3 +369,17 @@ def test_preview_mako_template_valid(client):
     )
     assert resp.status_code == 200
     assert resp.get_json()["rendered"] == "Welcome Alice!"
+
+
+def test_config_deep_merge_valid(client):
+    """Verify deep merge endpoint combines dictionary configuration."""
+    resp = client.post(
+        "/api/v1/config/deep-merge",
+        json={"features": {"metrics": True, "tracing": False}, "cluster": "us-east-1"}
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "merged"
+    assert data["config"]["features"]["metrics"] is True
+    assert data["config"]["features"]["telemetry"] is True
+    assert data["config"]["cluster"] == "us-east-1"
