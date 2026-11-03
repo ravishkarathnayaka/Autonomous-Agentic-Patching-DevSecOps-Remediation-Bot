@@ -14,11 +14,17 @@
 - [Live Web Portal & Vercel Deployment](#-live-web-portal--vercel-deployment)
 - [Executive Overview](#-executive-overview)
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
-- [Supported 40-Scanner Security Matrix](#-supported-40-scanner-security-matrix)
+- [Supported 46-Scanner Security Matrix](#-supported-46-scanner-security-matrix)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
 - [Enterprise Compliance Policies](#-enterprise-compliance-policies)
 - [Architecture & Technical Specifications](#-architecture--technical-specifications)
+  - [JWT Zero-Trust Authentication & Verification Spec](docs/JWT_ZERO_TRUST_SPEC.md)
+  - [Cross-Site Request Forgery (CSRF) Defense-in-Depth Architecture](docs/ANTI_CSRF_ARCHITECTURE.md)
+  - [LDAP Injection Defense & Directory Service Hardening Specification](docs/LDAP_SECURITY_HARDENING.md)
+  - [Structured Logging Hygiene & Log Injection Prevention Guide](docs/STRUCTURED_LOGGING_HYGIENE.md)
+  - [Container Image Minimization & Distroless Hardening Guide](docs/CONTAINER_IMAGE_MINIMIZATION.md)
+  - [Ephemeral Token Rotation & Dynamic Credential Architecture](docs/EPHEMERAL_TOKEN_ROTATION.md)
   - [Vulnerability Exploitability eXchange (VEX) Integration Spec](docs/VEX_INTEGRATION_SPEC.md)
   - [CISA Software Attestation Compliance Guide](docs/CISA_ATTESTATION_GUIDE.md)
   - [Cross-Repository Multi-Service Remediation Guide](docs/CROSS_REPO_ORCHESTRATION.md)
@@ -139,9 +145,9 @@ flowchart TD
 
 ---
 
-## 🔍 Supported 40-Scanner Security Matrix
+## 🔍 Supported 46-Scanner Security Matrix
 
-The bot features native, zero-dependency JSON and SARIF parsers supporting 40 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
+The bot features native, zero-dependency JSON and SARIF parsers supporting 46 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
 
 | Category | Scanner Tool | Engine Target | Parser Implementation |
 |---|---|---|---|
@@ -159,6 +165,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 40 in
 | **SAST** | Fortify SSC | Enterprise SAST vulnerability data | `agent_engine/tools/fortify_parser.py` |
 | **SAST** | Veracode | Static flaw diagnostic reports | `agent_engine/tools/veracode_parser.py` |
 | **SAST** | PyLint Security | Python security static AST linter | `agent_engine/tools/pylint_security_parser.py` |
+| **SAST** | Bearer CLI | Privacy & security AST analyzer | `agent_engine/tools/bearer_parser.py` |
 | **SAST** | Microsoft Defender for DevOps | Azure DevOps & GitHub multi-tool SARIF | `agent_engine/tools/defender_devops_parser.py` |
 | **IAST** | Contrast Security | Interactive Application Security Testing | `agent_engine/tools/contrast_iast_parser.py` |
 | **SCA** | Trivy | OS package & library dependency | `agent_engine/tools/trivy_parser.py` |
@@ -173,6 +180,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 40 in
 | **Secrets** | Gitleaks | Regex token & high-entropy scan | `agent_engine/tools/gitleaks_parser.py` |
 | **Secrets** | Semgrep Secrets | Semantic credential detection | `agent_engine/tools/semgrep_secrets_parser.py` |
 | **Secrets** | GitHub Secret Scanning | Webhook & alert payload tokens | `agent_engine/tools/github_secret_scanning_parser.py` |
+| **Secrets** | Check Point Spectral Ops | Deep code & config secret scanner | `agent_engine/tools/spectral_parser.py` |
 | **IaC** | KICS | Kubernetes, Terraform, CloudFormation | `agent_engine/tools/kics_parser.py` |
 | **IaC** | Checkov | Infrastructure-as-Code hardening | `agent_engine/tools/checkov_parser.py` |
 | **IaC** | Kubescape | Kubernetes security & NSA posture | `agent_engine/tools/kubescape_parser.py` |
@@ -182,7 +190,11 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 40 in
 | **Container** | NeuVector | SUSE NeuVector container vulnerabilities | `agent_engine/tools/neuvector_parser.py` |
 | **Container** | Prisma Cloud | Palo Alto Prisma Cloud Compute scans | `agent_engine/tools/prisma_cloud_parser.py` |
 | **Container** | Snyk Container | Snyk container image scan JSON | `agent_engine/tools/snyk_container_parser.py` |
+| **Container** | Aqua Security | Container & cloud workload vulnerability | `agent_engine/tools/aqua_scanner_parser.py` |
+| **Container** | Anchore Enterprise | Image vulnerability & SBOM assessment | `agent_engine/tools/anchore_enterprise_parser.py` |
 | **DAST** | OWASP ZAP & Nuclei | Dynamic API & blackbox scanning | `agent_engine/tools/dast_parser.py` |
+| **DAST** | AppCheck | Web application & API DAST engine | `agent_engine/tools/appcheck_parser.py` |
+| **DAST** | Invicti (Netsparker) | Enterprise web & API vulnerability DAST | `agent_engine/tools/invicti_parser.py` |
 | **SBOM** | Anchore Syft | SPDX 2.3 & CycloneDX SBOM catalog | `agent_engine/tools/syft_parser.py` |
 | **SBOM** | CycloneDX | Standard 1.5 JSON SBOM reports | `agent_engine/tools/cyclonedx_parser.py` |
 
@@ -218,6 +230,12 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 40 in
 | **Timing Attack Agent** | `agent_engine/agents/timing_attack_agent.py` | Constant-time comparison for secrets & MACs | `hmac.compare_digest`, side-channel elimination |
 | **Zip Slip Remediation**| `agent_engine/agents/zip_slip_agent.py` | Archive extraction path traversal prevention | `os.path.commonpath` canonical boundary checking, traversal exceptions |
 | **Randomness Hardening**| `agent_engine/agents/randomness_agent.py` | Cryptographically secure PRNG enforcement | `secrets.token_urlsafe`, `secrets.token_hex`, CSPRNG replacement |
+| **LDAP Sanitizer** | `agent_engine/agents/ldap_sanitizer_agent.py` | RFC 4515 LDAP filter character escaping | Escape mapping for `*`, `(`, `)`, `\`, NULL byte |
+| **Log Injection Agent** | `agent_engine/agents/log_injection_agent.py` | CRLF log splitting & forgery neutralization | Strips `\r`, `\n` and ANSI terminal control sequences |
+| **Prototype Pollution** | `agent_engine/agents/prototype_pollution_agent.py` | Object property attribute injection protection | Filters `__proto__`, `constructor`, `__class__`, `prototype` |
+| **Key Derivation Agent**| `agent_engine/agents/key_derivation_agent.py` | NIST SP 800-132 password hashing & PBKDF2 hardening | 600,000+ iterations, CSPRNG 128-bit random salt |
+| **Mako Sandbox Agent** | `agent_engine/agents/mako_sandbox_agent.py` | Template engine sandbox & autoescape enforcement | Jinja2 SandboxedEnvironment, attribute lookup restriction |
+| **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
 | **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
 
 ---
