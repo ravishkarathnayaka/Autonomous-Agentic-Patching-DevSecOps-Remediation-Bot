@@ -1,0 +1,42 @@
+# OWASP API Security Top 10 Standard Policy
+# Enforces automated detection and patch synthesis for modern API architectural risks.
+
+policy_name: owasp-api-security-top-10
+version: "2023.1"
+framework: "OWASP API Security Top 10 2023"
+description: "Security policy governing REST, GraphQL, and gRPC endpoint controls."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 96
+
+api_categories:
+  - category: "API1:2023 - Broken Object Level Authorization (BOLA)"
+    description: "Access control checks must validate current session identity against requested entity ID."
+    cwes:
+      - CWE-639   # Authorization Bypass Through User-Controlled Key
+      - CWE-862   # Missing Authorization
+
+  - category: "API2:2023 - Broken Authentication"
+    description: "Strict password policies, short-lived JWT expiration, and absence of alg:none."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-345   # Insufficient Verification of Data Authenticity
+      - CWE-916   # Weak Password Hash
+
+  - category: "API3:2023 - Broken Object Property Level Authorization"
+    description: "Protection against mass assignment and schema property exposure."
+    cwes:
+      - CWE-1321  # Prototype Pollution / Object Property Modification
+      - CWE-915   # Improperly Controlled Modification of Dynamically-Determined Object Attributes
+
+  - category: "API7:2023 - Server-Side Request Forgery"
+    description: "Strict egress filtering and validation of user-controlled URLs."
+    cwes:
+      - CWE-918   # Server-Side Request Forgery
