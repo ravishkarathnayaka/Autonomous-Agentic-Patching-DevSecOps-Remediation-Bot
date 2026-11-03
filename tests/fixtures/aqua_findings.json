@@ -1,0 +1,35 @@
+{
+  "resources": [
+    {
+      "resource": {
+        "name": "base-alpine-image"
+      },
+      "vulnerabilities": [
+        {
+          "name": "CVE-2023-5363",
+          "description": "OpenSSL issue in key generation algorithm",
+          "resource": {
+            "name": "openssl",
+            "version": "3.1.2-r0"
+          },
+          "fix_version": "3.1.4-r0",
+          "nvd_score": 7.5,
+          "aqua_severity": "high",
+          "cwe": "CWE-326"
+        },
+        {
+          "name": "CVE-2023-44487",
+          "description": "HTTP/2 Rapid Reset Denial of Service",
+          "resource": {
+            "name": "nghttp2",
+            "version": "1.55.0"
+          },
+          "fix_version": "1.57.0",
+          "nvd_score": 9.8,
+          "aqua_severity": "critical",
+          "cwe": "CWE-400"
+        }
+      ]
+    }
+  ]
+}
