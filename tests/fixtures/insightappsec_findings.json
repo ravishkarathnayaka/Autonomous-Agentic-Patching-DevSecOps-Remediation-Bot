@@ -1,0 +1,24 @@
+{
+  "vulnerabilities": [
+    {
+      "vuln_type": "Path Traversal",
+      "description": "File path parameter allows traversal outside storage directory",
+      "severity": "High",
+      "vector": {
+        "url": "/api/v1/storage/read-symlink",
+        "parameter": "filename"
+      },
+      "cwe": "CWE-59"
+    },
+    {
+      "vuln_type": "SQL Injection",
+      "description": "SQL concatenation detected in query parameter",
+      "severity": "Critical",
+      "vector": {
+        "url": "/items",
+        "parameter": "category"
+      },
+      "cwe": "CWE-89"
+    }
+  ]
+}
