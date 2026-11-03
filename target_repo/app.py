@@ -423,6 +423,25 @@ def preview_mako_template():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/api/v1/config/deep-merge", methods=["POST"])
+def config_deep_merge():
+    # Vulnerable: Prototype Pollution / Object Attribute Injection (CWE-1321)
+    # Recursively merges untrusted dictionary without key allowlist or protection against special attributes
+    payload = request.get_json(silent=True) or {}
+    base_config = {"version": "1.0.0", "env": "production", "features": {"telemetry": True}}
+
+    def unsafe_merge(target, src):
+        for k, v in src.items():
+            if isinstance(v, dict) and k in target and isinstance(target[k], dict):
+                unsafe_merge(target[k], v)
+            else:
+                target[k] = v
+        return target
+
+    merged = unsafe_merge(base_config, payload)
+    return jsonify({"status": "merged", "config": merged}), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
