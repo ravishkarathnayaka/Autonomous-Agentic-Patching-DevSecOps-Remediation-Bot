@@ -1,0 +1,30 @@
+{
+  "critical": [
+    {
+      "id": "python_lang_sql_injection",
+      "title": "SQL Injection through unparameterized query",
+      "description": "User supplied input flows into SQL execute statement without escaping",
+      "cwe_ids": ["CWE-89"],
+      "matches": [
+        {
+          "filename": "target_repo/app.py",
+          "line_number": 68
+        }
+      ]
+    }
+  ],
+  "high": [
+    {
+      "id": "python_lang_ssrf",
+      "title": "Server-Side Request Forgery",
+      "description": "Network request destination constructed from untrusted parameter",
+      "cwe_ids": ["CWE-918"],
+      "matches": [
+        {
+          "filename": "target_repo/app.py",
+          "line_number": 372
+        }
+      ]
+    }
+  ]
+}
