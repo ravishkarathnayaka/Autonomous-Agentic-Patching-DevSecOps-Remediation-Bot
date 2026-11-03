@@ -408,6 +408,21 @@ def generate_report_temp():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/api/v1/preview/mako-template", methods=["POST"])
+def preview_mako_template():
+    # Vulnerable: Server-Side Template Injection with Sandbox Bypass (CWE-1336 / CWE-94)
+    # Evaluates user-supplied template strings without an AST-restricted rendering environment
+    data = request.get_json(silent=True) or {}
+    template_str = data.get("template", "Hello {{name}}")
+    user_context = data.get("context", {"name": "Guest"})
+    try:
+        # Intentionally renders unescaped string directly into Jinja2 engine
+        rendered = render_template_string(template_str, **user_context)
+        return jsonify({"rendered": rendered}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
