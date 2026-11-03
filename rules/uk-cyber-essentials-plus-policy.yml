@@ -1,0 +1,38 @@
+# UK National Cyber Security Centre (NCSC) Cyber Essentials Plus Policy
+# Technical verification controls for access security, patch management, and malware defense.
+
+policy_name: uk-cyber-essentials-plus
+version: "3.2.0"
+framework: "UK NCSC Cyber Essentials Plus"
+description: "Autonomous policy requiring verified patching of critical and high vulnerabilities within 14 days."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 168
+
+technical_controls:
+  - control: "1. Security Update Management"
+    description: "Install all critical and high-risk security updates within 14 days of release."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-1104  # Unmaintained Components
+
+  - control: "2. User Access Control"
+    description: "Enforce principle of least privilege and strict server-side authorization checks."
+    cwes:
+      - CWE-284   # Improper Access Control
+      - CWE-862   # Missing Authorization
+      - CWE-602   # Client-Side Security Check
+
+  - control: "3. Boundary Firewalls & File Integrity"
+    description: "Prevent directory traversal, symlink escapes, and boundary breakouts."
+    cwes:
+      - CWE-22    # Path Traversal
+      - CWE-59    # Symlink Following
+      - CWE-918   # SSRF
