@@ -442,6 +442,21 @@ def config_deep_merge():
     return jsonify({"status": "merged", "config": merged}), 200
 
 
+@app.route("/api/v1/auth/audit-log", methods=["POST"])
+def write_audit_log():
+    # Vulnerable: Improper Output Handling for Logs / Log Injection (CWE-117)
+    # Writes unsanitized user input containing potential CRLF characters to log
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "anonymous")
+    action = data.get("action", "login_attempt")
+    log_entry = f"AUDIT: user='{username}' performed action='{action}'"
+    # Unsanitized append to audit log file
+    audit_file = os.path.join(tempfile.gettempdir(), "app_audit.log")
+    with open(audit_file, "a", encoding="utf-8") as f:
+        f.write(log_entry + "\n")
+    return jsonify({"status": "logged", "entry": log_entry}), 201
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
