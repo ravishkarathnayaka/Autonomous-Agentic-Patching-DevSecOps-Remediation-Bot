@@ -1,0 +1,39 @@
+# Monetary Authority of Singapore (MAS) Notice on Cyber Hygiene Baseline Policy
+# Mandates basic cybersecurity hygiene controls for financial institutions and fintech services.
+
+policy_name: singapore-mas-cyber-hygiene
+version: "2024.1"
+framework: "MAS Notice 655 / MAS Notice 126"
+description: "Compliance controls governing administrative access, patch management, and malware isolation."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 96
+
+cyber_hygiene_controls:
+  - control: "Clause 3: Administrative Accounts"
+    description: "Multi-factor authentication and role verification for privileged operations."
+    cwes:
+      - CWE-287   # Improper Authentication
+      - CWE-602   # Client-Side Security Check
+      - CWE-798   # Hardcoded Credentials
+
+  - control: "Clause 4: Security Patching"
+    description: "Rapid remediation of critical vulnerabilities in applications and underlying frameworks."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-89    # SQL Injection
+      - CWE-78    # OS Command Injection
+
+  - control: "Clause 6: Perimeter Defense"
+    description: "Restricting external network connections and sanitizing input across trust boundaries."
+    cwes:
+      - CWE-918   # SSRF
+      - CWE-22    # Path Traversal
+      - CWE-352   # CSRF
