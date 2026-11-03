@@ -1,0 +1,26 @@
+{
+  "issues": [
+    {
+      "rule": {
+        "name": "aws-access-key-id",
+        "description": "Detected hardcoded AWS Access Key ID"
+      },
+      "severity": "CRITICAL",
+      "location": {
+        "path": "config/cloud_credentials.py",
+        "line": 14
+      }
+    },
+    {
+      "rule": {
+        "name": "generic-api-key",
+        "description": "Detected high entropy API key token"
+      },
+      "severity": "HIGH",
+      "location": {
+        "path": "services/payment.py",
+        "line": 42
+      }
+    }
+  ]
+}

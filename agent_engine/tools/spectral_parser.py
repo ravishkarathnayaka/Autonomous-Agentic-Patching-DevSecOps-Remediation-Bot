@@ -55,7 +55,8 @@ def parse_spectral_report(report_data: Union[str, Dict[str, Any], Path]) -> List
             severity=severity,
             cwe_ids=["CWE-798"],
             file_path=file_path,
-            line_start=line,
+            start_line=line,
+            end_line=line,
         )
         findings.append(finding)
 

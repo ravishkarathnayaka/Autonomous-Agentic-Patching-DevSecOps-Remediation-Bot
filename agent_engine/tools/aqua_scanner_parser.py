@@ -65,7 +65,7 @@ def parse_aqua_report(report_data: Union[str, Dict[str, Any], Path]) -> List[Fin
                 severity=severity,
                 cwe_ids=cwe_ids,
                 file_path="Dockerfile",
-                line_start=1,
+                start_line=1,
             )
             findings.append(finding)
 
