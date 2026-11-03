@@ -30,7 +30,8 @@ export type AgentName =
   | 'LogInjectionSanitizerAgent'
   | 'PrototypePollutionRemediationAgent'
   | 'KeyDerivationHardeningAgent'
-  | 'MakoSandboxAgent';
+  | 'MakoSandboxAgent'
+  | 'SymlinkTraversalAgent';
 
 export type ScannerType =
   | 'semgrep'
@@ -78,7 +79,8 @@ export type ScannerType =
   | 'anchore'
   | 'appcheck'
   | 'bearer'
-  | 'invicti';
+  | 'invicti'
+  | 'insightappsec';
 
 export type RemediationStatus = 
   | 'IDLE' 

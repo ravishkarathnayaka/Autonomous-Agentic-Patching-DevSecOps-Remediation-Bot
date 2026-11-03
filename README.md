@@ -14,11 +14,12 @@
 - [Live Web Portal & Vercel Deployment](#-live-web-portal--vercel-deployment)
 - [Executive Overview](#-executive-overview)
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
-- [Supported 46-Scanner Security Matrix](#-supported-46-scanner-security-matrix)
+- [Supported 47-Scanner Security Matrix](#-supported-47-scanner-security-matrix)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
 - [Enterprise Compliance Policies](#-enterprise-compliance-policies)
 - [Architecture & Technical Specifications](#-architecture--technical-specifications)
+  - [Symbolic Link Traversal & TOCTOU Defense Specification](docs/SYMLINK_RACE_DEFENSE_SPEC.md)
   - [JWT Zero-Trust Authentication & Verification Spec](docs/JWT_ZERO_TRUST_SPEC.md)
   - [Cross-Site Request Forgery (CSRF) Defense-in-Depth Architecture](docs/ANTI_CSRF_ARCHITECTURE.md)
   - [LDAP Injection Defense & Directory Service Hardening Specification](docs/LDAP_SECURITY_HARDENING.md)
@@ -145,9 +146,9 @@ flowchart TD
 
 ---
 
-## 🔍 Supported 46-Scanner Security Matrix
+## 🔍 Supported 47-Scanner Security Matrix
 
-The bot features native, zero-dependency JSON and SARIF parsers supporting 46 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
+The bot features native, zero-dependency JSON and SARIF parsers supporting 47 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
 
 | Category | Scanner Tool | Engine Target | Parser Implementation |
 |---|---|---|---|
@@ -195,6 +196,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 46 in
 | **DAST** | OWASP ZAP & Nuclei | Dynamic API & blackbox scanning | `agent_engine/tools/dast_parser.py` |
 | **DAST** | AppCheck | Web application & API DAST engine | `agent_engine/tools/appcheck_parser.py` |
 | **DAST** | Invicti (Netsparker) | Enterprise web & API vulnerability DAST | `agent_engine/tools/invicti_parser.py` |
+| **DAST** | Rapid7 InsightAppSec | Dynamic application security testing | `agent_engine/tools/insightappsec_parser.py` |
 | **SBOM** | Anchore Syft | SPDX 2.3 & CycloneDX SBOM catalog | `agent_engine/tools/syft_parser.py` |
 | **SBOM** | CycloneDX | Standard 1.5 JSON SBOM reports | `agent_engine/tools/cyclonedx_parser.py` |
 
@@ -235,7 +237,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 46 in
 | **Prototype Pollution** | `agent_engine/agents/prototype_pollution_agent.py` | Object property attribute injection protection | Filters `__proto__`, `constructor`, `__class__`, `prototype` |
 | **Key Derivation Agent**| `agent_engine/agents/key_derivation_agent.py` | NIST SP 800-132 password hashing & PBKDF2 hardening | 600,000+ iterations, CSPRNG 128-bit random salt |
 | **Mako Sandbox Agent** | `agent_engine/agents/mako_sandbox_agent.py` | Template engine sandbox & autoescape enforcement | Jinja2 SandboxedEnvironment, attribute lookup restriction |
-| **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
+| **Symlink Traversal** | `agent_engine/agents/symlink_traversal_agent.py` | Canonical boundary enforcement & symlink defense | `os.path.realpath`, `os.path.commonpath`, link traversal blocking |
 | **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
 
 ---
