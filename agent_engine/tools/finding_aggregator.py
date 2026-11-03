@@ -100,6 +100,9 @@ class FindingAggregator:
         elif name in ["invicti", "netsparker"]:
             from agent_engine.tools.invicti_parser import parse_invicti_report
             parsed = parse_invicti_report(report_data)
+        elif name in ["insightappsec", "rapid7"]:
+            from agent_engine.tools.insightappsec_parser import parse_insightappsec_report
+            parsed = parse_insightappsec_report(report_data)
 
         if parsed:
             self.add_findings(parsed)
