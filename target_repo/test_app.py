@@ -411,3 +411,19 @@ def test_directory_ldap_search_empty(client):
     """Verify ldap search endpoint returns 400 when query is omitted."""
     resp = client.post("/api/v1/directory/ldap-search", json={})
     assert resp.status_code == 400
+
+
+def test_crypto_derive_key_valid(client):
+    """Verify key derivation endpoint generates hex-encoded derived key."""
+    resp = client.post("/api/v1/crypto/derive-key", json={"password": "MySuperSecretPassword!"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "derived"
+    assert len(data["key_hex"]) == 64
+    assert data["algorithm"] == "PBKDF2-HMAC-SHA256"
+
+
+def test_crypto_derive_key_missing_password(client):
+    """Verify key derivation returns 400 when password is omitted."""
+    resp = client.post("/api/v1/crypto/derive-key", json={})
+    assert resp.status_code == 400
