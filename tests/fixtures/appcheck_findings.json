@@ -1,0 +1,22 @@
+{
+  "vulnerabilities": [
+    {
+      "name": "SQL Injection",
+      "description": "SQL statement concatenation detected in search endpoint",
+      "severity": "Critical",
+      "url": "/items",
+      "parameter": "category",
+      "cvss": 9.4,
+      "cwe": "CWE-89"
+    },
+    {
+      "name": "Cross-Site Scripting (Reflected)",
+      "description": "Unencoded parameter rendered into HTML body",
+      "severity": "Medium",
+      "url": "/search",
+      "parameter": "q",
+      "cvss": 6.1,
+      "cwe": "CWE-79"
+    }
+  ]
+}
