@@ -395,3 +395,19 @@ def test_write_audit_log_valid(client):
     data = resp.get_json()
     assert data["status"] == "logged"
     assert "user='bob_smith'" in data["entry"]
+
+
+def test_directory_ldap_search_valid(client):
+    """Verify ldap search endpoint returns matching user and filter string."""
+    resp = client.post("/api/v1/directory/ldap-search", json={"query": "charlie"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "success"
+    assert "sAMAccountName=charlie" in data["filter_executed"]
+    assert len(data["results"]) == 1
+
+
+def test_directory_ldap_search_empty(client):
+    """Verify ldap search endpoint returns 400 when query is omitted."""
+    resp = client.post("/api/v1/directory/ldap-search", json={})
+    assert resp.status_code == 400
