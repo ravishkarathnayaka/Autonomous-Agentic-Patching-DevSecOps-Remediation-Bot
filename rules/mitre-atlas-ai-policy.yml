@@ -1,0 +1,36 @@
+# MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems) Policy
+# Threat matrix and remediation controls for LLM applications, prompt injection, and model pipeline vulnerabilities.
+
+policy_name: mitre-atlas-ai
+version: "2.0.0"
+framework: "MITRE ATLAS"
+description: "Autonomous remediation policy defending against prompt injection, model poisoning, and insecure output handling."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 48
+
+technical_controls:
+  - control: "AML.T0051 LLM Prompt Injection & Jailbreaking"
+    description: "Enforce strict delimiters and input sanitization on untrusted prompts before model invocation."
+    cwes:
+      - CWE-20    # Improper Input Validation
+      - CWE-74    # Improper Neutralization of Special Elements
+
+  - control: "AML.T0054 Insecure Output Handling"
+    description: "Sanitize model outputs before rendering in UI, executing shell tools, or executing database queries."
+    cwes:
+      - CWE-79    # Cross-site Scripting
+      - CWE-78    # OS Command Injection
+      - CWE-89    # SQL Injection
+
+  - control: "AML.T0057 Model Supply Chain Vulnerability"
+    description: "Prohibit untrusted pickle or unsafe serialization formats for model weight deserialization."
+    cwes:
+      - CWE-502   # Deserialization of Untrusted Data
