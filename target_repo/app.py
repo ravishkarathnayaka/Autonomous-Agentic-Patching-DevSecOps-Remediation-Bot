@@ -545,6 +545,26 @@ def render_pdf_document():
     }), 200
 
 
+@app.route("/api/v1/profile/avatar-svg", methods=["POST"])
+def upload_avatar_svg():
+    # Vulnerable: XML External Entity Reference (XXE / CWE-611) via SVG vector graphic
+    # Parses raw XML without disabling external DTD or parameter entities
+    data = request.get_json(silent=True) or {}
+    svg_raw = data.get("svg_data", "")
+    if not svg_raw:
+        return jsonify({"error": "SVG data required"}), 400
+    try:
+        import xml.etree.ElementTree as ET
+        # Insecure default parser without defusedxml
+        root = ET.fromstring(svg_raw)
+        tag = root.tag
+        width = root.attrib.get("width", "100")
+        height = root.attrib.get("height", "100")
+        return jsonify({"status": "parsed", "root_tag": tag, "dimensions": f"{width}x{height}"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
