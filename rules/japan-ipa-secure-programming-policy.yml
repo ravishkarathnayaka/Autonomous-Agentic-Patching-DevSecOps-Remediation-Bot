@@ -1,0 +1,36 @@
+# Japan Information-technology Promotion Agency (IPA) Secure Programming Guidance Policy
+# Standard security controls for web applications and embedded system software development.
+
+policy_name: japan-ipa-secure-programming
+version: "2.1.0"
+framework: "Japan IPA Secure Programming Guidance"
+description: "Autonomous policy requiring strict input boundary validation, parameterized queries, and safe XML processing."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+technical_controls:
+  - control: "IPA-SEC-01 Input Validation and Parameter Binding"
+    description: "Prohibit concatenation in database queries and reject parameter pollution."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-235   # HTTP Parameter Pollution
+
+  - control: "IPA-SEC-02 Safe Document and Markup Processing"
+    description: "Disable external entity resolution in all XML and SVG parsers."
+    cwes:
+      - CWE-611   # XML External Entity (XXE)
+      - CWE-79    # Cross-site Scripting
+
+  - control: "IPA-SEC-03 Access Control Verification"
+    description: "Assert user authorization at the server boundary before retrieving or altering records."
+    cwes:
+      - CWE-639   # Insecure Direct Object Reference
+      - CWE-862   # Missing Authorization
