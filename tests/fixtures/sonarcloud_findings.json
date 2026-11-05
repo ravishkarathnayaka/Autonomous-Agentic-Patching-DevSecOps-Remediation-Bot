@@ -1,0 +1,20 @@
+{
+  "issues": [
+    {
+      "key": "AYk49aX_9921",
+      "rule": "python:S2077",
+      "severity": "BLOCKER",
+      "component": "my_project:target_repo/app.py",
+      "line": 68,
+      "message": "Formatting SQL queries is security-sensitive"
+    },
+    {
+      "key": "AYk49aX_9922",
+      "rule": "python:S5144",
+      "severity": "CRITICAL",
+      "component": "my_project:target_repo/app.py",
+      "line": 372,
+      "message": "Server-Side Requests should not be vulnerable to forgery"
+    }
+  ]
+}
