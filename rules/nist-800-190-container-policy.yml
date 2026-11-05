@@ -1,0 +1,36 @@
+# NIST Special Publication 800-190: Application Container Security Guide
+# Autonomous DevSecOps remediation baseline for container images, registries, and runtimes.
+
+policy_name: nist-800-190-container
+version: "1.1.0"
+framework: "NIST SP 800-190"
+description: "Autonomous policy requiring container image vulnerability scanning, least-privilege runtimes, and base image pinning."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 168
+
+technical_controls:
+  - control: "3.1 Image Vulnerabilities"
+    description: "Prohibit container images with unpatched critical or high CVEs in base packages."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-1104  # Use of Unmaintained Components
+
+  - control: "3.2 Image Configuration Defects"
+    description: "Ensure containers do not execute as root (UID 0) and enforce read-only root filesystems."
+    cwes:
+      - CWE-250   # Execution with Unnecessary Privileges
+      - CWE-269   # Improper Privilege Management
+
+  - control: "3.3 Embedded Secrets"
+    description: "Prevent embedding private keys, tokens, or hardcoded passwords in Dockerfile layers."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-259   # Hardcoded Password
