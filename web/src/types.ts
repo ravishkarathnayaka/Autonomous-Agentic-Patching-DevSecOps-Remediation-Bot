@@ -31,7 +31,14 @@ export type AgentName =
   | 'PrototypePollutionRemediationAgent'
   | 'KeyDerivationHardeningAgent'
   | 'MakoSandboxAgent'
-  | 'SymlinkTraversalAgent';
+  | 'SymlinkTraversalAgent'
+  | 'HppRemediationAgent'
+  | 'SvgXxeSanitizerAgent'
+  | 'IdorRemediationAgent'
+  | 'PdfSsrfSanitizerAgent'
+  | 'RegexTimeoutAgent'
+  | 'GraphqlIntrospectionAgent'
+  | 'CachePoisoningAgent';
 
 export type ScannerType =
   | 'semgrep'
@@ -80,7 +87,14 @@ export type ScannerType =
   | 'appcheck'
   | 'bearer'
   | 'invicti'
-  | 'insightappsec';
+  | 'insightappsec'
+  | 'qualys-was'
+  | 'stackhawk'
+  | 'jfrog-xray'
+  | 'acunetix'
+  | 'sonarcloud'
+  | 'lacework'
+  | 'bridgecrew';
 
 export type RemediationStatus = 
   | 'IDLE' 
