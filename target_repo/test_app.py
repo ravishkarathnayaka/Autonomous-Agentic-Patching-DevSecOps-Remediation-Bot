@@ -474,3 +474,20 @@ def test_render_pdf_empty_html(client):
     """Verify render-pdf returns 400 when HTML is empty."""
     resp = client.post("/api/v1/documents/render-pdf", json={})
     assert resp.status_code == 400
+
+
+def test_upload_avatar_svg_valid(client):
+    """Verify avatar svg upload parses valid SVG graphic."""
+    svg = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><circle cx="50" cy="50" r="40"/></svg>'
+    resp = client.post("/api/v1/profile/avatar-svg", json={"svg_data": svg})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "parsed"
+    assert "svg" in data["root_tag"].lower()
+    assert data["dimensions"] == "200x200"
+
+
+def test_upload_avatar_svg_missing(client):
+    """Verify avatar svg returns 400 when svg_data is omitted."""
+    resp = client.post("/api/v1/profile/avatar-svg", json={})
+    assert resp.status_code == 400
