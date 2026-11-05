@@ -1,0 +1,37 @@
+# Center for Internet Security (CIS) Google Cloud Platform Foundation Benchmark v3.0.0
+# Autonomous remediation rules for GCP IAM, Storage, Compute, and KMS misconfigurations.
+
+policy_name: cis-gcp-foundations
+version: "3.0.0"
+framework: "CIS Google Cloud Platform Foundation Benchmark"
+description: "Autonomous policy requiring hardened IAM roles, encrypted Cloud Storage buckets, and network ingress boundaries."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+technical_controls:
+  - control: "1. IAM and Access Management"
+    description: "Ensure service account keys are rotated and separation of duties is enforced without admin wildcards."
+    cwes:
+      - CWE-250   # Execution with Unnecessary Privileges
+      - CWE-284   # Improper Access Control
+      - CWE-798   # Hardcoded Credentials
+
+  - control: "5. Storage Hardening"
+    description: "Ensure Cloud Storage buckets have uniform bucket-level access enabled and public access prevention enforced."
+    cwes:
+      - CWE-732   # Incorrect Permission Assignment for Critical Resource
+      - CWE-16    # Configuration Weakness
+
+  - control: "3. Networking and Firewall"
+    description: "Prevent open ingress (0.0.0.0/0) on sensitive administrative ports."
+    cwes:
+      - CWE-1188  # Insecure Default Initialization
+      - CWE-276   # Incorrect Default Permissions
