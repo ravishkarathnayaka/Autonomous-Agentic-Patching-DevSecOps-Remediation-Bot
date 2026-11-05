@@ -565,6 +565,26 @@ def upload_avatar_svg():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/api/v1/search/regex-filter", methods=["POST"])
+def search_regex_filter():
+    # Vulnerable: Inefficient Regular Expression Complexity (CWE-1333 / ReDoS)
+    # Compiles and matches arbitrary user-provided regex without execution timeout or complexity check
+    data = request.get_json(silent=True) or {}
+    pattern = data.get("pattern", "")
+    target_string = data.get("text", "")
+    if not pattern:
+        return jsonify({"error": "Pattern required"}), 400
+    try:
+        import re
+        match = re.search(pattern, target_string)
+        return jsonify({
+            "status": "matched" if match else "no_match",
+            "matched_text": match.group(0) if match else None
+        }), 200
+    except re.error as e:
+        return jsonify({"error": f"Invalid regex: {str(e)}"}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
