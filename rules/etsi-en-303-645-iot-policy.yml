@@ -1,0 +1,37 @@
+# ETSI EN 303 645: Cyber Security for Consumer Internet of Things (IoT) Baseline
+# European standard specifications for connected device firmware, services, and communication security.
+
+policy_name: etsi-en-303-645-iot
+version: "2.1.1"
+framework: "ETSI EN 303 645"
+description: "Autonomous policy enforcing unique default credentials, secure update mechanisms, and cryptographic data protection."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 168
+
+technical_controls:
+  - control: "5.1-1 No universal default passwords"
+    description: "Prohibit hardcoded passwords, factory default credentials, and static API keys."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-259   # Hardcoded Password
+      - CWE-521   # Weak Password Requirements
+
+  - control: "5.3-1 Keep software updated"
+    description: "Ensure software packages and dependencies receive verified security patches."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-494   # Download of Code Without Integrity Check
+
+  - control: "5.4-1 Securely store sensitive data"
+    description: "Prevent exposure of credentials, tokens, or encryption keys in source files or configuration."
+    cwes:
+      - CWE-312   # Cleartext Storage of Sensitive Information
+      - CWE-327   # Broken or Risky Cryptographic Algorithm
