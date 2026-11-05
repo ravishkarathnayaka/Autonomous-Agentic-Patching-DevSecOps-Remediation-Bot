@@ -1,0 +1,20 @@
+{
+  "findings": [
+    {
+      "qid": 150004,
+      "name": "Cross-Site Scripting (Reflected)",
+      "description": "Reflected XSS vulnerability detected in search parameter",
+      "severity": 4,
+      "url": "https://target.corp/search?q=",
+      "cwe_id": "79"
+    },
+    {
+      "qid": 150081,
+      "name": "SQL Injection",
+      "description": "SQL Injection vulnerability verified in items query",
+      "severity": 5,
+      "url": "https://target.corp/items?category=",
+      "cwe_id": "89"
+    }
+  ]
+}
