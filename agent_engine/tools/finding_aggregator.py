@@ -103,6 +103,27 @@ class FindingAggregator:
         elif name in ["insightappsec", "rapid7"]:
             from agent_engine.tools.insightappsec_parser import parse_insightappsec_report
             parsed = parse_insightappsec_report(report_data)
+        elif name in ["qualys", "qualys-was"]:
+            from agent_engine.tools.qualys_was_parser import parse_qualys_was_report
+            parsed = parse_qualys_was_report(report_data)
+        elif name in ["stackhawk", "hawk"]:
+            from agent_engine.tools.stackhawk_parser import parse_stackhawk_report
+            parsed = parse_stackhawk_report(report_data)
+        elif name in ["jfrog", "jfrog-xray", "xray"]:
+            from agent_engine.tools.jfrog_xray_parser import parse_jfrog_xray_report
+            parsed = parse_jfrog_xray_report(report_data)
+        elif name in ["acunetix", "acunetix-360"]:
+            from agent_engine.tools.acunetix_parser import parse_acunetix_report
+            parsed = parse_acunetix_report(report_data)
+        elif name in ["sonarcloud", "sonar-cloud"]:
+            from agent_engine.tools.sonarcloud_parser import parse_sonarcloud_report
+            parsed = parse_sonarcloud_report(report_data)
+        elif name in ["lacework", "lacework-container"]:
+            from agent_engine.tools.lacework_parser import parse_lacework_report
+            parsed = parse_lacework_report(report_data)
+        elif name in ["bridgecrew", "checkov-iac"]:
+            from agent_engine.tools.bridgecrew_parser import parse_bridgecrew_report
+            parsed = parse_bridgecrew_report(report_data)
 
         if parsed:
             self.add_findings(parsed)
