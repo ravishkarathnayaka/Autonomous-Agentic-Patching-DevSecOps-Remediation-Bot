@@ -1,0 +1,20 @@
+{
+  "findings": [
+    {
+      "pluginId": "40018",
+      "name": "SQL Injection - SQLite",
+      "description": "SQL statement modification possible through user parameters",
+      "severity": "High",
+      "path": "/items",
+      "cweId": "89"
+    },
+    {
+      "pluginId": "10038",
+      "name": "Content Security Policy (CSP) Header Not Set",
+      "description": "Response does not include CSP protection against XSS",
+      "severity": "Medium",
+      "path": "/api/v1/resource",
+      "cweId": "693"
+    }
+  ]
+}
