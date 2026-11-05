@@ -508,6 +508,25 @@ def read_storage_symlink():
         return jsonify({"error": str(e)}), 404
 
 
+@app.route("/api/v1/transfer/funds", methods=["POST"])
+def transfer_funds():
+    # Vulnerable: HTTP Parameter Pollution (HPP / CWE-235)
+    # Allows multiple recipient parameters; security validation checks first item while execution uses last
+    recipients = request.form.getlist("recipient")
+    amount = request.form.get("amount", "0")
+    if not recipients:
+        return jsonify({"error": "Recipient required"}), 400
+    # Flawed logic: validation checks first, transaction executes last
+    first_recipient = recipients[0]
+    final_recipient = recipients[-1]
+    return jsonify({
+        "status": "transferred",
+        "validated_recipient": first_recipient,
+        "transferred_to": final_recipient,
+        "amount": amount
+    }), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
