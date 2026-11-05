@@ -1,0 +1,38 @@
+# ISO/IEC 27701:2019 Privacy Information Management System (PIMS) Policy
+# Extended controls for PII protection, data minimization, and automated remediation.
+
+policy_name: iso-27701-privacy
+version: "1.0.0"
+framework: "ISO/IEC 27701:2019 PIMS"
+description: "Autonomous policy requiring strict PII data minimization, object-level privacy authorization, and data leak prevention."
+
+thresholds:
+  min_severity: MEDIUM
+  min_cvss_score: 5.5
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+technical_controls:
+  - control: "7.2.1 Conditions for collection and processing"
+    description: "Prohibit unauthorized exposure of personal data via IDOR or broken object authorization."
+    cwes:
+      - CWE-639   # Insecure Direct Object Reference (IDOR)
+      - CWE-284   # Improper Access Control
+      - CWE-862   # Missing Authorization
+
+  - control: "7.2.6 Privacy by design and default"
+    description: "Ensure sensitive personal information is not stored in unencrypted web caches or query strings."
+    cwes:
+      - CWE-524   # Use of Cache Containing Sensitive Information
+      - CWE-598   # Information Exposure Through Query Strings
+      - CWE-235   # HTTP Parameter Pollution
+
+  - control: "7.2.8 Data minimization and retention"
+    description: "Prevent unintended telemetry leakage in API introspection and diagnostic endpoints."
+    cwes:
+      - CWE-200   # Exposure of Sensitive Information
+      - CWE-209   # Generation of Error Message Containing Sensitive Information
