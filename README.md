@@ -14,11 +14,17 @@
 - [Live Web Portal & Vercel Deployment](#-live-web-portal--vercel-deployment)
 - [Executive Overview](#-executive-overview)
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
-- [Supported 47-Scanner Security Matrix](#-supported-47-scanner-security-matrix)
+- [Supported 54-Scanner Security Matrix](#-supported-54-scanner-security-matrix)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
 - [Enterprise Compliance Policies](#-enterprise-compliance-policies)
 - [Architecture & Technical Specifications](#-architecture--technical-specifications)
+  - [HTTP Parameter Pollution (HPP) Defense Specification](docs/HTTP_PARAMETER_POLLUTION_SPEC.md)
+  - [SVG XML External Entity (XXE) & Stored XSS Hardening Guide](docs/SVG_XXE_HARDENING_GUIDE.md)
+  - [Insecure Direct Object References (IDOR/BOLA) Authorization Specification](docs/IDOR_BOLA_AUTHORIZATION_SPEC.md)
+  - [Web Cache Poisoning & Unkeyed Header Defense Guide](docs/WEB_CACHE_POISONING_DEFENSE.md)
+  - [AI Remediation Agent Evaluation Metrics & Benchmarks](docs/AI_AGENT_EVALUATION_METRICS.md)
+  - [Secure Document & Headless Browser Rendering Specification](docs/SECURE_DOCUMENT_RENDERING_SPEC.md)
   - [Symbolic Link Traversal & TOCTOU Defense Specification](docs/SYMLINK_RACE_DEFENSE_SPEC.md)
   - [JWT Zero-Trust Authentication & Verification Spec](docs/JWT_ZERO_TRUST_SPEC.md)
   - [Cross-Site Request Forgery (CSRF) Defense-in-Depth Architecture](docs/ANTI_CSRF_ARCHITECTURE.md)
@@ -146,9 +152,9 @@ flowchart TD
 
 ---
 
-## 🔍 Supported 47-Scanner Security Matrix
+## 🔍 Supported 54-Scanner Security Matrix
 
-The bot features native, zero-dependency JSON and SARIF parsers supporting 47 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
+The bot features native, zero-dependency JSON and SARIF parsers supporting 54 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
 
 | Category | Scanner Tool | Engine Target | Parser Implementation |
 |---|---|---|---|
@@ -157,6 +163,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 47 in
 | **SAST** | Bandit | Python AST security linter | `agent_engine/tools/bandit_parser.py` |
 | **SAST** | SonarQube | Clean Code enterprise analysis | `agent_engine/tools/sonarqube_parser.py` |
 | **SAST** | SonarQube Hotspots | Security Hotspot review findings | `agent_engine/tools/sonar_hotspots_parser.py` |
+| **SAST** | SonarCloud | Cloud-based static analysis & telemetry | `agent_engine/tools/sonarcloud_parser.py` |
 | **SAST** | Horusec | Multi-language source analysis | `agent_engine/tools/horusec_parser.py` |
 | **SAST** | Flawfinder | C/C++ source code vulnerability | `agent_engine/tools/flawfinder_parser.py` |
 | **SAST** | Clang-Tidy | C/C++ static diagnostic engine | `agent_engine/tools/clang_tidy_parser.py` |
@@ -172,6 +179,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 47 in
 | **SCA** | Trivy | OS package & library dependency | `agent_engine/tools/trivy_parser.py` |
 | **SCA** | Snyk | Open source dependency scanner | `agent_engine/tools/snyk_parser.py` |
 | **SCA** | Mend | Open source dependency alerts | `agent_engine/tools/mend_parser.py` |
+| **SCA** | JFrog Xray | Artifact binary & dependency scanning | `agent_engine/tools/jfrog_xray_parser.py` |
 | **SCA** | pip-audit | Python PyPI package advisories | `agent_engine/tools/pip_audit_parser.py` |
 | **SCA** | npm-audit | Node.js ecosystem advisories | `agent_engine/tools/npm_audit_parser.py` |
 | **SCA** | Safety | Python PyUp advisory vulnerability | `agent_engine/tools/safety_parser.py` |
@@ -184,10 +192,12 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 47 in
 | **Secrets** | Check Point Spectral Ops | Deep code & config secret scanner | `agent_engine/tools/spectral_parser.py` |
 | **IaC** | KICS | Kubernetes, Terraform, CloudFormation | `agent_engine/tools/kics_parser.py` |
 | **IaC** | Checkov | Infrastructure-as-Code hardening | `agent_engine/tools/checkov_parser.py` |
+| **IaC** | Bridgecrew | Palo Alto Prisma IaC policy scanner | `agent_engine/tools/bridgecrew_parser.py` |
 | **IaC** | Kubescape | Kubernetes security & NSA posture | `agent_engine/tools/kubescape_parser.py` |
 | **IaC** | Terrascan | Tenable IaC security policy scanner | `agent_engine/tools/terrascan_parser.py` |
 | **Container** | Hadolint | Dockerfile best-practice linter | `agent_engine/tools/hadolint_parser.py` |
 | **Container** | Trivy Operator | Kubernetes VulnerabilityReport CRD | `agent_engine/tools/trivy_operator_parser.py` |
+| **Container** | Lacework | Container image vulnerability analysis | `agent_engine/tools/lacework_parser.py` |
 | **Container** | NeuVector | SUSE NeuVector container vulnerabilities | `agent_engine/tools/neuvector_parser.py` |
 | **Container** | Prisma Cloud | Palo Alto Prisma Cloud Compute scans | `agent_engine/tools/prisma_cloud_parser.py` |
 | **Container** | Snyk Container | Snyk container image scan JSON | `agent_engine/tools/snyk_container_parser.py` |
@@ -197,6 +207,9 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 47 in
 | **DAST** | AppCheck | Web application & API DAST engine | `agent_engine/tools/appcheck_parser.py` |
 | **DAST** | Invicti (Netsparker) | Enterprise web & API vulnerability DAST | `agent_engine/tools/invicti_parser.py` |
 | **DAST** | Rapid7 InsightAppSec | Dynamic application security testing | `agent_engine/tools/insightappsec_parser.py` |
+| **DAST** | Qualys WAS | Web Application Scanning vulnerability reports | `agent_engine/tools/qualys_was_parser.py` |
+| **DAST** | StackHawk | Automated AST / DAST finding reports | `agent_engine/tools/stackhawk_parser.py` |
+| **DAST** | Acunetix 360 | Automated web vulnerability scanning | `agent_engine/tools/acunetix_parser.py` |
 | **SBOM** | Anchore Syft | SPDX 2.3 & CycloneDX SBOM catalog | `agent_engine/tools/syft_parser.py` |
 | **SBOM** | CycloneDX | Standard 1.5 JSON SBOM reports | `agent_engine/tools/cyclonedx_parser.py` |
 
@@ -238,6 +251,13 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 47 in
 | **Key Derivation Agent**| `agent_engine/agents/key_derivation_agent.py` | NIST SP 800-132 password hashing & PBKDF2 hardening | 600,000+ iterations, CSPRNG 128-bit random salt |
 | **Mako Sandbox Agent** | `agent_engine/agents/mako_sandbox_agent.py` | Template engine sandbox & autoescape enforcement | Jinja2 SandboxedEnvironment, attribute lookup restriction |
 | **Symlink Traversal** | `agent_engine/agents/symlink_traversal_agent.py` | Canonical boundary enforcement & symlink defense | `os.path.realpath`, `os.path.commonpath`, link traversal blocking |
+| **HPP Remediation** | `agent_engine/agents/hpp_agent.py` | HTTP parameter pollution & duplicate key defense | `request.args.getlist`, single-value invariants, 400 rejection |
+| **SVG XXE Sanitizer** | `agent_engine/agents/svg_xxe_agent.py` | XML external entity & SVG script injection defense | `defusedxml.ElementTree`, `forbid_dtd`, entity neutralization |
+| **IDOR Remediation** | `agent_engine/agents/idor_agent.py` | Insecure direct object & broken object authorization | Context user ownership matching, multi-tenant isolation |
+| **PDF SSRF Sanitizer** | `agent_engine/agents/pdf_ssrf_agent.py` | Headless rendering & PDF converter SSRF defense | Private IP blocking, cloud metadata prohibition, URI allowlisting |
+| **ReDoS Timeout Agent**| `agent_engine/agents/regex_timeout_agent.py` | Regular expression denial of service mitigation | Length capping, catastrophic backtracking audit, timeout guardrails |
+| **GraphQL Introspection**| `agent_engine/agents/graphql_introspection_agent.py` | Schema reconnaissance & introspection gating | Production introspection disabling, query depth bounds |
+| **Cache Poisoning Agent**| `agent_engine/agents/cache_poisoning_agent.py` | Web cache poisoning & unkeyed header defense | Anti-caching directives, `Vary: Cookie`, unkeyed header stripping |
 | **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
 
 ---
@@ -289,6 +309,12 @@ The bot includes turnkey YAML policy profiles under `rules/` governing autonomou
 | `rules/mas-trm-policy.yml` | MAS TRM Guidelines (Singapore) | Financial Institution Resilience | 12h / 24h |
 | `rules/pci-sslc-policy.yml` | PCI Secure Software Standard v1.1 | Payment Software Architecture | 24h / 48h |
 | `rules/hitrust-csf-policy.yml` | HITRUST CSF v11.0 | Healthcare & Life Sciences ePHI | 24h / 72h |
+| `rules/iso-27701-privacy-policy.yml` | ISO/IEC 27701:2019 PIMS | Privacy Information Management & PII | 12h / 24h |
+| `rules/cis-gcp-foundations-policy.yml` | CIS GCP Foundation Benchmark v3.0 | Google Cloud Platform Infrastructure | 24h / 48h |
+| `rules/nist-800-190-container-policy.yml` | NIST SP 800-190 | Application Container Security Guide | 24h / 48h |
+| `rules/mitre-atlas-ai-policy.yml` | MITRE ATLAS | AI / LLM Threat Matrix & Prompt Defense | 12h / 24h |
+| `rules/japan-ipa-secure-programming-policy.yml` | Japan IPA Guidance | Web & Embedded Secure Programming | 24h / 48h |
+| `rules/etsi-en-303-645-iot-policy.yml` | ETSI EN 303 645 | Consumer Internet of Things Baseline | 24h / 48h |
 
 ---
 
