@@ -1,0 +1,22 @@
+{
+  "vulnerabilities": [
+    {
+      "vuln_id": "CVE-2023-4807",
+      "feature_name": "openssl",
+      "version": "3.0.8-r0",
+      "fix_version": "3.0.10-r0",
+      "severity": "High",
+      "score": 7.8,
+      "cwe": "CWE-327"
+    },
+    {
+      "vuln_id": "CVE-2023-38039",
+      "feature_name": "curl",
+      "version": "8.1.2",
+      "fix_version": "8.4.0",
+      "severity": "Critical",
+      "score": 9.1,
+      "cwe": "CWE-400"
+    }
+  ]
+}
