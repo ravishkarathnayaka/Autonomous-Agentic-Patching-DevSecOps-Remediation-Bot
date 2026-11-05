@@ -440,3 +440,19 @@ def test_read_storage_symlink_missing_filename(client):
     """Verify read-symlink returns 400 when filename is omitted."""
     resp = client.post("/api/v1/storage/read-symlink", json={})
     assert resp.status_code == 400
+
+
+def test_transfer_funds_single_param(client):
+    """Verify transfer funds endpoint processes valid single recipient."""
+    resp = client.post("/api/v1/transfer/funds", data={"recipient": "alice", "amount": "100"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "transferred"
+    assert data["validated_recipient"] == "alice"
+    assert data["transferred_to"] == "alice"
+
+
+def test_transfer_funds_missing_recipient(client):
+    """Verify transfer funds returns 400 when recipient is omitted."""
+    resp = client.post("/api/v1/transfer/funds", data={"amount": "100"})
+    assert resp.status_code == 400
