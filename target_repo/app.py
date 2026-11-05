@@ -585,6 +585,24 @@ def search_regex_filter():
         return jsonify({"error": f"Invalid regex: {str(e)}"}), 400
 
 
+@app.route("/api/v1/invoices/download", methods=["GET"])
+def download_invoice():
+    # Vulnerable: Insecure Direct Object Reference (IDOR / CWE-639 / OWASP API1:2023)
+    # Retrieves invoice based solely on query param 'id' without checking current user's ownership
+    invoice_id = request.args.get("id", "")
+    if not invoice_id:
+        return jsonify({"error": "Invoice ID required"}), 400
+    mock_invoices = {
+        "1001": {"owner": "alice", "amount_due": "$450.00", "billing_address": "123 Maple St"},
+        "1002": {"owner": "bob", "amount_due": "$1,200.00", "billing_address": "456 Oak Ave"},
+        "1003": {"owner": "charlie", "amount_due": "$89.50", "billing_address": "789 Pine Rd"},
+    }
+    invoice = mock_invoices.get(str(invoice_id))
+    if not invoice:
+        return jsonify({"error": "Invoice not found"}), 404
+    return jsonify({"status": "retrieved", "invoice_id": invoice_id, "data": invoice}), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
