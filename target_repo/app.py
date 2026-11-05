@@ -527,6 +527,24 @@ def transfer_funds():
     }), 200
 
 
+@app.route("/api/v1/documents/render-pdf", methods=["POST"])
+def render_pdf_document():
+    # Vulnerable: Server-Side Request Forgery (SSRF / CWE-918) via PDF HTML rendering
+    # Renders user HTML with external resource fetching without internal IP filtering
+    data = request.get_json(silent=True) or {}
+    html_content = data.get("html", "")
+    if not html_content:
+        return jsonify({"error": "HTML content required"}), 400
+    # Simulate PDF engine fetching linked images or stylesheets
+    import re
+    external_links = re.findall(r'(?:src|href)=["\'](http[s]?://[^"\']+)["\']', html_content)
+    return jsonify({
+        "status": "rendered",
+        "fetched_resources": external_links,
+        "byte_size": len(html_content)
+    }), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
