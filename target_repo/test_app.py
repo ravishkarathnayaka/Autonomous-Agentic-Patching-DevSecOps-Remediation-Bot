@@ -509,3 +509,25 @@ def test_search_regex_filter_invalid(client):
     """Verify search regex filter returns 400 on malformed syntax."""
     resp = client.post("/api/v1/search/regex-filter", json={"pattern": "[a-z"})
     assert resp.status_code == 400
+
+
+def test_download_invoice_valid(client):
+    """Verify invoice download endpoint returns invoice for existing ID."""
+    resp = client.get("/api/v1/invoices/download?id=1001")
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "retrieved"
+    assert data["data"]["owner"] == "alice"
+    assert data["data"]["amount_due"] == "$450.00"
+
+
+def test_download_invoice_not_found(client):
+    """Verify invoice download returns 404 for nonexistent ID."""
+    resp = client.get("/api/v1/invoices/download?id=9999")
+    assert resp.status_code == 404
+
+
+def test_download_invoice_missing_id(client):
+    """Verify invoice download returns 400 when ID is omitted."""
+    resp = client.get("/api/v1/invoices/download")
+    assert resp.status_code == 400
