@@ -1,0 +1,32 @@
+{
+  "results": {
+    "failed_checks": [
+      {
+        "check_id": "BC_AWS_S3_1",
+        "check_name": "Ensure S3 bucket has access logging enabled",
+        "file_path": "/terraform/s3.tf",
+        "file_line_range": [10, 22],
+        "severity": "MEDIUM",
+        "guideline": "https://docs.bridgecrew.io/docs/s3_1-enable-access-logging",
+        "code_block": [
+          [10, "resource \"aws_s3_bucket\" \"data\" {"],
+          [11, "  bucket = \"my-unlogged-bucket\""],
+          [12, "}"]
+        ]
+      },
+      {
+        "check_id": "BC_AWS_IAM_45",
+        "check_name": "Ensure IAM policies do not allow full administrative privileges",
+        "file_path": "/terraform/iam.tf",
+        "file_line_range": [35, 45],
+        "severity": "HIGH",
+        "guideline": "https://docs.bridgecrew.io/docs/iam_45-admin-privileges",
+        "code_block": [
+          [35, "resource \"aws_iam_policy\" \"admin\" {"],
+          [36, "  policy = \"*\""],
+          [37, "}"]
+        ]
+      }
+    ]
+  }
+}
