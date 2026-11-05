@@ -491,3 +491,21 @@ def test_upload_avatar_svg_missing(client):
     """Verify avatar svg returns 400 when svg_data is omitted."""
     resp = client.post("/api/v1/profile/avatar-svg", json={})
     assert resp.status_code == 400
+
+
+def test_search_regex_filter_valid(client):
+    """Verify search regex filter matches text pattern correctly."""
+    resp = client.post(
+        "/api/v1/search/regex-filter",
+        json={"pattern": r"\buser_\d+\b", "text": "Active session for user_4291 in cluster."}
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "matched"
+    assert data["matched_text"] == "user_4291"
+
+
+def test_search_regex_filter_invalid(client):
+    """Verify search regex filter returns 400 on malformed syntax."""
+    resp = client.post("/api/v1/search/regex-filter", json={"pattern": "[a-z"})
+    assert resp.status_code == 400
