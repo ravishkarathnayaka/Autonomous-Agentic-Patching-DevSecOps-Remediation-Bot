@@ -1,0 +1,18 @@
+{
+  "Vulnerabilities": [
+    {
+      "Type": "Server-Side Request Forgery",
+      "Description": "Target endpoint fetches unconstrained internal network addresses",
+      "Severity": "Critical",
+      "Url": "/api/v1/documents/render-pdf",
+      "Cwe": "918"
+    },
+    {
+      "Type": "Directory Traversal",
+      "Description": "Path traversal sequence in file request",
+      "Severity": "High",
+      "Url": "/api/v1/storage/read-symlink",
+      "Cwe": "22"
+    }
+  ]
+}
