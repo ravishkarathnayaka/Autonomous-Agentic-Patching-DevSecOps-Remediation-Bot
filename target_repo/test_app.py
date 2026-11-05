@@ -456,3 +456,21 @@ def test_transfer_funds_missing_recipient(client):
     """Verify transfer funds returns 400 when recipient is omitted."""
     resp = client.post("/api/v1/transfer/funds", data={"amount": "100"})
     assert resp.status_code == 400
+
+
+def test_render_pdf_valid(client):
+    """Verify render-pdf endpoint parses HTML and returns fetched resources."""
+    resp = client.post(
+        "/api/v1/documents/render-pdf",
+        json={"html": "<h1>Invoice</h1><img src='https://cdn.corp.com/logo.png'>"}
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "rendered"
+    assert "https://cdn.corp.com/logo.png" in data["fetched_resources"]
+
+
+def test_render_pdf_empty_html(client):
+    """Verify render-pdf returns 400 when HTML is empty."""
+    resp = client.post("/api/v1/documents/render-pdf", json={})
+    assert resp.status_code == 400
