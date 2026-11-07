@@ -124,6 +124,24 @@ class FindingAggregator:
         elif name in ["bridgecrew", "checkov-iac"]:
             from agent_engine.tools.bridgecrew_parser import parse_bridgecrew_report
             parsed = parse_bridgecrew_report(report_data)
+        elif name in ["prisma-compute", "prisma_compute", "prismacloud"]:
+            from agent_engine.tools.prisma_compute_parser import parse_prisma_compute_report
+            parsed = parse_prisma_compute_report(report_data)
+        elif name in ["deepsource", "deep-source"]:
+            from agent_engine.tools.deepsource_parser import parse_deepsource_report
+            parsed = parse_deepsource_report(report_data)
+        elif name in ["wiz", "wiz-cloud"]:
+            from agent_engine.tools.wiz_parser import parse_wiz_report
+            parsed = parse_wiz_report(report_data)
+        elif name in ["mend-bolt", "mend_bolt", "whitesource"]:
+            from agent_engine.tools.mend_bolt_parser import parse_mend_bolt_report
+            parsed = parse_mend_bolt_report(report_data)
+        elif name in ["orca", "orca-security"]:
+            from agent_engine.tools.orca_parser import parse_orca_report
+            parsed = parse_orca_report(report_data)
+        elif name in ["prowler", "prowler-cloud"]:
+            from agent_engine.tools.prowler_parser import parse_prowler_report
+            parsed = parse_prowler_report(report_data)
 
         if parsed:
             self.add_findings(parsed)
