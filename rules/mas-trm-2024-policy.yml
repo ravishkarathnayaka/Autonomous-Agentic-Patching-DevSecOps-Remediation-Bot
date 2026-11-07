@@ -1,0 +1,37 @@
+# Monetary Authority of Singapore (MAS) Technology Risk Management (TRM) 2024 Guidelines
+# Enhanced standards for cloud resilience, API parameter integrity, and prompt cyber defense.
+
+policy_name: mas-trm-2024
+version: "2.4.0"
+framework: "MAS TRM Guidelines 2024"
+description: "Autonomous policy requiring strict API integrity, rapid zero-day remediation SLAs, and strong parameter validation."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 48
+
+technical_controls:
+  - control: "11.1 Secure Application Programming & API Integrity"
+    description: "Prohibit parameter pollution, mass assignment, and schema bypass in financial APIs."
+    cwes:
+      - CWE-235   # HTTP Parameter Pollution
+      - CWE-915   # Mass Assignment
+      - CWE-89    # SQL Injection
+
+  - control: "11.2 Access Rights Management & Data Confidentiality"
+    description: "Prevent direct object referencing without session ownership validation."
+    cwes:
+      - CWE-639   # Insecure Direct Object References
+      - CWE-862   # Missing Authorization
+
+  - control: "11.3 Vulnerability Assessment & Patch Management"
+    description: "Enforce automated patching and regression verification within rigorous SLAs."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-502   # Deserialization of Untrusted Data
