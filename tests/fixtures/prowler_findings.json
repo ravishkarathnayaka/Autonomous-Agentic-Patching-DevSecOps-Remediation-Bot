@@ -1,0 +1,38 @@
+[
+  {
+    "Status": "FAIL",
+    "CheckID": "s3_bucket_default_encryption",
+    "CheckTitle": "Ensure S3 bucket has default server-side encryption enabled",
+    "ServiceName": "s3",
+    "Region": "us-east-1",
+    "ResourceId": "arn:aws:s3:::unencrypted-data-bucket",
+    "Severity": "high",
+    "Risk": "Data stored unencrypted at rest in S3 bucket",
+    "Remediation": {
+      "Url": "https://docs.prowler.cloud/en/latest/tutorials/s3/",
+      "Code": {
+        "CLI": "aws s3api put-bucket-encryption --bucket unencrypted-data-bucket"
+      }
+    }
+  },
+  {
+    "Status": "FAIL",
+    "CheckID": "iam_root_hardware_mfa_enabled",
+    "CheckTitle": "Ensure MFA is enabled for the root account",
+    "ServiceName": "iam",
+    "Region": "global",
+    "ResourceId": "arn:aws:iam::123456789012:root",
+    "Severity": "critical",
+    "Risk": "AWS root account does not have hardware or virtual MFA configured",
+    "Remediation": {
+      "Url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
+    }
+  },
+  {
+    "Status": "PASS",
+    "CheckID": "s3_bucket_public_access_block",
+    "CheckTitle": "Ensure S3 public access block is enabled",
+    "ServiceName": "s3",
+    "Severity": "high"
+  }
+]
