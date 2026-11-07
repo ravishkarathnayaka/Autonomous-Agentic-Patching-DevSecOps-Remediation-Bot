@@ -1,0 +1,36 @@
+# German Federal Office for Information Security (BSI) IT-Grundschutz INF.2 (Cloud Usage)
+# Baseline requirements for secure cloud usage, tenant partitioning, and automated remediation.
+
+policy_name: bsi-inf2-cloud-security
+version: "1.2.0"
+framework: "BSI IT-Grundschutz INF.2"
+description: "Autonomous remediation policy enforcing secure cloud access controls, tenant isolation, and encrypted storage."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 168
+
+technical_controls:
+  - control: "INF.2.A1 Secure Cloud Service Configuration"
+    description: "Ensure cloud compute and container resources drop administrative capabilities and enforce read-only filesystems."
+    cwes:
+      - CWE-250   # Execution with Unnecessary Privileges
+      - CWE-269   # Improper Privilege Management
+
+  - control: "INF.2.A2 Multi-Tenant Object Access Control"
+    description: "Prevent broken object authorization and cross-tenant data leakage in cloud API endpoints."
+    cwes:
+      - CWE-639   # Insecure Direct Object References (IDOR)
+      - CWE-284   # Improper Access Control
+
+  - control: "INF.2.A3 Cryptographic Key Protection"
+    description: "Prevent embedded credentials or insecure key generation in cloud templates."
+    cwes:
+      - CWE-798   # Hardcoded Credentials
+      - CWE-327   # Broken or Risky Cryptographic Algorithm
