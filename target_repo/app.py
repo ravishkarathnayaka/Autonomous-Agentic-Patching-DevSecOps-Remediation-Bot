@@ -686,6 +686,18 @@ def update_user_profile():
     return jsonify({"status": "updated", "profile": profile}), 200
 
 
+@app.route("/api/v1/auth/external-redirect", methods=["GET"])
+def external_redirect():
+    # Vulnerable: URL Redirection to Untrusted Site (Open Redirect / CWE-601)
+    # Redirects client to arbitrary external URL supplied in query parameter 'next'
+    target_url = request.args.get("next", "")
+    if not target_url:
+        return jsonify({"error": "Redirect destination required"}), 400
+    # Insecure open redirect: directly issues 302 without hostname verification
+    from flask import redirect
+    return redirect(target_url, code=302)
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
