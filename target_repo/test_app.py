@@ -587,4 +587,23 @@ def test_query_catalog_xpath_missing(client):
     assert resp.status_code == 400
 
 
+def test_update_user_profile_valid(client):
+    """Verify profile update updates email without breaking structure."""
+    resp = client.post(
+        "/api/v1/user/profile-update",
+        json={"email": "alice_new@corp.internal"}
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "updated"
+    assert data["profile"]["email"] == "alice_new@corp.internal"
+
+
+def test_update_user_profile_empty(client):
+    """Verify profile update returns 400 on empty payload."""
+    resp = client.post("/api/v1/user/profile-update", json={})
+    assert resp.status_code == 400
+
+
+
 
