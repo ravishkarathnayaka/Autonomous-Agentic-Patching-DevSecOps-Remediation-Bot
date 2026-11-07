@@ -667,6 +667,25 @@ def query_catalog_xpath():
         return jsonify({"error": f"XPath error: {str(e)}"}), 400
 
 
+@app.route("/api/v1/user/profile-update", methods=["POST"])
+def update_user_profile():
+    # Vulnerable: Improperly Controlled Modification of Dynamically-Determined Object Attributes (CWE-915 / Mass Assignment)
+    # Merges unvetted request dictionary directly into user profile object allowing privilege escalation
+    data = request.get_json(silent=True) or {}
+    if not data:
+        return jsonify({"error": "Profile data required"}), 400
+    profile = {
+        "user_id": "usr_500",
+        "username": "developer",
+        "email": "dev@corp.internal",
+        "is_admin": False,
+        "role": "standard_user"
+    }
+    # Dangerous: mass assignment without field allowlist
+    profile.update(data)
+    return jsonify({"status": "updated", "profile": profile}), 200
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
