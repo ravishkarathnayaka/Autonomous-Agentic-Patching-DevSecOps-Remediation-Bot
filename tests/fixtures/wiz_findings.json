@@ -1,0 +1,22 @@
+{
+  "findings": [
+    {
+      "id": "WIZ-RULE-001",
+      "name": "Publicly accessible S3 bucket containing confidential assets",
+      "description": "Bucket acl allows AllUsers read access",
+      "severity": "CRITICAL",
+      "score": 9.2,
+      "cwe": "CWE-732",
+      "asset": "terraform/s3_storage.tf"
+    },
+    {
+      "id": "CVE-2023-22515",
+      "name": "Confluence Data Center Privilege Escalation",
+      "description": "Critical broken access control vulnerability in Atlassian Confluence",
+      "severity": "HIGH",
+      "score": 8.8,
+      "cwe": "CWE-284",
+      "asset": "k8s/confluence-deployment.yaml"
+    }
+  ]
+}
