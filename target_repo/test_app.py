@@ -531,3 +531,22 @@ def test_download_invoice_missing_id(client):
     """Verify invoice download returns 400 when ID is omitted."""
     resp = client.get("/api/v1/invoices/download")
     assert resp.status_code == 400
+
+
+def test_render_greeting_template_valid(client):
+    """Verify greeting template renders user variable correctly."""
+    resp = client.post(
+        "/api/v1/templates/render-greeting",
+        json={"template": "Hello {{ username }}! Welcome aboard.", "username": "Alice"}
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "rendered"
+    assert "Hello Alice! Welcome aboard." in data["output"]
+
+
+def test_render_greeting_template_missing(client):
+    """Verify greeting template returns 400 when template is omitted."""
+    resp = client.post("/api/v1/templates/render-greeting", json={})
+    assert resp.status_code == 400
+
