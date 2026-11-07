@@ -1,0 +1,37 @@
+# European Union Agency for Cybersecurity (ENISA) Cloud Cybersecurity Policy
+# Standard controls for cloud architecture, vulnerability triage, and automated patching.
+
+policy_name: enisa-cloud-cybersecurity
+version: "2.0.0"
+framework: "ENISA Cloud Cybersecurity"
+description: "Autonomous policy requiring timely remediation of cloud asset vulnerabilities, least privilege, and container integrity."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+technical_controls:
+  - control: "ENISA-CC-01 Cloud Infrastructure Misconfiguration"
+    description: "Prevent open storage buckets, unrestricted security groups, and unencrypted volumes."
+    cwes:
+      - CWE-16    # Configuration Weakness
+      - CWE-732   # Incorrect Permission Assignment
+      - CWE-311   # Missing Encryption of Sensitive Data
+
+  - control: "ENISA-CC-02 Third-Party Software Supply Chain"
+    description: "Eliminate known vulnerabilities in container base images and open-source packages."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-1104  # Use of Unmaintained Third-Party Components
+
+  - control: "ENISA-CC-03 Application Ingress Protection"
+    description: "Enforce boundary verification and anti-redirection controls on cloud gateways."
+    cwes:
+      - CWE-918   # Server-Side Request Forgery (SSRF)
+      - CWE-601   # URL Redirection to Untrusted Site
