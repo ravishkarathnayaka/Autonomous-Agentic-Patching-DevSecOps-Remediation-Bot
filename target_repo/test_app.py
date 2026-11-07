@@ -570,3 +570,21 @@ def test_restore_pickle_session_missing(client):
     assert resp.status_code == 400
 
 
+def test_query_catalog_xpath_valid(client):
+    """Verify catalog xpath query retrieves matching electronics items."""
+    resp = client.post("/api/v1/catalog/xpath-query", json={"category": "electronics"})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "queried"
+    assert data["matches_count"] == 2
+    assert "Laptop" in data["items"]
+    assert "Phone" in data["items"]
+
+
+def test_query_catalog_xpath_missing(client):
+    """Verify catalog xpath returns 400 when category is omitted."""
+    resp = client.post("/api/v1/catalog/xpath-query", json={})
+    assert resp.status_code == 400
+
+
+
