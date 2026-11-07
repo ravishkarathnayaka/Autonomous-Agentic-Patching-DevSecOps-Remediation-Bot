@@ -550,3 +550,23 @@ def test_render_greeting_template_missing(client):
     resp = client.post("/api/v1/templates/render-greeting", json={})
     assert resp.status_code == 400
 
+
+def test_restore_pickle_session_valid(client):
+    """Verify restore pickle session correctly deserializes encoded dictionary."""
+    import base64
+    import pickle
+    payload = base64.b64encode(pickle.dumps({"user": "admin", "role": "superuser"})).decode("utf-8")
+    resp = client.post("/api/v1/session/restore-pickle", json={"payload": payload})
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["status"] == "restored"
+    assert data["object_type"] == "dict"
+    assert "admin" in data["content"]
+
+
+def test_restore_pickle_session_missing(client):
+    """Verify restore pickle session returns 400 when payload is missing."""
+    resp = client.post("/api/v1/session/restore-pickle", json={})
+    assert resp.status_code == 400
+
+
