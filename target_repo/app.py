@@ -643,6 +643,30 @@ def restore_pickle_session():
         return jsonify({"error": f"Deserialization error: {str(e)}"}), 400
 
 
+@app.route("/api/v1/catalog/xpath-query", methods=["POST"])
+def query_catalog_xpath():
+    # Vulnerable: Improper Neutralization of Data within XPath Expressions (CWE-643)
+    # Concatenates user input directly into XPath query without escaping
+    data = request.get_json(silent=True) or {}
+    category = data.get("category", "")
+    if not category:
+        return jsonify({"error": "Category required"}), 400
+    catalog_xml = """<catalog>
+        <item><name>Laptop</name><category>electronics</category><price>1200</price></item>
+        <item><name>Desk</name><category>furniture</category><price>350</price></item>
+        <item><name>Phone</name><category>electronics</category><price>800</price></item>
+    </catalog>"""
+    try:
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(catalog_xml)
+        xpath_query = f".//item[category='{category}']"
+        matches = root.findall(xpath_query)
+        items = [elem.find("name").text for elem in matches if elem.find("name") is not None]
+        return jsonify({"status": "queried", "matches_count": len(items), "items": items}), 200
+    except Exception as e:
+        return jsonify({"error": f"XPath error: {str(e)}"}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
