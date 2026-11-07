@@ -603,6 +603,24 @@ def download_invoice():
     return jsonify({"status": "retrieved", "invoice_id": invoice_id, "data": invoice}), 200
 
 
+@app.route("/api/v1/templates/render-greeting", methods=["POST"])
+def render_greeting_template():
+    # Vulnerable: Server-Side Template Injection (SSTI / CWE-1336)
+    # Renders user-supplied string template directly using jinja2.Template without sandbox
+    data = request.get_json(silent=True) or {}
+    template_str = data.get("template", "")
+    username = data.get("username", "Guest")
+    if not template_str:
+        return jsonify({"error": "Template string required"}), 400
+    try:
+        from jinja2 import Template
+        tmpl = Template(template_str)
+        rendered = tmpl.render(username=username)
+        return jsonify({"status": "rendered", "output": rendered}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
