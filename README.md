@@ -14,11 +14,15 @@
 - [Live Web Portal & Vercel Deployment](#-live-web-portal--vercel-deployment)
 - [Executive Overview](#-executive-overview)
 - [Multi-Agent State Architecture](#-multi-agent-state-architecture)
-- [Supported 54-Scanner Security Matrix](#-supported-54-scanner-security-matrix)
+- [Supported 60-Scanner Security Matrix](#-supported-60-scanner-security-matrix)
 - [Agent Engine Deep Dive](#-agent-engine-deep-dive)
 - [Threat Model & Safety Controls](#-threat-model--safety-controls)
 - [Enterprise Compliance Policies](#-enterprise-compliance-policies)
 - [Architecture & Technical Specifications](#-architecture--technical-specifications)
+  - [Insecure Deserialization (CWE-502) Defense Specification](docs/INSECURE_DESERIALIZATION_DEFENSE_SPEC.md)
+  - [Server-Side Template Injection (SSTI) Defense-in-Depth Specification](docs/SSTI_DEFENSE_IN_DEPTH_SPEC.md)
+  - [XPath Injection (CWE-643) Defense Specification](docs/XPATH_INJECTION_DEFENSE_SPEC.md)
+  - [Mass Assignment & Parameter Tampering Defense Specification](docs/MASS_ASSIGNMENT_DEFENSE_SPEC.md)
   - [HTTP Parameter Pollution (HPP) Defense Specification](docs/HTTP_PARAMETER_POLLUTION_SPEC.md)
   - [SVG XML External Entity (XXE) & Stored XSS Hardening Guide](docs/SVG_XXE_HARDENING_GUIDE.md)
   - [Insecure Direct Object References (IDOR/BOLA) Authorization Specification](docs/IDOR_BOLA_AUTHORIZATION_SPEC.md)
@@ -152,9 +156,9 @@ flowchart TD
 
 ---
 
-## 🔍 Supported 54-Scanner Security Matrix
+## 🔍 Supported 60-Scanner Security Matrix
 
-The bot features native, zero-dependency JSON and SARIF parsers supporting 54 industry-standard scanners across SAST, SCA, Secrets, Container, IaC, and SBOM domains:
+The bot features native, zero-dependency JSON and SARIF parsers supporting 60 industry-standard scanners across SAST, SCA, Secrets, Container, Cloud, IaC, and SBOM domains:
 
 | Category | Scanner Tool | Engine Target | Parser Implementation |
 |---|---|---|---|
@@ -164,6 +168,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 54 in
 | **SAST** | SonarQube | Clean Code enterprise analysis | `agent_engine/tools/sonarqube_parser.py` |
 | **SAST** | SonarQube Hotspots | Security Hotspot review findings | `agent_engine/tools/sonar_hotspots_parser.py` |
 | **SAST** | SonarCloud | Cloud-based static analysis & telemetry | `agent_engine/tools/sonarcloud_parser.py` |
+| **SAST** | DeepSource | Continuous automated static code analysis | `agent_engine/tools/deepsource_parser.py` |
 | **SAST** | Horusec | Multi-language source analysis | `agent_engine/tools/horusec_parser.py` |
 | **SAST** | Flawfinder | C/C++ source code vulnerability | `agent_engine/tools/flawfinder_parser.py` |
 | **SAST** | Clang-Tidy | C/C++ static diagnostic engine | `agent_engine/tools/clang_tidy_parser.py` |
@@ -179,6 +184,7 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 54 in
 | **SCA** | Trivy | OS package & library dependency | `agent_engine/tools/trivy_parser.py` |
 | **SCA** | Snyk | Open source dependency scanner | `agent_engine/tools/snyk_parser.py` |
 | **SCA** | Mend | Open source dependency alerts | `agent_engine/tools/mend_parser.py` |
+| **SCA** | Mend Bolt (WhiteSource) | Repository open source CVE alert reports | `agent_engine/tools/mend_bolt_parser.py` |
 | **SCA** | JFrog Xray | Artifact binary & dependency scanning | `agent_engine/tools/jfrog_xray_parser.py` |
 | **SCA** | pip-audit | Python PyPI package advisories | `agent_engine/tools/pip_audit_parser.py` |
 | **SCA** | npm-audit | Node.js ecosystem advisories | `agent_engine/tools/npm_audit_parser.py` |
@@ -199,10 +205,13 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 54 in
 | **Container** | Trivy Operator | Kubernetes VulnerabilityReport CRD | `agent_engine/tools/trivy_operator_parser.py` |
 | **Container** | Lacework | Container image vulnerability analysis | `agent_engine/tools/lacework_parser.py` |
 | **Container** | NeuVector | SUSE NeuVector container vulnerabilities | `agent_engine/tools/neuvector_parser.py` |
-| **Container** | Prisma Cloud | Palo Alto Prisma Cloud Compute scans | `agent_engine/tools/prisma_cloud_parser.py` |
+| **Container** | Prisma Cloud Compute | Cloud container & CVE vulnerability analysis | `agent_engine/tools/prisma_compute_parser.py` |
 | **Container** | Snyk Container | Snyk container image scan JSON | `agent_engine/tools/snyk_container_parser.py` |
 | **Container** | Aqua Security | Container & cloud workload vulnerability | `agent_engine/tools/aqua_scanner_parser.py` |
 | **Container** | Anchore Enterprise | Image vulnerability & SBOM assessment | `agent_engine/tools/anchore_enterprise_parser.py` |
+| **Cloud** | Wiz Cloud | Agentless cloud security & asset risk posture | `agent_engine/tools/wiz_parser.py` |
+| **Cloud** | Orca Security | SideScanning cloud infrastructure telemetry | `agent_engine/tools/orca_parser.py` |
+| **Cloud** | Prowler | AWS, Azure & GCP security assessment & CIS | `agent_engine/tools/prowler_parser.py` |
 | **DAST** | OWASP ZAP & Nuclei | Dynamic API & blackbox scanning | `agent_engine/tools/dast_parser.py` |
 | **DAST** | AppCheck | Web application & API DAST engine | `agent_engine/tools/appcheck_parser.py` |
 | **DAST** | Invicti (Netsparker) | Enterprise web & API vulnerability DAST | `agent_engine/tools/invicti_parser.py` |
@@ -258,6 +267,11 @@ The bot features native, zero-dependency JSON and SARIF parsers supporting 54 in
 | **ReDoS Timeout Agent**| `agent_engine/agents/regex_timeout_agent.py` | Regular expression denial of service mitigation | Length capping, catastrophic backtracking audit, timeout guardrails |
 | **GraphQL Introspection**| `agent_engine/agents/graphql_introspection_agent.py` | Schema reconnaissance & introspection gating | Production introspection disabling, query depth bounds |
 | **Cache Poisoning Agent**| `agent_engine/agents/cache_poisoning_agent.py` | Web cache poisoning & unkeyed header defense | Anti-caching directives, `Vary: Cookie`, unkeyed header stripping |
+| **Pickle Deserialization**| `agent_engine/agents/pickle_deserialization_agent.py` | Insecure deserialization & RCE elimination | Opcode inspection, JSON replacement, HMAC integrity check |
+| **SSTI Sandbox Agent** | `agent_engine/agents/ssti_sandbox_agent.py` | Template injection & sandboxed execution | `SandboxedEnvironment`, `autoescape=True`, dunder attribute blocking |
+| **XPath Parameterizer**| `agent_engine/agents/xpath_parameterization_agent.py` | XPath query parameterization & predicate defense | Variable binding, quote delimiter interception, structural validation |
+| **Mass Assignment Guard**| `agent_engine/agents/mass_assignment_guard_agent.py` | Object property overwrite & privilege defense | Explicit field allowlists, privileged attribute filtering |
+| **Open Redirect Guard**| `agent_engine/agents/open_redirect_guard_agent.py` | Destination URL validation & phishing defense | Hostname allowlisting, protocol-relative escape blocking |
 | **Compliance Agent** | `agent_engine/agents/compliance_agent.py` | Multi-standard regulatory audit & SLA tracking | HIPAA, GDPR, BSI, ASD, NSA, CIS, DORA, FedRAMP, ISO 27001 mapping |
 
 ---
@@ -315,6 +329,12 @@ The bot includes turnkey YAML policy profiles under `rules/` governing autonomou
 | `rules/mitre-atlas-ai-policy.yml` | MITRE ATLAS | AI / LLM Threat Matrix & Prompt Defense | 12h / 24h |
 | `rules/japan-ipa-secure-programming-policy.yml` | Japan IPA Guidance | Web & Embedded Secure Programming | 24h / 48h |
 | `rules/etsi-en-303-645-iot-policy.yml` | ETSI EN 303 645 | Consumer Internet of Things Baseline | 24h / 48h |
+| `rules/enisa-cloud-cybersecurity-policy.yml` | ENISA Cloud Cybersecurity | European Cloud Vulnerability Management | 24h / 48h |
+| `rules/bsi-inf2-cloud-security-policy.yml` | BSI IT-Grundschutz INF.2 | German Cloud Service & Compute Hygiene | 24h / 48h |
+| `rules/cisa-circia-reporting-policy.yml` | CISA CIRCIA (6 CFR Part 226) | Critical Infrastructure Incident Baselines | 12h / 24h |
+| `rules/south-korea-pipa-policy.yml` | South Korea PIPA (Act 19234) | Personal Information Protection Controls | 24h / 48h |
+| `rules/canada-bill-c26-policy.yml` | Canada Bill C-26 (CCSPA) | Critical Cyber Systems Protection Act | 24h / 48h |
+| `rules/mas-trm-2024-policy.yml` | MAS TRM Guidelines 2024 | Singapore Technology Risk Management | 12h / 24h |
 
 ---
 
