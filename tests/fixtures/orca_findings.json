@@ -1,0 +1,22 @@
+{
+  "data": [
+    {
+      "cve_id": "CVE-2023-44487",
+      "summary": "HTTP/2 Rapid Reset Attack enabling Denial of Service",
+      "description": "Rapid stream resets consume excessive server resources",
+      "priority": "CRITICAL",
+      "score": 9.4,
+      "cwe": "CWE-400",
+      "asset_name": "nginx-ingress-pod"
+    },
+    {
+      "cve_id": "ORCA-IAM-022",
+      "summary": "Cloud IAM user has unused administrator privileges",
+      "description": "Service account retains owner privileges without MFA",
+      "priority": "HIGH",
+      "score": 7.6,
+      "cwe": "CWE-250",
+      "asset_name": "terraform/iam_bindings.tf"
+    }
+  ]
+}
