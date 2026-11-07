@@ -38,7 +38,12 @@ export type AgentName =
   | 'PdfSsrfSanitizerAgent'
   | 'RegexTimeoutAgent'
   | 'GraphqlIntrospectionAgent'
-  | 'CachePoisoningAgent';
+  | 'CachePoisoningAgent'
+  | 'PickleDeserializationAgent'
+  | 'SstiSandboxAgent'
+  | 'XpathParameterizationAgent'
+  | 'MassAssignmentGuardAgent'
+  | 'OpenRedirectGuardAgent';
 
 export type ScannerType =
   | 'semgrep'
@@ -94,7 +99,13 @@ export type ScannerType =
   | 'acunetix'
   | 'sonarcloud'
   | 'lacework'
-  | 'bridgecrew';
+  | 'bridgecrew'
+  | 'prisma-compute'
+  | 'deepsource'
+  | 'wiz'
+  | 'mend-bolt'
+  | 'orca'
+  | 'prowler';
 
 export type RemediationStatus = 
   | 'IDLE' 
