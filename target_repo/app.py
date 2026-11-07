@@ -621,6 +621,28 @@ def render_greeting_template():
         return jsonify({"error": str(e)}), 400
 
 
+@app.route("/api/v1/session/restore-pickle", methods=["POST"])
+def restore_pickle_session():
+    # Vulnerable: Deserialization of Untrusted Data (CWE-502)
+    # Unpickles base64 user payload without cryptographic signature verification
+    data = request.get_json(silent=True) or {}
+    b64_payload = data.get("payload", "")
+    if not b64_payload:
+        return jsonify({"error": "Base64 pickle payload required"}), 400
+    try:
+        import base64
+        import pickle
+        raw_bytes = base64.b64decode(b64_payload)
+        unpickled_obj = pickle.loads(raw_bytes)
+        return jsonify({
+            "status": "restored",
+            "object_type": type(unpickled_obj).__name__,
+            "content": str(unpickled_obj)
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Deserialization error: {str(e)}"}), 400
+
+
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
