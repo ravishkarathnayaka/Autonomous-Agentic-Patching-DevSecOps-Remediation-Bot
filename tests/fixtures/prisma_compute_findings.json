@@ -1,0 +1,26 @@
+{
+  "cveVulnerabilities": [
+    {
+      "cve": "CVE-2023-38545",
+      "packageName": "curl",
+      "packageVersion": "7.88.1",
+      "severity": "critical",
+      "cvss": 9.8,
+      "cwe": "CWE-122",
+      "description": "SOCKS5 heap buffer overflow in curl",
+      "imageName": "docker/sandbox.Dockerfile",
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2023-38545"
+    },
+    {
+      "cve": "CVE-2023-4911",
+      "packageName": "glibc",
+      "packageVersion": "2.35",
+      "severity": "high",
+      "cvss": 7.8,
+      "cwe": "CWE-787",
+      "description": "Looney Tunables buffer overflow in GNU C Library dynamic loader",
+      "imageName": "docker/sandbox.Dockerfile",
+      "link": "https://nvd.nist.gov/vuln/detail/CVE-2023-4911"
+    }
+  ]
+}
