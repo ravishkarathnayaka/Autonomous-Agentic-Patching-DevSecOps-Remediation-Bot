@@ -1,0 +1,38 @@
+# Cybersecurity and Infrastructure Security Agency (CISA) CIRCIA Compliance Policy
+# Cyber Incident Reporting for Critical Infrastructure Act (CIRCIA) 24h/72h mandatory reporting baselines.
+
+policy_name: cisa-circia-reporting
+version: "1.0.0"
+framework: "CISA CIRCIA (6 CFR Part 226)"
+description: "Autonomous remediation policy enforcing rapid patching and alert generation for critical infrastructure vulnerabilities."
+
+thresholds:
+  min_severity: CRITICAL
+  min_cvss_score: 8.5
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 12
+    high: 24
+    medium: 72
+
+technical_controls:
+  - control: "CIRCIA-SEC-01 Remote Code Execution Defense"
+    description: "Neutralize untrusted deserialization, command injection, and template breakouts immediately."
+    cwes:
+      - CWE-502   # Deserialization of Untrusted Data
+      - CWE-78    # OS Command Injection
+      - CWE-1336  # Server-Side Template Injection
+
+  - control: "CIRCIA-SEC-02 Perimeter Breach & Lateral Movement"
+    description: "Prevent directory traversal and server-side request forgery into internal networks."
+    cwes:
+      - CWE-22    # Path Traversal
+      - CWE-59    # Symlink Following
+      - CWE-918   # Server-Side Request Forgery
+
+  - control: "CIRCIA-SEC-03 Authentication & Authorization Failures"
+    description: "Intercept privilege escalation via mass assignment and broken authorization."
+    cwes:
+      - CWE-915   # Mass Assignment
+      - CWE-862   # Missing Authorization
