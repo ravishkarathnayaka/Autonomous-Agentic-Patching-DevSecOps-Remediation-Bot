@@ -605,5 +605,19 @@ def test_update_user_profile_empty(client):
     assert resp.status_code == 400
 
 
+def test_external_redirect_valid(client):
+    """Verify external redirect issues 302 with specified Location."""
+    resp = client.get("/api/v1/auth/external-redirect?next=https://trusted.corp.com/dashboard")
+    assert resp.status_code == 302
+    assert resp.headers["Location"] == "https://trusted.corp.com/dashboard"
+
+
+def test_external_redirect_missing(client):
+    """Verify external redirect returns 400 when next is omitted."""
+    resp = client.get("/api/v1/auth/external-redirect")
+    assert resp.status_code == 400
+
+
+
 
 
