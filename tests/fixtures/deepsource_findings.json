@@ -1,0 +1,24 @@
+{
+  "issues": [
+    {
+      "issue_code": "PTC-W1004",
+      "title": "Possible SQL injection via string interpolation",
+      "description": "User input directly formatted into raw database query string",
+      "path": "target_repo/app.py",
+      "line": 15,
+      "severity": "critical",
+      "cwe": "CWE-89",
+      "snippet": "cursor.execute(f'SELECT * FROM users WHERE id={user_id}')"
+    },
+    {
+      "issue_code": "PTC-W1009",
+      "title": "Use of insecure temporary file creation",
+      "description": "os.tempnam is vulnerable to symlink race conditions",
+      "path": "target_repo/app.py",
+      "line": 42,
+      "severity": "major",
+      "cwe": "CWE-377",
+      "snippet": "tmp = os.tempnam()"
+    }
+  ]
+}
