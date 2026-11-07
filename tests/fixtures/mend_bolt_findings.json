@@ -1,0 +1,32 @@
+{
+  "alerts": [
+    {
+      "vulnerability": {
+        "name": "CVE-2022-21699",
+        "severity": "HIGH",
+        "cvss3_score": 7.5,
+        "cwe": "CWE-377",
+        "description": "ipython temporary path vulnerability allowing local code execution"
+      },
+      "library": {
+        "name": "ipython",
+        "version": "7.31.0"
+      },
+      "fixResolution": "7.31.1"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-32681",
+        "severity": "CRITICAL",
+        "cvss3_score": 9.1,
+        "cwe": "CWE-200",
+        "description": "Requests session proxy credential leak on cross-origin redirects"
+      },
+      "library": {
+        "name": "requests",
+        "version": "2.28.1"
+      },
+      "fixResolution": "2.31.0"
+    }
+  ]
+}
