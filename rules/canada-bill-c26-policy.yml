@@ -1,0 +1,37 @@
+# Canada Critical Cyber Systems Protection Act (Bill C-26) Compliance Policy
+# Baseline requirements for telecommunications, energy, and financial critical infrastructure cyber resilience.
+
+policy_name: canada-bill-c26
+version: "1.1.0"
+framework: "Canada Bill C-26 (CCSPA)"
+description: "Autonomous remediation policy establishing mandatory cybersecurity program compliance and vulnerability patch management."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+technical_controls:
+  - control: "CCSPA-01 Third-Party Dependency & Supply Chain Verification"
+    description: "Audit and remediate critical software component flaws before deployment into vital cyber systems."
+    cwes:
+      - CWE-1395  # Vulnerable Third-Party Components
+      - CWE-1104  # Use of Unmaintained Third-Party Components
+
+  - control: "CCSPA-02 Access Control & Boundary Defense"
+    description: "Prevent unauthorized entry points via unvalidated redirects and broken access controls."
+    cwes:
+      - CWE-284   # Improper Access Control
+      - CWE-601   # URL Redirection to Untrusted Site
+      - CWE-918   # Server-Side Request Forgery
+
+  - control: "CCSPA-03 System Integrity & Command Execution"
+    description: "Eliminate command injection and untrusted deserialization vectors."
+    cwes:
+      - CWE-78    # OS Command Injection
+      - CWE-502   # Deserialization of Untrusted Data
