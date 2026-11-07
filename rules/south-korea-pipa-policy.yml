@@ -1,0 +1,38 @@
+# South Korea Personal Information Protection Act (PIPA) Compliance Policy
+# Stringent technical measures for personal data protection, access governance, and leak prevention.
+
+policy_name: south-korea-pipa
+version: "2.0.0"
+framework: "South Korea PIPA (Act No. 19234)"
+description: "Autonomous policy requiring strict access control, encryption of resident registration numbers, and anti-leakage guards."
+
+thresholds:
+  min_severity: HIGH
+  min_cvss_score: 7.0
+  auto_remediate_critical: true
+  auto_remediate_high: true
+  remediation_slas_hours:
+    critical: 24
+    high: 48
+    medium: 120
+
+technical_controls:
+  - control: "Article 29 Safety Measures for Personal Data"
+    description: "Prevent unauthorized access to personal records via IDOR or broken object authorization."
+    cwes:
+      - CWE-639   # Insecure Direct Object References
+      - CWE-284   # Improper Access Control
+      - CWE-200   # Exposure of Sensitive Information
+
+  - control: "Article 24 Restriction on Processing Identification Data"
+    description: "Prohibit injection flaws that could extract sensitive resident numbers or payment data."
+    cwes:
+      - CWE-89    # SQL Injection
+      - CWE-643   # XPath Injection
+      - CWE-611   # XML External Entity (XXE)
+
+  - control: "Article 34 Notification of Leakage"
+    description: "Ensure session tokens and cookies have strict security attributes."
+    cwes:
+      - CWE-614   # Sensitive Cookie Without 'Secure' Attribute
+      - CWE-1004  # Sensitive Cookie Without 'HttpOnly' Flag
